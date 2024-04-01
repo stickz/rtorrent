@@ -1,0 +1,1132 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+
+<refentry id="rtorrent">
+
+
+  <refmeta>
+    <refentrytitle>rtorrent</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="date">June 25th, 2005</refmiscinfo>
+    <refmiscinfo class="source"></refmiscinfo>
+    <refmiscinfo class="title">BitTorrent client for ncurses</refmiscinfo>
+  </refmeta>
+
+  
+  <refnamediv>
+    <refname>rtorrent</refname>
+    <refpurpose>a BitTorrent client for ncurses</refpurpose>
+  </refnamediv>
+  
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>rtorrent</command>
+      <arg choice="opt">-h</arg>
+      <arg choice="opt">-n</arg>
+      <arg choice="opt">-o key1=opt1,...</arg>
+      <arg choice="opt">-O key=opt</arg>
+      <arg choice="opt" rep="repeat">URL | FILE</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>
+<command>rtorrent</command> is a BitTorrent client for ncurses, using
+the <emphasis>libtorrent</emphasis> library. The client and library is
+written in C++ with emphasis on speed and efficiency, while delivering
+equivalent features to those found in GUI based clients in an ncurses
+client.
+    </para>
+
+    <para>
+Most of the options below have their own default unit in addition to
+supporting B, K, M and G suffixes.
+    </para>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>KEYBOARD CONTROL</title>
+    <para>
+    </para>
+
+    <refsect2>
+      <title>Global Keys</title>
+
+      <variablelist>
+
+	<varlistentry>
+	  <term>^q</term>
+	  <listitem><para>
+            Initiate shutdown, press again to force the shutdown and
+            skip sending the stop signal to trackers.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>up | down | left | right arrow keys</term>
+	  <term>^P | ^N | ^B | ^F</term>
+	  <listitem><para>
+Select entries or change windows. The right arrow key or ^F is often
+used for viewing details about the selected entry, while the left
+arrow key or ^B often returns to the previous screen.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>a | s | d</term>
+	  <listitem><para>
+            Increase the upload throttle by 1/5/50 KB.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>A | S | D</term>
+	  <listitem><para>
+            Increase the download throttle by 1/5/50 KB.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>z | x | c</term>
+	  <listitem><para>
+            Decrease the upload throttle by 1/5/50 KB.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>Z | X | C</term>
+	  <listitem><para>
+            Decrease the download throttle by 1/5/50 KB.
+          </para></listitem>
+	</varlistentry>
+
+      </variablelist>
+
+    </refsect2>
+
+    <refsect2>
+      <title>Main View Keys</title>
+
+      <variablelist>
+
+	<varlistentry>
+	  <term>-></term>
+	  <listitem><para>
+View download.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>0 - 9</term>
+	  <listitem><para>
+Change view.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^S</term>
+	  <listitem><para>
+Start download.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^D</term>
+	  <listitem><para>
+Stop an active download, or remove a stopped download.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^K</term>
+	  <listitem><para>
+Close a torrent and its files.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^E</term>
+	  <listitem><para>
+Set the 'create/resize queued' flags on all files in a torrent. This
+is necessary if the underlying files in a torrent have been deleted or
+truncated, and thus rtorrent must recreate them.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^R</term>
+	  <listitem><para>
+Initiate hash check of torrent.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^O</term>
+	  <listitem><para>
+Change the destination directory of the download. The torrent must be
+closed.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^X</term>
+	  <listitem><para>
+Call commands or change settings.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>^B</term>
+	  <listitem><para>
+Set download to perform initial seeding. Only use when
+you are the first and only seeder so far for the download.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>+ | -</term>
+	  <listitem><para>
+Change the priority of the download.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>backspace</term>
+	  <listitem><para>
+Add torrent using an URL or file path. Use
+<emphasis>tab</emphasis> to view directory content and do
+auto-complete.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>l</term>
+	  <listitem><para>
+View log. Exit by pressing the space-bar.
+          </para></listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term>U</term>
+          <listitem><para>
+Delete the file the torrent is tied to, and clear the association.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>I</term>
+          <listitem><para>
+Toggle whether torrent ignores ratio settings.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>F</term>
+          <listitem><para>
+Add a temporary name based regex filter to the current view.
+          </para></listitem>
+        </varlistentry>
+
+      </variablelist>
+
+    </refsect2>
+
+    <refsect2>
+      <title>Download View Keys</title>
+
+      <variablelist>
+
+	<varlistentry>
+	  <term>-></term>
+	  <listitem><para>
+View torrent file list. Use the space-bar to change the file priority
+and <emphasis>*</emphasis> to change the priority of all
+files. Use <emphasis>/</emphasis> to collapse the directories. OUTDATED
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>1 | 2</term>
+	  <listitem><para>
+Adjust max uploads.
+          </para></listitem>
+	</varlistentry>
+
+
+	<varlistentry>
+	  <term>3 | 4</term>
+	  <listitem><para>
+Adjust min peers.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>5 | 6</term>
+	  <listitem><para>
+Adjust max peers.
+          </para></listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term>u</term>
+          <listitem><para>
+Display transfering blocks.
+          </para></listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term>i</term>
+	  <listitem><para>
+Display chunk rarity.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>o</term>
+	  <listitem><para>
+Display the tracker list. Cycle the trackers in a group with the
+space-bar.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>p</term>
+	  <listitem><para>
+View peer and torrent information.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>t | T</term>
+	  <listitem><para>
+Initiate tracker request. Use capital T to force the request, ignoring
+the "min interval" set by the tracker.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>k</term>
+	  <listitem><para>
+Disconnect peer.
+          </para></listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>*</term>
+	  <listitem><para>
+Choke/Snub peer.
+          </para></listitem>
+	</varlistentry>
+
+      </variablelist>
+
+    </refsect2>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>-b <replaceable>a.b.c.d</replaceable></term>
+        <listitem><para>
+Bind listening socket and outgoing connections to this network
+interface address.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable>directory</replaceable></term>
+        <listitem><para>
+Set the default download directory. Defaults to "./".
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem><para>
+Display help and exit.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i <replaceable>a.b.c.d</replaceable></term>
+        <listitem><para>
+Set the address reported to the tracker.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-n</term>
+        <listitem><para>
+Don't load ~/.rtorrent.rc on startup.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-o key1=opt1,...</term>
+        <term>-O key=opt</term>
+        <listitem><para>
+Set any number of options, see the SETTINGS section. The options given
+here override the resource files. Use capital <emphasis>-O</emphasis>
+to allow comma in the option.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable>a-b</replaceable></term>
+        <listitem><para>
+Try to open a listening port in the range <emphasis>a</emphasis> up to
+and including <emphasis>b</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable>directory</replaceable></term>
+        <listitem><para>
+Session management will be enabled and the torrent files for all open
+downloads will be stored in this directory. Only one instance of
+rtorrent should be used with each session directory, though at the
+moment no locking is done. An empty string will disable the session
+directory.
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>GENERAL SETTINGS</title>
+    <para>
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>bind = <replaceable>a.b.c.d</replaceable></term>
+        <listitem><para>
+Bind listening socket and outgoing connections to this network
+interface address.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>ip = <replaceable>a.b.c.d</replaceable></term>
+        <term>ip = <replaceable>hostname</replaceable></term>
+        <listitem><para>
+Set the address reported to the tracker.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>port_range = <replaceable>a-b</replaceable></term>
+        <listitem><para>
+Try to open a listening port in the range <emphasis>a</emphasis> up to
+and including <emphasis>b</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>port_random = <replaceable>yes | no</replaceable></term>
+        <listitem><para>
+Open the listening port at a random position in the port range.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>check_hash = <replaceable>yes | no</replaceable></term>
+        <listitem><para>
+Perform hash check on torrents that have finished downloading.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>directory = <replaceable>directory</replaceable></term>
+        <listitem><para>
+Set the default download directory. Defaults to "./".
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>session = <replaceable>directory</replaceable></term>
+        <listitem><para>
+Session management will be enabled and the torrent files for all open
+downloads will be stored in this directory. Only one instance of
+rtorrent can be used per session directory. An empty string will
+disable the session directory.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>http_proxy = <replaceable>url</replaceable></term>
+        <listitem><para>
+Use a http proxy. Use an empty string to disable.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>encoding_list = <replaceable>encoding</replaceable></term>
+        <listitem><para>
+Add a preferred filename encoding to the list. The encodings are
+attempted in the order they are inserted, if none match the torrent
+default is used.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>encryption = <replaceable>option</replaceable>,<replaceable>...</replaceable></term>
+        <listitem><para>
+
+Set how rtorrent should deal with encrypted Bittorrent connections. By
+default, encryption is disabled, equivalent to specifying the option
+<emphasis>none</emphasis>. Alternatively, any number of the following
+options may be specified:
+
+        </para><para>
+
+<emphasis>allow_incoming</emphasis> (allow incoming encrypted connections), 
+<emphasis>try_outgoing</emphasis> (use encryption for outgoing connections),
+<emphasis>require</emphasis> (disable unencrypted handshakes), 
+<emphasis>require_RC4</emphasis> (also disable plaintext transmission after the
+initial encrypted handshake),
+<emphasis>enable_retry</emphasis> (if the initial outgoing connection fails, retry
+with encryption turned on if it was off or off if it was on), 
+<emphasis>prefer_plaintext</emphasis> (choose plaintext when peer offers a choice 
+between plaintext transmission and RC4 encryption, otherwise RC4 will be used).
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>peer_exchange = <replaceable>yes | no</replaceable></term>
+        <listitem><para>
+Enable/disable peer exchange for torrents that aren't marked private. Disabled by default.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>start_tied =</term>
+        <listitem><para>
+Start torrents that are tied to filenames that have been re-added.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>stop_untied =</term>
+        <term>close_untied =</term>
+        <term>remove_untied =</term>
+        <listitem><para>
+Stop, close or remove the torrents that are tied to filenames that
+have been deleted. Clear the association with the 'U' key.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>close_low_diskspace = <replaceable>space</replaceable></term>
+        <listitem><para>
+Close any active torrents on filesystems with less than
+<emphasis>space</emphasis> diskspace left. Use with
+the <emphasis>schedule</emphasis> option. A default scheduled event
+with id <emphasis>low_diskspace</emphasis> is set to 500Mb.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>load = <replaceable>file</replaceable></term>
+        <term>load_verbose = <replaceable>file</replaceable></term>
+        <term>load_start = <replaceable>file</replaceable></term>
+        <term>load_start_verbose = <replaceable>file</replaceable></term>
+        <listitem><para>
+Load and possibly start a file, or possibly multiple files by using the
+wild-card "*". This is meant for use with
+<emphasis>schedule</emphasis>, though ensure that the
+<emphasis>start</emphasis> is non-zero. The loaded file will be tied
+to the filename provided.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>import = <replaceable>file</replaceable></term>
+        <term>try_import = <replaceable>file</replaceable></term>
+        <listitem><para>
+Load a resource file. <emphasis>try_import</emphasis> does not throw
+torrent::input_error exception on bad input.
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>THROTTLE SETTINGS</title>
+<!--     <para> -->
+
+<!--     </para> -->
+
+    <variablelist>
+
+      <varlistentry>
+        <term>upload_rate = <replaceable>KB</replaceable></term>
+        <term>download_rate = <replaceable>KB</replaceable></term>
+        <term>set_upload_rate = <replaceable>TODO</replaceable></term>
+        <term>set_download_rate = <replaceable>TODO</replaceable></term>
+        <listitem><para>
+Set the maximum global uploand and download rates.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>min_peers = <replaceable>value</replaceable></term>
+        <term>max_peers = <replaceable>value</replaceable></term>
+        <listitem><para>
+Set the minimum and maximum number of peers to allow in each download.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>min_peers_seed = <replaceable>value</replaceable></term>
+        <term>max_peers_seed = <replaceable>value</replaceable></term>
+        <listitem><para>
+Set the minimum nad maximum number of peers to allow while seeding, or
+-1 (default) to use max_peers.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_uploads = <replaceable>value</replaceable></term>
+        <term>max_downloads = <replaceable>value</replaceable></term>
+        <term>min_uploads = <replaceable>value</replaceable></term>
+        <term>min_downloads = <replaceable>value</replaceable></term>
+        <listitem><para>
+Set the maximum/minimum number of simultaneous uploads/downloads per download/upload.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_uploads_div = <replaceable>value</replaceable></term>
+        <term>max_downloads_div = <replaceable>value</replaceable></term>
+        <term>set_max_uploads_div = <replaceable>value</replaceable></term>
+        <term>set_max_downloads_div = <replaceable>value</replaceable></term>
+        <listitem><para>
+Change the divider used to calculate the max upload and download slots
+to use when the throttle is changed. Disable by
+setting <emphasis>0</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_uploads_global = <replaceable>value</replaceable></term>
+        <term>max_downloads_global = <replaceable>value</replaceable></term>
+        <term>set_max_uploads_global = <replaceable>value</replaceable></term>
+        <term>set_max_downloads_global = <replaceable>value</replaceable></term>
+        <listitem><para>
+Max upload and download slots allowed. Disable by
+setting <emphasis>0</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>throttle_up = <replaceable>name</replaceable>, <replaceable>upload_rate</replaceable></term>
+        <term>throttle_down = <replaceable>name</replaceable>, <replaceable>download_rate</replaceable></term>
+        <listitem><para>
+Define secondary throttle and/or set the given upload or download rate. Attach to a download with the d.set_throttle_name=name command
+or switch throttles with Ctrl-T. Download must be stopped when changing throttles. Note that secondary throttles only work if the
+global upload/download is throttled. Setting a download to use the <emphasis>NULL</emphasis> throttle makes the download unthrottled
+even when there is a global throttle. Note that this special case bypasses the global throttle entirely, and as such its rate and
+transfer amounts are not included in the global statistics.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>throttle_ip = <replaceable>name</replaceable>, <replaceable>host</replaceable></term>
+        <term>throttle_ip = <replaceable>name</replaceable>, <replaceable>network/prefix</replaceable></term>
+        <term>throttle_ip = <replaceable>name</replaceable>, <replaceable>start</replaceable>, <replaceable>end</replaceable></term>
+        <listitem><para>
+Use the given secondary throttle for a host, CIDR network or IP range. All peers with a matching IP will use this throttle instead
+of the global throttle or a custom download throttle. The name may be <emphasis>NULL</emphasis> to make these peers unthrottled, with
+the same caveats as explained above.
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>TRACKER RELATED SETTINGS</title>
+    <para>
+Tracker related settings.
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>enable_trackers = <replaceable>yes</replaceable></term>
+        <listitem><para>
+Set to <emphasis>no</emphasis> to disable all tracker requests. Useful
+for disabling rtorrent with the <emphasis>schedule</emphasis> command.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>tracker_dump = <replaceable>filename</replaceable></term>
+        <listitem><para>
+Dump tracker requests to <emphasis>filename</emphasis>, disable by
+supplying an empty string. Only torrents loaded while
+<emphasis>tracker_dump</emphasis> contains a non-empty string will be
+logged at the moment, although disabling it will work as expected.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>tracker_numwant = <replaceable>number</replaceable></term>
+        <listitem><para>
+Set the numwant field sent to the tracker, which indicates how many
+peers we want. A negative value disables this feature.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>use_udp_trackers = <replaceable>yes</replaceable></term>
+        <listitem><para>
+Use UDP trackers. Disable if you are behind a firewall, etc, that does
+not allow connections to UDP trackers.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>http_capath = <replaceable>path</replaceable></term>
+        <term>http_cacert = <replaceable>filename</replaceable></term>
+        <listitem><para>
+Set the certificates to use in http requests. See Curl's
+CURLOPT_CAPATH and CURLOPT_CAINFO options for further information.
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>DHT-RELATED SETTINGS</title>
+    <para>
+      Settings related to DHT
+    </para>
+
+    <variablelist>
+
+       <varlistentry>
+        <term>dht = <replaceable>disabled|off|auto|on</replaceable></term>
+        <listitem><para>
+Support for querying the distributed hash table (DHT) to find peers for trackerless
+torrents or when all trackers are down. Set to <emphasis>disable</emphasis> to completely
+disable DHT, <emphasis>off</emphasis> (default) to enable DHT but to not start the
+DHT server, <emphasis>auto</emphasis> to automatically start and stop the DHT server
+as needed or <emphasis>on</emphasis> for permanently keeping the DHT server running.
+When set to automatic, the DHT server will start up when the first non-private torrent
+is started, and will stop 15-30 minutes after the last non-private torrent is
+stopped (or when rTorrent quits). For DHT to work, a session directory must be set (for
+saving the DHT cache).
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>dht_port = <replaceable>number</replaceable></term>
+        <listitem><para>
+Set the UDP listen port for DHT. Defaults to 6881.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>dht_add_node = <replaceable>host[:port]</replaceable></term>
+        <listitem><para>
+Not intended for use in the configuration file but as one-time option in the
+client or on the command line to bootstrap an empty DHT node table. Contacts 
+the given node and attempts to bootstrap from it if it replies.
+The port is optional, with port 6881 being used by default.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>dht_statistics = <replaceable>TODO</replaceable></term>
+        <listitem><para>
+TODO
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>set_dht_port = <replaceable>TODO</replaceable></term>
+        <listitem><para>
+TODO
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>set_dht_throttle = <replaceable>TODO</replaceable></term>
+        <listitem><para>
+TODO
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>USER-INTERFACE SETTINGS</title>
+    <para>
+      Display related settings.
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>view_add = <replaceable>name</replaceable></term>
+        <listitem><para>
+Create a new view.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>view_sort = <replaceable>name</replaceable></term>
+        <term>view_sort = <replaceable>name</replaceable>,<replaceable>seconds</replaceable></term>
+        <listitem><para>
+Sort a view according the the criteria set by
+<emphasis>view_sort_current</emphasis>. If the optional argument is
+supplied, the view is not sorted if a change happened during the last
+<emphasis>seconds</emphasis>. This command is meant to be used with
+<emphasis>schedule</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>view_sort_new = <replaceable>name</replaceable>,<replaceable>...</replaceable></term>
+        <term>view_sort_current = <replaceable>name</replaceable>,<replaceable>...</replaceable></term>
+        <listitem><para>
+
+Set the sorting criteria for when new elements inserted or
+<emphasis>view_sort</emphasis> is called. The list can contain any
+number of criteria, including zero, from the following:
+
+        </para><para>
+
+<emphasis>name</emphasis>, <emphasis>name_reverse</emphasis>,
+<emphasis>stopped</emphasis>, <emphasis>started</emphasis>,
+<emphasis>complete</emphasis>, <emphasis>incomplete</emphasis>,
+<emphasis>state_changed</emphasis>,
+<emphasis>state_changed_reverse</emphasis>
+
+        </para></listitem>
+      </varlistentry>
+
+<!--       <varlistentry> -->
+<!--         <term>view_filter = <replaceable>command</replaceable></term> -->
+<!--         <listitem><para> -->
+
+<!-- Set a list of filter to apply when new new downloads are added and -->
+<!-- when <emphasis>view_sort</emphasis> is called. All filters must -->
+<!-- match for the download to be included. -->
+
+
+
+<!--         </para><para> -->
+
+<!-- <emphasis>stopped</emphasis>, <emphasis>started</emphasis>, -->
+<!-- <emphasis>complete</emphasis>, <emphasis>incomplete</emphasis>, -->
+
+<!--         </para></listitem> -->
+<!--       </varlistentry> -->
+
+      <varlistentry>
+        <term>key_layout = <replaceable>qwerty|azerty|qwertz|dvorak</replaceable></term>
+        <listitem><para>
+
+Change the key-bindings.
+
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>FILE-SYSTEM SETTINGS</title>
+    <para>
+      File-system related settings.
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>max_file_size = <replaceable>size</replaceable></term>
+        <listitem><para>
+Set the maximum size a file can have. Disable by
+passing <emphasis>-1</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>split_file_size = <replaceable>size</replaceable></term>
+        <listitem><para>
+Split files in a torrent larger than <emphasis>size</emphasis> into
+seperate files. Disable by passing <emphasis>-1</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>split_suffix = <replaceable>string</replaceable></term>
+        <listitem><para>
+Set the suffix used on split files. Defaults
+to <emphasis>.part</emphasis>.
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>DOWNLOAD SETTINGS</title>
+    <para>
+
+Settings that require a download as a target, the options need to be
+called through f.ex <emphasis>on_finished</emphasis>.
+
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>create_link = <replaceable>type</replaceable>,<replaceable>path</replaceable>,<replaceable>suffix</replaceable></term>
+        <term>delete_link = <replaceable>type</replaceable>,<replaceable>path</replaceable>,<replaceable>suffix</replaceable></term>
+        <listitem><para>
+
+Create or delete a symbolic link. The link path is the concatenation
+of <emphasis>path</emphasis>, the result of
+the <emphasis>type</emphasis> on the download,
+and <emphasis>suffix</emphasis>.
+
+        </para><para>
+
+Available types are; <emphasis>base_path</emphasis> uses the base path
+of the download, <emphasis>base_filename</emphasis> uses the base
+filename of the download, <emphasis>tied</emphasis> uses the path of
+the file the download is tied to, see <emphasis>start_tied</emphasis>.
+
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>ADVANCED SETTINGS</title>
+    <para>
+
+This list contains settings users shouldn't need to touch, some may
+even cause crashes or similar if incorrectly set.
+
+    </para>
+
+    <variablelist>
+
+      <varlistentry>
+        <term>hash_read_ahead = <replaceable>MB</replaceable></term>
+        <listitem><para>
+
+Configure how far ahead we ask the kernel to read when doing hash
+checking. The hash checker uses madvise(..., MADV_WILLNEED) for the
+requests.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>hash_interval = <replaceable>ms</replaceable></term>
+        <listitem><para>
+
+Interval between attempts to check the hash when the chunk is not in
+memory, in milliseconds.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>hash_max_tries = <replaceable>tries</replaceable></term>
+        <listitem><para>
+
+Number of attempts to check the hash while using the mincore status,
+before forcing. Overworked systems might need lower values to get a
+decent hash checking rate.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>safe_sync = <replaceable>yes|no</replaceable></term>
+        <listitem><para>
+
+Always use MS_SYNC rather than MS_ASYNC when syncing chunks. This may
+be nessesary in case of filesystem bugs like NFS in linux ~2.6.13.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_open_files = <replaceable>value</replaceable></term>
+        <listitem><para>
+
+Number of files to simultaneously keep open. LibTorrent dynamically
+opens and closes files as necessary when mapping files to
+memory. Default is based on sysconf(_SC_OPEN_MAX).
+
+You probably only think you know what this option does, so don't touch
+it.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_open_sockets = <replaceable>value</replaceable></term>
+        <listitem><para>
+
+Number of network sockets to simultaneously keep open. This value is
+set to a reasonable value based on <emphasis>sysconf(_SC_OPEN_MAX)</emphasis>.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_open_http = <replaceable>value</replaceable></term>
+        <listitem><para>
+
+Number of sockets to simultaneously keep open. This value is set
+to <emphasis>32</emphasis> by default.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>max_memory_usage = <replaceable>bytes</replaceable></term>
+        <listitem><para>
+
+Set the max amount of memory space used to mapping file chunks. This
+may also be set using <emphasis>ulimit -m</emphasis> where 3/4 will be
+allocated to file chunks.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>send_buffer_size = <replaceable>value</replaceable></term>
+        <term>receive_buffer_size = <replaceable>value</replaceable></term>
+        <listitem><para>
+
+Adjust the send and receive buffer size for socket.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>umask = <replaceable>0022</replaceable></term>
+        <listitem><para>
+
+Set the umask for this process, which is applied to all files created
+by the program.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>cwd = <replaceable>directory</replaceable></term>
+        <listitem><para>
+
+Changes the working directory of the process using
+<emphasis>chdir</emphasis>.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>session_on_completion = <replaceable>yes</replaceable></term>
+        <listitem><para>
+
+Controls if the session torrent is saved when a torrent finishes. By
+default on.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>session_lock = <replaceable>yes</replaceable></term>
+        <listitem><para>
+
+Controls if a lock file is created in the session directory on startup.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>session_save = </term>
+        <listitem><para>
+
+Save the session files for all downloads.
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>tos = <replaceable>default|lowdelay|throughput|reliability|mincost</replaceable></term>
+        <term>tos = <replaceable>hex</replaceable></term>
+        <listitem><para>
+Change the TOS of peer connections, by default set to
+<emphasis>throughput</emphasis>. If the option is set to
+<emphasis>default</emphasis> then the system default TOS is used. A
+hex value may be used for non-standard settings.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>handshake_log = <replaceable>yes</replaceable></term>
+        <listitem><para>
+
+Enable logging of the peer handshake. This generates a large number of
+log messages, but may be useful to debug connection problems.
+
+        </para></listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>AUTHORS</title>
+    <para>
+      <simplelist type="vert">
+
+<member>Jari "Rakshasa" Sundell <email>jaris@ifi.uio.no</email></member>
+
+      </simplelist>
+    </para>
+  </refsect1>
+
+
+</refentry>

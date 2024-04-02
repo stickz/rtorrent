@@ -37,4 +37,4 @@ chmod 777 autogen.sh
 make -j2 CFLAGS="-O3 -flto"
 make install
 
-#rebuild script 13
+#rebuild script 14

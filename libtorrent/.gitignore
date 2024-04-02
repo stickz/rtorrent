@@ -5,9 +5,7 @@
 *.a
 *.la
 *.so
-*.in
 *.sub
-*.pc
 *.orig
 *.rej
 

@@ -8,7 +8,6 @@ ROOTDIR=$(dirname "$SCRIPTDIR")
 # Set project build dirs
 XMLRPCDIR="$ROOTDIR/xmlrpc"
 LIBTORRENTDIR="$ROOTDIR/libtorrent"
-RTORRENTDIR="$ROOTDIR/rtorrent"
 
 # Reset build directory for xmlrpc-c
 rm -fr $XMLRPCDIR && mkdir $XMLRPCDIR
@@ -30,7 +29,7 @@ make -j$(nproc) CFLAGS="-O3 -flto -pipe"
 make install
 
 #install rtorrent
-cd $LIBTORRENTDIR
+cd ../rtorrent
 #chmod 777 autogen.sh
 ./autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c

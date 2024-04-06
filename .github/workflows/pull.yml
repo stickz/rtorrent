@@ -16,9 +16,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
-
       - name: Build AMD Debian 12 x86
         run: ./.github/scripts/build.sh
         shell: bash
@@ -30,9 +27,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
 
       - name: Build ARM64 Debian 12
         run: ./.github/scripts/build.sh

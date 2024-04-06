@@ -13,9 +13,6 @@ jobs:
       - name: Clone Repo
         uses: actions/checkout@v4
 
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
-
       - name: Build AMD Debian 12 x86
         run: ./.github/scripts/build.sh
         shell: bash
@@ -24,9 +21,6 @@ jobs:
     steps:
       - name: Clone Repo
         uses: actions/checkout@v4
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
 
       - name: Build ARM64 Debian 12
         run: ./.github/scripts/build.sh

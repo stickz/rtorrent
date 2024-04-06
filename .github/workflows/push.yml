@@ -7,18 +7,6 @@ on:
       - 'develop'
 
 jobs:
-  intel:
-    runs-on: [self-hosted, linux, x86, intel]
-    steps:
-      - name: Clone Repo
-        uses: actions/checkout@v4
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
-
-      - name: Build Intel Debian 12 x86
-        run: ./.github/scripts/build.sh
-        shell: bash
   amd:
     runs-on: [self-hosted, linux, x86, amd]
     steps:

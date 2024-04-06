@@ -32,21 +32,18 @@ wait
 
 # Install xmlrp-c
 cd "$XMLRPCDIR"
-make -j$(nproc) CFLAGS="-O3 -flto -pipe"
-make install
+make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 
 #install libtorrent
 cd "$LIBTORRENTDIR"
 #chmod 777 autogen.sh
 #chmod 777 libtorrent.pc.in
-make -j$(nproc) CFLAGS="-O3 -flto -pipe"
-make install
+make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 
 #install rtorrent
 cd "$RTORRENTDIR"
 #chmod 777 autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CFLAGS="-O3 -flto -pipe"
-make install
+make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 
 #rebuild script 19

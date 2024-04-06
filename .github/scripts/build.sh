@@ -1,7 +1,7 @@
 # Set project build dirs
-XMLRPCDIR="~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/xmlrpc"
-LIBTORRENTDIR="~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/libtorrent"
-RTORRENTDIR="~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/rtorrent"
+XMLRPCDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/xmlrpc")
+LIBTORRENTDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/libtorrent")
+RTORRENTDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/rtorrent")
 
 # Reset build directory for xmlrpc-c
 rm -fr $XMLRPCDIR && mkdir $XMLRPCDIR

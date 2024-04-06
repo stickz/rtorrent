@@ -22,7 +22,7 @@ make install
 
 #install libtorrent
 cd $LIBTORRENTDIR
-chmod 777 autogen.sh
+#chmod 777 autogen.sh
 chmod 777 libtorrent.pc.in
 ./autogen.sh
 ./configure --prefix=/usr --enable-aligned
@@ -31,7 +31,7 @@ make install
 
 #install rtorrent
 cd $LIBTORRENTDIR
-chmod 777 autogen.sh
+#chmod 777 autogen.sh
 ./autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
 make -j2 CFLAGS="-O3 -flto"

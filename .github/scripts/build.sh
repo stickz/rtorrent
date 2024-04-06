@@ -1,7 +1,14 @@
+# Get directory path of this script
+SCRIPTPATH=$(readlink -f "$0")
+SCRIPTDIR=$(dirname $(dirname "$SCRIPTPATH"))
+
+# Get project ROOT directory
+ROOTDIR=$(dirname "$SCRIPTDIR")
+
 # Set project build dirs
-XMLRPCDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/xmlrpc")
-LIBTORRENTDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/libtorrent")
-RTORRENTDIR=$(readlink "~/actions-runner/_work/rTorrent-seedbox/rTorrent-seedbox/rtorrent")
+XMLRPCDIR="$ROOTDIR/xmlrpc"
+LIBTORRENTDIR="$ROOTDIR/libtorrent"
+RTORRENTDIR="$ROOTDIR/rtorrent"
 
 # Reset build directory for xmlrpc-c
 rm -fr "$XMLRPCDIR" && mkdir "$XMLRPCDIR"
@@ -30,4 +37,4 @@ cd "$RTORRENTDIR"
 make -j$(nproc) CFLAGS="-O3 -flto -pipe"
 make install
 
-#rebuild script 16
+#rebuild script 19

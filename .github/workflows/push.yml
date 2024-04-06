@@ -7,32 +7,11 @@ on:
       - 'develop'
 
 jobs:
-  intel:
-    runs-on: [self-hosted, linux, x86, intel]
-    steps:
-      - name: Clone Repo
-        run: |
-          cd ..
-          rm -rf rTorrent-seedbox
-          git clone -q https://github.com/stickz/rTorrent-seedbox
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
-
-      - name: Build Intel Debian 12 x86
-        run: ./.github/scripts/build.sh
-        shell: bash
   amd:
     runs-on: [self-hosted, linux, x86, amd]
     steps:
       - name: Clone Repo
-        run: |
-          cd ..
-          rm -rf rTorrent-seedbox
-          git clone -q https://github.com/stickz/rTorrent-seedbox
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
+        uses: actions/checkout@v4
 
       - name: Build AMD Debian 12 x86
         run: ./.github/scripts/build.sh
@@ -41,13 +20,7 @@ jobs:
     runs-on: [self-hosted, linux, ARM64]
     steps:
       - name: Clone Repo
-        run: |
-          cd ..
-          rm -rf rTorrent-seedbox
-          git clone -q https://github.com/stickz/rTorrent-seedbox
-
-      - name: Run Chmod
-        run: chmod 777 .github/scripts/build.sh
+        uses: actions/checkout@v4
 
       - name: Build ARM64 Debian 12
         run: ./.github/scripts/build.sh

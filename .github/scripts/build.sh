@@ -11,30 +11,39 @@ LIBTORRENTDIR="$ROOTDIR/libtorrent"
 RTORRENTDIR="$ROOTDIR/rtorrent"
 
 # Reset build directory for xmlrpc-c
-rm -fr $XMLRPCDIR && mkdir $XMLRPCDIR
+rm -fr "$XMLRPCDIR" && mkdir "$XMLRPCDIR"
+
+# Download xmlrpc-c in parallel background
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable@3212 $XMLRPCDIR &
+
+# Generate configuration files in parallel background
+cd "$LIBTORRENTDIR" && ./autogen.sh &
+cd "$RTORRENTDIR" && ./autogen.sh &
+
+# Wait for all parallel tasks to complete before we configure and build
+wait
+
+# Configure xmlrpc-c and libtorrent in parallel background
+cd "$XMLRPCDIR" && ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client &
+cd "$LIBTORRENTDIR" && ./configure --prefix=/usr --enable-aligned &
+
+# Wait for all parallel tasks to complete before we build
+wait
 
 # Install xmlrp-c
-svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable@3212 $XMLRPCDIR
-cd $XMLRPCDIR
-./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
-make -j2 CFLAGS="-O3 -flto"
-make install
+cd "$XMLRPCDIR"
+make -j$(nproc) CFLAGS="-O3 -pipe" all
+make -j$(nproc) install
 
 #install libtorrent
-cd $LIBTORRENTDIR
-chmod 777 autogen.sh
-chmod 777 libtorrent.pc.in
-./autogen.sh
-./configure --prefix=/usr --enable-aligned
-make -j2 CFLAGS="-O3 -flto"
-make install
+cd "$LIBTORRENTDIR"
+make -j$(nproc) CXXFLAGS="-O3 -pipe" all
+make -j$(nproc) install
 
 #install rtorrent
-cd $LIBTORRENTDIR
-chmod 777 autogen.sh
-./autogen.sh
+cd "$RTORRENTDIR"
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j2 CFLAGS="-O3 -flto"
-make install
+make -j$(nproc) CXXFLAGS="-O3 -pipe" all
+make -j$(nproc) install
 
-#rebuild script 14
+#rebuild script 19

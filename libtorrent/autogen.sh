@@ -49,3 +49,4 @@ autoconf || exit 1
 echo ready to configure
 
 exit 0
+#fix permissions

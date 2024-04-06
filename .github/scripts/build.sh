@@ -31,18 +31,13 @@ cd "$LIBTORRENTDIR" && ./configure --prefix=/usr --enable-aligned &
 wait
 
 # Install xmlrp-c
-cd "$XMLRPCDIR"
-make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
+cd "$XMLRPCDIR" && make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 
 #install libtorrent
-cd "$LIBTORRENTDIR"
-#chmod 777 autogen.sh
-#chmod 777 libtorrent.pc.in
-make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
+cd "$LIBTORRENTDIR" && make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 
 #install rtorrent
 cd "$RTORRENTDIR"
-#chmod 777 autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
 make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
 

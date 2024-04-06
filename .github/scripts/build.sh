@@ -37,13 +37,13 @@ make -j$(nproc) install
 
 #install libtorrent
 cd "$LIBTORRENTDIR"
-make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
+make -j$(nproc) CXXFLAGS="-O3 -flto -pipe" all
 make -j$(nproc) install
 
 #install rtorrent
 cd "$RTORRENTDIR"
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CFLAGS="-O3 -flto -pipe" all
+make -j$(nproc) CXXFLAGS="-O3 -flto -pipe" all
 make -j$(nproc) install
 
 #rebuild script 19

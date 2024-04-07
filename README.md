@@ -7,7 +7,7 @@ We recommend disabling c++, wininet and libwww support. And to use your curl ins
 ```
 svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable@3212
 ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
-make -j$(nproc) CFLAGS="-O3 -pipe"
+make -j$(nproc) CFLAGS="-O3"
 make install
 ```
 
@@ -17,7 +17,7 @@ We strongly advise to configure with aligned memory access to avoid critical sta
 cd libtorrent
 ./autogen.sh
 ./configure --prefix=/usr --enable-aligned
-make -j$(nproc) CXXFLAGS="-O3 -pipe"
+make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 
@@ -27,7 +27,7 @@ We strongly advise to configure with xmlrpc-c to ensure ruTorrent is supported.
 cd rtorrent
 ./autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CXXFLAGS="-O3 -pipe"
+make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 

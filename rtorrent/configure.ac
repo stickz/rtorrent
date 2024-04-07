@@ -40,7 +40,7 @@ fi
 
 PKG_CHECK_MODULES([LIBCURL], [libcurl],, [LIBCURL_CHECK_CONFIG])
 PKG_CHECK_MODULES([CPPUNIT], [cppunit],, [no_cppunit="yes"])
-PKG_CHECK_MODULES([DEPENDENCIES], [libtorrent >= 0.13.8])
+PKG_CHECK_MODULES([DEPENDENCIES], [libtorrent >= 0.13.8],, [no_libtorrent="yes"])
 
 AC_LANG_PUSH(C++)
 TORRENT_WITH_XMLRPC_C

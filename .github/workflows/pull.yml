@@ -7,6 +7,18 @@ on:
       - 'develop'
 
 jobs:
+  whatbox:
+    runs-on: [self-hosted, linux, whatbox]
+    steps:
+      - name: Checkout Pull Request
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Build Whatbox
+        run: ./.github/scripts/build_whatbox.sh
+        shell: bash
   arm:
     runs-on: [self-hosted, linux, ARM64]
     steps:

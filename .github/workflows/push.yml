@@ -7,15 +7,6 @@ on:
       - 'develop'
 
 jobs:
-  amd:
-    runs-on: [self-hosted, linux, x86, amd]
-    steps:
-      - name: Clone Repo
-        uses: actions/checkout@v4
-
-      - name: Build AMD Debian 12 x86
-        run: ./.github/scripts/build.sh
-        shell: bash
   arm:
     runs-on: [self-hosted, linux, ARM64]
     steps:

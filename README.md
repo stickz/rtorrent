@@ -2,12 +2,12 @@
 This project does not offer pre-built binaries at this moment in time. It's required to build the project manually with xmlrpc-c. We test and develop our project with GCC and GNU Make.
 
 **Installing xmlrpc-c**
-We strong advise that you use xmlrpc-c revision 3212 to ensure the torrent client is stable.
+We strong advise that you use xmlrpc-c stable branch to ensure the torrent client is stable.
 We recommend disabling c++, wininet and libwww support. And to use your curl installation.
 ```
-svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable@3212
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable
 ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
-make -j$(nproc) CFLAGS="-O3 -pipe"
+make -j$(nproc) CFLAGS="-O3"
 make install
 ```
 
@@ -17,7 +17,7 @@ We strongly advise to configure with aligned memory access to avoid critical sta
 cd libtorrent
 ./autogen.sh
 ./configure --prefix=/usr --enable-aligned
-make -j$(nproc) CXXFLAGS="-O3 -pipe"
+make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 
@@ -27,7 +27,7 @@ We strongly advise to configure with xmlrpc-c to ensure ruTorrent is supported.
 cd rtorrent
 ./autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CXXFLAGS="-O3 -pipe"
+make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 

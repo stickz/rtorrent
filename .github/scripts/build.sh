@@ -14,6 +14,7 @@ RTORRENTDIR="$ROOTDIR/rtorrent"
 rm -fr "$XMLRPCDIR" && mkdir "$XMLRPCDIR" && cd "$XMLRPCDIR"
 svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable $XMLRPCDIR
 ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
+make -j$(nproc) clean
 make -j$(nproc) CFLAGS="-O3" all
 make -j$(nproc) install
 

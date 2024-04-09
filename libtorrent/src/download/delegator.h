@@ -57,7 +57,7 @@ public:
   typedef std::function<uint32_t (PeerChunks*, bool)> slot_peer_chunk;
   typedef std::function<uint32_t (uint32_t)>          slot_size;
 
-  static const unsigned int block_size = 1 << 14;
+  static const unsigned int block_size = 1 << 16;
 
   Delegator() : m_aggressive(false) { }
 

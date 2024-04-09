@@ -43,5 +43,6 @@ namespace torrent {
 
 LIBTORRENT_EXPORT rak::priority_queue_default taskScheduler;
 LIBTORRENT_EXPORT rak::timer                  cachedTime;
+LIBTORRENT_EXPORT rak::udp_tracker_vector     udpTrackerInfo;
 
 }

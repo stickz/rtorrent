@@ -65,10 +65,11 @@
 
 namespace torrent {
 
-TrackerUdp::TrackerUdp(TrackerList* parent, const std::string& url, int flags) :
-  Tracker(parent, url, flags),
+TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int flags) :
+  Tracker(parent, info.get_url(), flags),
 
-  m_port(0),
+  m_port(info.get_port()),
+  m_hostname(info.get_hostname()),
 
   m_slot_resolver(NULL),
   m_readBuffer(NULL),
@@ -96,12 +97,7 @@ TrackerUdp::send_state(int state) {
   close_directly();
   m_latest_event = state;
 
-  hostname_type hostname;
-
-  if (!parse_udp_url(m_url, hostname, m_port))
-    return receive_failed("could not parse hostname or port");
-
-  LT_LOG_TRACKER(DEBUG, "hostname lookup (address:%s)", hostname.data());
+  LT_LOG_TRACKER(DEBUG, "hostname lookup (address:%s)", m_hostname.c_str());
 
   m_sendState = state;
 
@@ -112,25 +108,11 @@ TrackerUdp::send_state(int state) {
     m_slot_resolver = NULL;
   }
 
-  m_slot_resolver = make_resolver_slot(hostname);
+  m_slot_resolver = make_resolver_slot(m_hostname.c_str());
 }
 
-bool
-TrackerUdp::parse_udp_url(const std::string& url, hostname_type& hostname, int& port) const {
-  if (std::sscanf(m_url.c_str(), "udp://%1023[^:]:%i", hostname.data(), &port) == 2 && hostname[0] != '\0' &&
-      port > 0 && port < (1 << 16))
-    return true;
-
-  if (std::sscanf(m_url.c_str(), "udp://[%1023[^]]]:%i", hostname.data(), &port) == 2 && hostname[0] != '\0' &&
-      port > 0 && port < (1 << 16))
-    return true;
-
-  return false;
-}
-
-TrackerUdp::resolver_type*
-TrackerUdp::make_resolver_slot(const hostname_type& hostname) {
-  return manager->connection_manager()->resolver()(hostname.data(), PF_UNSPEC, SOCK_DGRAM,
+TrackerUdp::resolver_type* TrackerUdp::make_resolver_slot(const char* hostname) {
+  return manager->connection_manager()->resolver()(hostname, PF_UNSPEC, SOCK_DGRAM,
                                                    std::bind(&TrackerUdp::start_announce,
                                                              this,
                                                              std::placeholders::_1,

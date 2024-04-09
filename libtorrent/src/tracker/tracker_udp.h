@@ -60,7 +60,7 @@ public:
 
   static const uint64_t magic_connection_id = 0x0000041727101980ll;
 
-  TrackerUdp(TrackerList* parent, const std::string& url, int flags);
+  TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int flags);
   ~TrackerUdp();
   
   const char*         type_name() const { return "tracker_udp"; }
@@ -94,10 +94,11 @@ private:
   bool                process_error_output();
 
   bool                parse_udp_url(const std::string& url, hostname_type& hostname, int& port) const;
-  resolver_type*      make_resolver_slot(const hostname_type& hostname);
+  resolver_type*      make_resolver_slot(const char* hostname);
 
   rak::socket_address m_connectAddress;
   int                 m_port;
+  std::string         m_hostname;
 
   int                 m_sendState;
 

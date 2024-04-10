@@ -251,6 +251,10 @@ View::prev_focus() {
 
 void
 View::sort() {
+  if (m_sortCurrent.is_empty()) {
+    return;
+  }
+  
   Download* curFocus = focus() != end_visible() ? *focus() : NULL;
 
   // Don't go randomly switching around equivalent elements.
@@ -312,7 +316,11 @@ View::filter_by(const torrent::Object& condition, View::base_type& result) {
 
 void
 View::filter_download(core::Download* download) {
-  iterator itr = std::find(base_type::begin(), base_type::end(), download);
+  iterator itr = std::find(base_type::end() - 1, base_type::end(), download);
+  
+  if (itr == base_type::end()) {
+    itr = std::find(base_type::begin(), base_type::end() - 1, download);
+  }
 
   if (itr == base_type::end())
     throw torrent::internal_error("View::filter_download(...) could not find download.");
@@ -358,7 +366,10 @@ View::clear_filter_on() {
 
 inline void
 View::insert_visible(Download* d) {
-  iterator itr = std::find_if(begin_visible(), end_visible(), std::bind1st(view_downloads_compare(m_sortNew), d));
+  iterator itr = m_sortNew.is_empty() ? end_visible() :
+    std::find_if(begin_visible(), end_visible(), [d, this](Download* download) {
+      return view_downloads_compare(m_sortNew)(d, download);
+    });
 
   m_size++;
   m_focus += (m_focus >= position(itr));

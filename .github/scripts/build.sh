@@ -6,9 +6,18 @@ SCRIPTDIR=$(dirname $(dirname "$SCRIPTPATH"))
 ROOTDIR=$(dirname "$SCRIPTDIR")
 
 # Set project build dirs
+UDNSDIR="$ROOTDIR/udns"
 XMLRPCDIR="$ROOTDIR/xmlrpc"
 LIBTORRENTDIR="$ROOTDIR/libtorrent"
 RTORRENTDIR="$ROOTDIR/rtorrent"
+
+# Install UDNS
+rm -fr "$UDNSDIR" && mkdir "$UDNSDIR" && cd "$UDNSDIR"
+git clone https://github.com/shadowsocks/libudns $UDNSDIR
+./autogen.sh
+./configure --prefix=/usr
+make -j$(nproc) CFLAGS="-O3 -fPIC"
+make -j$(nproc) install
 
 # Install xmlrp-c
 rm -fr "$XMLRPCDIR" && mkdir "$XMLRPCDIR" && cd "$XMLRPCDIR"

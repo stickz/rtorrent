@@ -71,25 +71,22 @@ TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int fla
   m_port(info.get_port()),
   m_hostname(info.get_hostname()),
 
-  m_slot_resolver(NULL),
   m_readBuffer(NULL),
   m_writeBuffer(NULL) {
 
   m_taskTimeout.slot() = std::bind(&TrackerUdp::receive_timeout, this);
+
+  m_resolver_callback = std::bind(&TrackerUdp::start_announce, this, std::placeholders::_1, std::placeholders::_2);
+  m_resolver_query = NULL;
 }
 
 TrackerUdp::~TrackerUdp() {
-  if (m_slot_resolver != NULL) {
-    *m_slot_resolver = resolver_type();
-    m_slot_resolver = NULL;
-  }
-
   close_directly();
 }
   
 bool
 TrackerUdp::is_busy() const {
-  return get_fd().is_valid();
+  return (m_resolver_query != NULL) || get_fd().is_valid();
 }
 
 void
@@ -101,30 +98,17 @@ TrackerUdp::send_state(int state) {
 
   m_sendState = state;
 
-  // Because we can only remember one slot, set any pending resolves blocked
-  // so that if this tracker is deleted, the member function won't be called.
-  if (m_slot_resolver != NULL) {
-    *m_slot_resolver = resolver_type();
-    m_slot_resolver = NULL;
-  }
-
-  m_slot_resolver = make_resolver_slot(m_hostname.c_str());
-}
-
-TrackerUdp::resolver_type* TrackerUdp::make_resolver_slot(const char* hostname) {
-  return manager->connection_manager()->resolver()(hostname, PF_UNSPEC, SOCK_DGRAM,
-                                                   std::bind(&TrackerUdp::start_announce,
-                                                             this,
-                                                             std::placeholders::_1,
-                                                             std::placeholders::_2));
+  m_resolver_query = manager->connection_manager()->async_resolver().enqueue(
+      m_hostname.c_str(),
+      AF_UNSPEC,
+      &m_resolver_callback
+  );
+  manager->connection_manager()->async_resolver().flush();
 }
 
 void
 TrackerUdp::start_announce(const sockaddr* sa, int err) {
-  if (m_slot_resolver != NULL) {
-    *m_slot_resolver = resolver_type();
-    m_slot_resolver = NULL;
-  }
+  m_resolver_query = NULL;
 
   if (sa == NULL)
     return receive_failed("could not resolve hostname");
@@ -162,9 +146,6 @@ TrackerUdp::start_announce(const sockaddr* sa, int err) {
 
 void
 TrackerUdp::close() {
-  if (!get_fd().is_valid())
-    return;
-
   LT_LOG_TRACKER(DEBUG, "request cancelled (state:%s url:%s)",
                  option_as_string(OPTION_TRACKER_EVENT, m_latest_event), m_url.c_str());
 
@@ -173,9 +154,6 @@ TrackerUdp::close() {
 
 void
 TrackerUdp::disown() {
-  if (!get_fd().is_valid())
-    return;
-
   LT_LOG_TRACKER(DEBUG, "request disowned (state:%s url:%s)",
                  option_as_string(OPTION_TRACKER_EVENT, m_latest_event), m_url.c_str());
 
@@ -184,6 +162,9 @@ TrackerUdp::disown() {
 
 void
 TrackerUdp::close_directly() {
+  manager->connection_manager()->async_resolver().cancel(m_resolver_query);
+  m_resolver_query = NULL;
+  
   if (!get_fd().is_valid())
     return;
 

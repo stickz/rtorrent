@@ -326,7 +326,7 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
       !(flags & create_raw_data) &&
       !is_network_uri(uri) &&
       !is_magnet_uri(uri) &&
-      !file_status_cache()->insert(uri, 0))
+      !file_status_cache()->insert(uri, flags & create_throw))
     return;
 
   // Adding download.
@@ -337,7 +337,11 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
 
   f->set_start(flags & create_start);
   f->set_print_log(!(flags & create_quiet));
-  f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
+  
+  if (flags & create_throw)
+    f->set_immediate(true);
+
+  f->slot_finished([f]() { delete f; });
 
   if (flags & create_raw_data)
     f->load_raw_data(uri);

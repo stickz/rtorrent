@@ -4,7 +4,7 @@ This project does not offer pre-built binaries at this moment in time. It's requ
 **Installing UDNS**
 We strongly advise to build rTorrent with UDNS for asynchronous DNS resolution of UDP trackers. This is an important stability change for the torrent client. Skip this step and use the development package from your Linux distribution if applicable.
 ```
-git clone https://github.com/shadowsocks/libudns $UDNSDIR
+git clone https://github.com/shadowsocks/libudns
 ./autogen.sh
 ./configure --prefix=/usr
 make -j$(nproc) CFLAGS="-O3 -fPIC"

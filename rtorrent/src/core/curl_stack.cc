@@ -255,8 +255,7 @@ int
 CurlStack::set_timeout(void* handle, long timeout_ms, void* userp) {
   CurlStack* stack = (CurlStack*)userp;
 
-  priority_queue_erase(&taskScheduler, &stack->m_taskTimeout);
-  priority_queue_insert(&taskScheduler, &stack->m_taskTimeout, cachedTime + rak::timer::from_milliseconds(timeout_ms));
+  priority_queue_upsert(&taskScheduler, &stack->m_taskTimeout, cachedTime + rak::timer::from_milliseconds(timeout_ms));
 
   return 0;
 }

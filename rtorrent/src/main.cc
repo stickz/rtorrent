@@ -362,7 +362,7 @@ main(int argc, char** argv) {
        "protocol.encryption.set=allow_incoming,prefer_plaintext,enable_retry\n"
     );
 	
-	// Sorting is O(n*log(n)) and very expensive
+    // Sorting is O(n*log(n)) and very expensive
     // RPC user does not rely on rTorrent for sorted list
     // Only set view sorting and periodic resorting when not in daemon mode
     if (!rpc::call_command_value("system.daemon")) {

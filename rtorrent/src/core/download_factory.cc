@@ -359,7 +359,7 @@ DownloadFactory::receive_success() {
       //     m_manager->download_list()->erase(m_manager->download_list()->find(infohash.data()));
     }
   }
-  
+
   m_slot_finished();
 }
 

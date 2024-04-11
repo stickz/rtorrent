@@ -5,6 +5,7 @@ This project does not offer pre-built binaries at this moment in time. It's requ
 We strongly advise to build rTorrent with UDNS for asynchronous DNS resolution of UDP trackers. This is an important stability change for the torrent client. Skip this step and use the development package from your Linux distribution if applicable.
 ```
 git clone https://github.com/shadowsocks/libudns
+cd libudns
 ./autogen.sh
 ./configure --prefix=/usr
 make -j$(nproc) CFLAGS="-O3 -fPIC"
@@ -16,6 +17,7 @@ We strong advise that you use xmlrpc-c super stable branch to ensure the torrent
 We recommend disabling c++, wininet and libwww support. And to use your curl installation.
 ```
 svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable
+cd super_stable
 ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
 make -j$(nproc) CFLAGS="-O3"
 make install

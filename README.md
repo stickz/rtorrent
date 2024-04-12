@@ -64,6 +64,7 @@ cd rtorrent
 ./configure --prefix=/usr --with-xmlrpc-c
 make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 make install
+```
 
 ## Configuring
 Please take a minute to review the custom **.rtorrent.rc** file. This project has specific requirements for configuration.

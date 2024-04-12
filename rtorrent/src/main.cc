@@ -136,7 +136,7 @@ load_session_torrents() {
     f->set_init_load(true);
     f->set_immediate(true);
     f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
-    f->load(entries.path() + first->d_name);
+    f->load(entries.path() + first->s_name);
     f->commit();
   }
   

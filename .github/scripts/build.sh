@@ -31,14 +31,14 @@ make -j$(nproc) install
 cd "$LIBTORRENTDIR"
 ./autogen.sh
 ./configure --prefix=/usr --enable-aligned
-make -j$(nproc) CXXFLAGS="-O3" all
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing" all
 make -j$(nproc) install
 
 #install rtorrent
 cd "$RTORRENTDIR"
 ./autogen.sh
 ./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CXXFLAGS="-O3" all
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing" all
 make -j$(nproc) install
 
 #rebuild script 21

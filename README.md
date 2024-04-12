@@ -43,6 +43,28 @@ make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 
+## Building with LTO
+This project supports building libtorrent and rTorrent with LTO (Link Time Optimizations). This support is still at the experimental stage. Please file an issue report if the build fails and disable LTO. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these.
+
+### Installing libtorrent
+We strongly advise to configure with aligned memory access to avoid critical stability issues.
+```
+cd libtorrent
+./autogen.sh
+./configure --prefix=/usr --enable-aligned
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+make install
+```
+
+### Installing rTorrent
+We strongly advise to configure with xmlrpc-c to ensure ruTorrent is supported.
+```
+cd rtorrent
+./autogen.sh
+./configure --prefix=/usr --with-xmlrpc-c
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+make install
+
 ## Configuring
 Please take a minute to review the custom **.rtorrent.rc** file. This project has specific requirements for configuration.
 

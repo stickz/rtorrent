@@ -103,10 +103,10 @@ WindowLog::receive_update() {
     mark_dirty();
   }
 
-  priority_queue_erase(&taskScheduler, &m_taskUpdate);
-
   if (height != 0)
-    priority_queue_insert(&taskScheduler, &m_taskUpdate, (cachedTime + rak::timer::from_seconds(5)).round_seconds());
+    priority_queue_upsert(&taskScheduler, &m_taskUpdate, (cachedTime + rak::timer::from_seconds(5)).round_seconds());
+  else
+    priority_queue_erase(&taskScheduler, &m_taskUpdate);  
 }
 
 }

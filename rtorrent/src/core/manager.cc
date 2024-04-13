@@ -326,7 +326,7 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
       !(flags & create_raw_data) &&
       !is_network_uri(uri) &&
       !is_magnet_uri(uri) &&
-      !file_status_cache()->insert(uri, 0))
+      !file_status_cache()->insert(uri, flags & create_throw))
     return;
 
   // Adding download.
@@ -337,6 +337,10 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
 
   f->set_start(flags & create_start);
   f->set_print_log(!(flags & create_quiet));
+  
+  if (flags & create_throw)
+    f->set_immediate(true);
+
   f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
 
   if (flags & create_raw_data)
@@ -374,7 +378,7 @@ Manager::try_create_download_from_meta_download(torrent::Object* bencode, const 
 
 utils::Directory
 path_expand_transform(std::string path, const utils::directory_entry& entry) {
-  return path + entry.d_name;
+  return path + entry.s_name;
 }
 
 // Move this somewhere better.
@@ -414,7 +418,7 @@ path_expand(std::vector<std::string>* paths, const std::string& pattern) {
       // Only include filenames starting with '.' if the pattern
       // starts with the same.
       itr->update((r.pattern()[0] != '.') ? utils::Directory::update_hide_dot : 0);
-      itr->erase(std::remove_if(itr->begin(), itr->end(), rak::on(rak::mem_ref(&utils::directory_entry::d_name), std::not1(r))), itr->end());
+      itr->erase(std::remove_if(itr->begin(), itr->end(), rak::on(rak::mem_ref(&utils::directory_entry::s_name), std::not1(r))), itr->end());
 
       std::transform(itr->begin(), itr->end(), std::back_inserter(nextCache), rak::bind1st(std::ptr_fun(&path_expand_transform), itr->path() + (itr->path() == "/" ? "" : "/")));
     }

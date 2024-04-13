@@ -60,8 +60,17 @@ public:
   typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
 
   static const size_type size_data = 20;
+  
+  static constexpr unsigned int hashstring_hash_ofs = 8;
+  static_assert((hashstring_hash_ofs + sizeof(size_t)) <= HashString::size_data);
 
   size_type           size() const                      { return size_data; }
+  
+  size_t hash() const {
+    size_t result = 0;
+    std::memcpy(&result, m_data + torrent::HashString::hashstring_hash_ofs, sizeof(size_t));
+    return result;
+  }
 
   iterator            begin()                           { return m_data; }
   const_iterator      begin() const                     { return m_data; }
@@ -129,6 +138,32 @@ inline bool
 operator <= (const HashString& one, const HashString& two) {
   return std::memcmp(one.begin(), two.begin(), HashString::size_data) <= 0;
 }
+
+}
+
+namespace std {
+
+template<>
+struct hash<torrent::HashString> {
+  std::size_t operator()(const torrent::HashString& n) const noexcept {
+    return n.hash();
+  }
+};
+
+template<>
+struct hash<torrent::HashString*> {
+  std::size_t operator()(const torrent::HashString* n) const noexcept {
+    return n->hash();
+  }
+};
+
+template<>
+struct equal_to<torrent::HashString*> {
+  bool operator()(const torrent::HashString* a,
+                  const torrent::HashString* b) const noexcept {
+    return *a == *b;
+  }
+};
 
 }
 

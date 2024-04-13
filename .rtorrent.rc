@@ -1,0 +1,30 @@
+# This configuration file is provided by the rTorrent seed box project
+# It has special configuration values that are only applicable to the project
+# https://github.com/stickz/rTorrent-seedbox
+
+# This setting will allow tens of thousands of torrents
+# The max value is raised 16M as required for torrent information
+network.xmlrpc.size_limit.set = 16M
+
+# This setting allows instantaneous start, without having to wait for trackers
+# It also prevents a thread time out crash with a large number of torrents
+#
+# Trackers will take a couple more minutes to announce at startup
+# The recommended value is 'yes'. Changing to 'no' is risky
+trackers.delay_scrape.set = yes
+
+# HTTP sockets will be procressed fast by curl. Ensure c-ares is installed.
+network.http.max_open.set = 512
+
+# UDNS requires a larger number of sockets to procress time outs
+network.max_open_sockets.set = 2048
+
+# Changes to the download delegator require 32MB TCP sockets for optimal performance
+# Override the operating system values just for rTorrent, to reduce memory usage
+#
+# The reason for higher socket requirements is for a significant reduction in CPU usage
+# Server processors can not exceed one gigabit download without this optimization
+# 
+# These settings allow up 2.5G per socket with a 250ms bandwidth delay product
+network.send_buffer.size.set = 32M
+network.receive_buffer.size.set = 32M

@@ -198,7 +198,12 @@ TrackerList::insert_url(unsigned int group, const std::string& url, bool extra_t
     tracker = new TrackerHttp(this, url, flags);
 
   } else if (std::strncmp("udp://", url.c_str(), 6) == 0) {
-    tracker = new TrackerUdp(this, url, flags);
+    rak::udp_tracker_info udpInfo = udpTrackerInfo.get_info(url);
+    if (udpInfo.get_broken()) {
+       LT_LOG_TRACKER(INFO, "skipped broken tracker (url:%s)", url.c_str());
+       return;
+    }    
+    tracker = new TrackerUdp(this, udpInfo, flags);
 
   } else if (std::strncmp("dht://", url.c_str(), 6) == 0 && TrackerDht::is_allowed()) {
     tracker = new TrackerDht(this, url, flags);

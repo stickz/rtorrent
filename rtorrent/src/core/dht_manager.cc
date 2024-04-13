@@ -102,15 +102,15 @@ DhtManager::load_dht_cache() {
 
 void
 DhtManager::start_dht() {
-  priority_queue_erase(&taskScheduler, &m_stopTimeout);
-
   if (!torrent::dht_manager()->is_valid()) {
     LT_LOG_THIS("server start skipped, manager is uninitialized", 0);
+    priority_queue_erase(&taskScheduler, &m_stopTimeout);
     return;
   }
 
   if (torrent::dht_manager()->is_active()) {
     LT_LOG_THIS("server start skipped, already active", 0);
+    priority_queue_erase(&taskScheduler, &m_stopTimeout);
     return;
   }
 
@@ -121,17 +121,21 @@ DhtManager::start_dht() {
   int port = rpc::call_command_value("dht.port");
 
   if (port <= 0)
+  {
+    priority_queue_erase(&taskScheduler, &m_stopTimeout);
     return;
+  }
 
   if (!torrent::dht_manager()->start(port)) {
     m_start = dht_off;
+    priority_queue_erase(&taskScheduler, &m_stopTimeout);
     return;
   }
 
   torrent::dht_manager()->reset_statistics();
 
   m_updateTimeout.slot() = std::bind(&DhtManager::update, this);
-  priority_queue_insert(&taskScheduler, &m_updateTimeout, (cachedTime + rak::timer::from_seconds(60)).round_seconds());
+  priority_queue_upsert(&taskScheduler, &m_updateTimeout, (cachedTime + rak::timer::from_seconds(60)).round_seconds());
 
   m_dhtPrevCycle = 0;
   m_dhtPrevQueriesSent = 0;

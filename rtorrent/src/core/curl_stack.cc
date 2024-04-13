@@ -138,13 +138,6 @@ CurlStack::process_done_handle() {
     if (itr == end())
       throw torrent::internal_error("Could not find CurlGet when calling CurlStack::receive_action.");
  
-    if (!(*itr)->is_using_ipv6()) {
-      (*itr)->retry_ipv6();
-
-      if (curl_multi_add_handle((CURLM*)m_handle, (*itr)->handle()) > 0)
-        throw torrent::internal_error("Error calling curl_multi_add_handle.");
-    }
-
   } else {
     transfer_done(msg->easy_handle,
                   msg->data.result == CURLE_OK ? NULL : curl_easy_strerror(msg->data.result));
@@ -262,8 +255,7 @@ int
 CurlStack::set_timeout(void* handle, long timeout_ms, void* userp) {
   CurlStack* stack = (CurlStack*)userp;
 
-  priority_queue_erase(&taskScheduler, &stack->m_taskTimeout);
-  priority_queue_insert(&taskScheduler, &stack->m_taskTimeout, cachedTime + rak::timer::from_milliseconds(timeout_ms));
+  priority_queue_upsert(&taskScheduler, &stack->m_taskTimeout, cachedTime + rak::timer::from_milliseconds(timeout_ms));
 
   return 0;
 }

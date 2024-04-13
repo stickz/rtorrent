@@ -62,6 +62,7 @@
 #include "core/download_factory.h"
 #include "core/download_store.h"
 #include "core/manager.h"
+#include "core/view_manager.h"
 #include "display/canvas.h"
 #include "display/window.h"
 #include "display/manager.h"
@@ -132,10 +133,18 @@ load_session_torrents() {
 
     // Replace with session torrent flag.
     f->set_session(true);
+    f->set_init_load(true);
+    f->set_immediate(true);
     f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
-    f->load(entries.path() + first->d_name);
+    f->load(entries.path() + first->s_name);
     f->commit();
   }
+  
+  const auto& hashing_view = *control->view_manager()->find_throw("hashing");
+  control->core()->set_hashing_view(hashing_view);
+  hashing_view->set_focus(hashing_view->focus());
+  
+  rak::priority_queue_perform(&taskScheduler, cachedTime);  
 }
 
 void
@@ -146,6 +155,7 @@ load_arg_torrents(char** first, char** last) {
 
     // Replace with session torrent flag.
     f->set_start(true);
+    f->set_init_load(true);
     f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
     f->load(*first);
     f->commit();
@@ -308,8 +318,6 @@ main(int argc, char** argv) {
        "view.add = default\n"
 
        "view.add = name\n"
-       "view.sort_new     = name,((less,((d.name))))\n"
-       "view.sort_current = name,((less,((d.name))))\n"
 
        "view.add = active\n"
        "view.filter = active,((false))\n"
@@ -347,15 +355,25 @@ main(int argc, char** argv) {
        "view.filter = leeching,((and,((d.state)),((not,((d.complete))))))\n"
        "view.filter_on = leeching,event.download.resumed,event.download.paused,event.download.finished\n"
 
-       "schedule2 = view.main,10,10,((view.sort,main,20))\n"
-       "schedule2 = view.name,10,10,((view.sort,name,20))\n"
-
        "schedule2 = session_save,1200,1200,((session.save))\n"
        "schedule2 = low_diskspace,5,60,((close_low_diskspace,500M))\n"
        "schedule2 = prune_file_status,3600,86400,((system.file_status_cache.prune))\n"
 
        "protocol.encryption.set=allow_incoming,prefer_plaintext,enable_retry\n"
     );
+	
+    // Sorting is O(n*log(n)) and very expensive
+    // RPC user does not rely on rTorrent for sorted list
+    // Only set view sorting and periodic resorting when not in daemon mode
+    if (!rpc::call_command_value("system.daemon")) {
+      rpc::parse_command_multiple(
+        rpc::make_target(),
+        "view.sort_new     = name,((less,((d.name))))\n"
+        "view.sort_current = name,((less,((d.name))))\n"
+
+        "schedule2 = view.main,10,10,((view.sort,main,20))\n"
+        "schedule2 = view.name,10,10,((view.sort,name,20))\n");
+    }
 
     // Functions that might not get depracted as they are nice for
     // configuration files, and thus might do with just some

@@ -3,7 +3,7 @@ name: rTorrent Push Commit
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
       - 'develop'
       - 'stable'
 

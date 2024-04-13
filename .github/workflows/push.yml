@@ -1,0 +1,28 @@
+name: rTorrent Push Commit
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'stable'
+
+jobs:
+  whatbox:
+    runs-on: [self-hosted, linux, whatbox]
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v4
+
+      - name: Build Whatbox
+        run: ./.github/scripts/build_whatbox.sh
+        shell: bash
+  arm:
+    runs-on: [self-hosted, linux, ARM64]
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v4
+
+      - name: Build ARM64 Debian 12
+        run: ./.github/scripts/build.sh
+        shell: bash

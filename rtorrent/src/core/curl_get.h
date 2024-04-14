@@ -58,9 +58,6 @@ public:
   void               start();
   void               close();
 
-  bool               is_using_ipv6()    { return m_ipv6; }
-  void               retry_ipv6();
-
   bool               is_busy() const    { return m_handle; }
   bool               is_active() const  { return m_active; }
 
@@ -78,7 +75,6 @@ private:
   void               receive_timeout();
 
   bool               m_active;
-  bool               m_ipv6;
 
   rak::priority_item m_taskTimeout;
   

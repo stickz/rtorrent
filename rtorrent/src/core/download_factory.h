@@ -76,6 +76,12 @@ public:
 
   bool                get_start() const     { return m_start; }
   void                set_start(bool v)     { m_start = v; }
+  
+  bool                get_init_load() const { return m_initLoad; }
+  void                set_init_load(bool v) { m_initLoad = v; }
+  
+  bool                get_immediate() const { return m_immediate; }
+  void                set_immediate(bool v) { m_immediate = v; }
 
   bool                print_log() const     { return m_printLog; }
   void                set_print_log(bool v) { m_printLog = v; }
@@ -105,7 +111,9 @@ private:
   bool                m_start;
   bool                m_printLog;
   bool                m_isFile;
-
+  bool                m_initLoad;
+  bool                m_immediate;
+  
   command_list_type         m_commands;
   torrent::Object::map_type m_variables;
 

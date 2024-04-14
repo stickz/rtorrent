@@ -40,6 +40,7 @@
 
 #include <fstream>
 #include <stdio.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <rak/error_number.h>
 #include <rak/path.h>
@@ -102,6 +103,7 @@ bool
 DownloadStore::write_bencode(const std::string& filename, const torrent::Object& obj, uint32_t skip_mask) {
   torrent::Object tmp;
   std::fstream output(filename.c_str(), std::ios::out | std::ios::trunc);
+  int fd = -1;
 
   if (!output.is_open())
     goto download_store_save_error;
@@ -112,6 +114,14 @@ DownloadStore::write_bencode(const std::string& filename, const torrent::Object&
     goto download_store_save_error;
 
   output.close();
+  
+  // Ensure that the new file is actually written to the disk
+  fd = ::open(filename.c_str(), O_WRONLY);
+  if (fd < 0)
+    goto download_store_save_error;
+
+  fsync(fd);
+  ::close(fd);
 
   // Test the new file, to ensure it is a valid bencode string.
   output.open(filename.c_str(), std::ios::in);
@@ -183,7 +193,7 @@ DownloadStore::remove(Download* d) {
 // This also needs to check that it isn't a directory.
 bool
 not_correct_format(const utils::directory_entry& entry) {
-  return !DownloadStore::is_correct_format(entry.d_name);
+  return !DownloadStore::is_correct_format(entry.s_name);
 }
 
 utils::Directory

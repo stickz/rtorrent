@@ -41,7 +41,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <rak/path.h>
-#include lt_tr1_functional
 #include <torrent/utils/log.h>
 #include <torrent/utils/resume.h>
 #include <torrent/object.h>
@@ -105,7 +104,9 @@ DownloadFactory::DownloadFactory(Manager* m) :
   m_session(false),
   m_start(false),
   m_printLog(true),
-  m_isFile(false) {
+  m_isFile(false),
+  m_initLoad(false),
+  m_immediate(false){
 
   m_taskLoad.slot() = std::bind(&DownloadFactory::receive_load, this);
   m_taskCommit.slot() = std::bind(&DownloadFactory::receive_commit, this);
@@ -131,6 +132,10 @@ void
 DownloadFactory::load(const std::string& uri) {
   m_uri = uri;
   priority_queue_insert(&taskScheduler, &m_taskLoad, cachedTime);
+  
+  if (m_immediate) {
+    priority_queue_perform(&taskScheduler, cachedTime);
+  }
 }
 
 // This function must be called before DownloadFactory::commit().
@@ -146,6 +151,10 @@ DownloadFactory::load_raw_data(const std::string& input) {
 void
 DownloadFactory::commit() {
   priority_queue_insert(&taskScheduler, &m_taskCommit, cachedTime);
+  
+  if (m_immediate) {
+    priority_queue_perform(&taskScheduler, cachedTime);
+  }
 }
 
 void
@@ -203,6 +212,10 @@ DownloadFactory::receive_commit() {
 
   if (m_loaded)
     receive_success();
+  else {
+    // drop immediate as this is asynchronous.
+    m_immediate = false;  
+  }
 }
 
 void
@@ -275,6 +288,10 @@ DownloadFactory::receive_success() {
   if (!rpc::call_command_value("trackers.use_udp"))
     download->enable_udp_trackers(false);
 
+  // Skip forcing trackers to scrape when rtorrent starts
+  if (m_initLoad && rpc::call_command_value("trackers.delay_scrape"))
+    download->set_resume_flags(torrent::Download::start_skip_tracker);
+
   // Check first if we already have these values set in the session
   // torrent, so that it is safe to change the values.
   //
@@ -318,11 +335,13 @@ DownloadFactory::receive_success() {
     std::for_each(m_commands.begin(), m_commands.end(),
                   rak::bind2nd(std::ptr_fun(&rpc::parse_command_multiple_std), rpc::make_target(download)));
 
-    if (m_manager->download_list()->find(infohash) == m_manager->download_list()->end())
-      throw torrent::input_error("The newly created download was removed.");
+    if (!m_session) {
+      if (m_manager->download_list()->find(infohash) == m_manager->download_list()->end()) {
+        throw torrent::input_error("The newly created download was removed.");
+      }
 
-    if (!m_session)
-       rpc::call_command("d.state.set", (int64_t)m_start, rpc::make_target(download));
+      rpc::call_command("d.state.set", (int64_t)m_start, rpc::make_target(download));
+    }
 
     rpc::commands.call_catch(m_session ? "event.download.inserted_session" : "event.download.inserted_new",
                              rpc::make_target(download), torrent::Object(), "Download event action failed: ");
@@ -372,11 +391,17 @@ DownloadFactory::log_created(Download* download, torrent::Object* rtorrent) {
 
 void
 DownloadFactory::receive_failed(const std::string& msg) {
+  bool shouldThrow = m_immediate;
+  
   // Add message to log.
   if (m_printLog)
     m_manager->push_log_std(msg + ": \"" + m_uri + "\"");
 
   m_slot_finished();
+  
+  if (shouldThrow) {
+    throw torrent::input_error(msg);
+  }
 }
 
 void

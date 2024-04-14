@@ -39,11 +39,13 @@
 
 #include <rak/timer.h>
 #include <rak/priority_queue_default.h>
+#include <rak/udp_tracker_info.h>
 
 namespace torrent {
 
 extern rak::priority_queue_default taskScheduler;
 extern rak::timer                  cachedTime;
+extern rak::udp_tracker_vector     udpTrackerInfo;
 
 }
 

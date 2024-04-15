@@ -124,19 +124,25 @@ RequestList::~RequestList() {
   priority_queue_erase(&taskScheduler, &m_delay_process_unordered);
 }
 
-const Piece*
-RequestList::delegate() {
-  BlockTransfer* transfer = m_delegator->delegate(m_peerChunks, m_affinity);
+std::vector<const Piece*>
+RequestList::delegate(uint32_t maxPieces) {
+  std::vector<BlockTransfer*> transfers = m_delegator->delegate(m_peerChunks, m_affinity, maxPieces);
+
+  std::vector<const Piece*> pieces;
+  if (transfers.empty())
+    return pieces;
 
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_DELEGATED, 1);
 
-  if (transfer == NULL)
-    return NULL;
+  for (auto& itr : transfers) {
+    m_queues.push_back(bucket_queued, itr);
+    pieces.push_back(&(itr->piece()));
+  }
 
-  m_affinity = transfer->index();
-  m_queues.push_back(bucket_queued, transfer);
+  // Use the last index returned for the next affinity
+  m_affinity = transfers.back()->index();
 
-  return &transfer->piece();
+  return pieces;
 }
 
 void

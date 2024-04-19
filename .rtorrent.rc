@@ -1,6 +1,6 @@
-# This configuration file is provided by the rTorrent seed box project
+# This configuration file is provided by the rtorrent stickz project
 # It has special configuration values that are only applicable to the project
-# https://github.com/stickz/rTorrent-seedbox
+# https://github.com/stickz/rtorrent
 
 # This setting will allow tens of thousands of torrents
 # The max value is raised 16M as required for torrent information

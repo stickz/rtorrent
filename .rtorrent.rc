@@ -28,3 +28,20 @@ network.max_open_sockets.set = 2048
 # These settings allow up 2.5G per socket with a 250ms bandwidth delay product
 network.send_buffer.size.set = 32M
 network.receive_buffer.size.set = 32M
+
+# Preallocate disk space for contents of a torrent
+#
+# Useful for reducing fragmentation, improving the performance
+# and I/O patterns of future read operations. However, with this
+# enabled, preallocated files will occupy the full size even if
+# they are not completed.
+#
+# If you choose to allocate space for the whole torrent at once,
+# rTorrent will create all files and allocate the space when the
+# torrent is started. rTorrent will NOT delete the file and free
+# the allocated space, if you later mark a file as DO NOT DOWNLOAD.
+#
+#   0 = disabled
+#   1 = enabled, allocate when a file is opened for write
+#   2 = enabled, allocate the space for the whole torrent at once
+system.file.allocate.set = 0

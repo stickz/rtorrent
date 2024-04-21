@@ -579,6 +579,21 @@ FileList::open_file(File* node, const Path& lastPath, int flags) {
     rak::error_number::set_global(rak::error_number::e_isdir);
     return false;
   }
+  
+  // Resize on open and iteration of file list if user wants the space for
+  // the whole torrent allocated at once. prot_write triggers the resize().
+  if (node->has_flags(File::flag_fallocate_all) &&
+      !node->is_previously_created() && node->priority() != PRIORITY_OFF) {
+    if (!node->prepare(MemoryChunk::prot_read, 0)) {
+      return false;
+    }
+
+    if (!node->is_correct_size() && node->is_resize_queued()) {
+      return node->prepare(MemoryChunk::prot_write, 0);
+    }
+
+    return true;
+  }
 
   return node->prepare(MemoryChunk::prot_read, 0);
 }

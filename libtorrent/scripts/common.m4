@@ -131,19 +131,7 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([
       #include <immintrin.h>
       #include <x86intrin.h>
-      void f() {     
-          const __m256i lookup = _mm256_setr_epi8(
-          /* 0 */ 0, /* 1 */ 1, /* 2 */ 1, /* 3 */ 2,
-          /* 4 */ 1, /* 5 */ 2, /* 6 */ 2, /* 7 */ 3,
-          /* 8 */ 1, /* 9 */ 2, /* a */ 2, /* b */ 3,
-          /* c */ 2, /* d */ 3, /* e */ 3, /* f */ 4,
-
-          /* 0 */ 0, /* 1 */ 1, /* 2 */ 1, /* 3 */ 2,
-          /* 4 */ 1, /* 5 */ 2, /* 6 */ 2, /* 7 */ 3,
-          /* 8 */ 1, /* 9 */ 2, /* a */ 2, /* b */ 3,
-          /* c */ 2, /* d */ 3, /* e */ 3, /* f */ 4
-          ); 
-      }
+      void f() { __m256i local = _mm256_setzero_si256(); }
     ])],
     [
       AC_MSG_RESULT(yes)

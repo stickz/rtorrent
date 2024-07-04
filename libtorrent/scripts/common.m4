@@ -131,7 +131,7 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([
       #include <immintrin.h>
       #include <x86intrin.h>
-      void f() { __m256i local = _mm256_setzero_si256(); }
+      int main() { __m256i local = _mm256_setzero_si256(); return 0; }
     ])],
     [
       AC_MSG_RESULT(yes)

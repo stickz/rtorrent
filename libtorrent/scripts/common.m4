@@ -125,6 +125,22 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT], [
   ])
 ])
 
+AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
+  AC_MSG_CHECKING(for popcnt_AVX2_lookup)
+  
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+      #include <immintrin.h>
+      #include <x86intrin.h>
+      const __m256i low_mask = _mm256_set1_epi8(0x0f);
+    ])],
+    [
+      AC_MSG_RESULT(yes)
+      AC_DEFINE(USE_AVX2_POPCOUNT, 1, Use popcnt_AVX2_lookup.)
+    ], [
+      AC_MSG_RESULT(no)
+  ])
+])
+
 AC_DEFUN([TORRENT_CHECK_CACHELINE], [
   AC_MSG_CHECKING(for cacheline)
 

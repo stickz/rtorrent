@@ -49,7 +49,7 @@
 namespace rak {
 
 #if USE_AVX2_POPCOUNT
-std::uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
+uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
 
     size_t i = 0;
 

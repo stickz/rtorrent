@@ -12,7 +12,7 @@ RTORRENTDIR="$ROOTDIR/rtorrent"
 #install libtorrent
 cd "$LIBTORRENTDIR"
 ./autogen.sh
-./configure --prefix="$ROOTDIR" --enable-aligned
+./configure --prefix="$ROOTDIR" --enable-aligned --enable-avx2
 make -j$(nproc) CXXFLAGS="-O3 -march=native -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 make -j$(nproc) install
 

@@ -125,22 +125,14 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT], [
   ])
 ])
 
-AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
-  AC_MSG_CHECKING(for popcnt_AVX2_lookup)
-  
-  AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-      int main() { 
-        if(__builtin_cpu_supports("avx2")){
-          return 0;
-        }
-        return -1;
-    ])],
+AC_DEFUN([TORRENT_ENABLE_AVX2], [
+  AC_ARG_ENABLE(avx2,
+    AC_HELP_STRING([--enable-avx2], [enable popcnt_AVX2_lookup [[default=no]]]),
     [
-      AC_MSG_RESULT(yes)
-      AC_DEFINE(USE_AVX2_POPCOUNT, 1, Use popcnt_AVX2_lookup.)
-    ], [
-      AC_MSG_RESULT(no)
-  ])
+        if test "$enableval" = "yes"; then
+          AC_DEFINE(USE_AVX2_POPCOUNT, 1, Use popcnt_AVX2_lookup.)
+        fi
+    ])
 ])
 
 AC_DEFUN([TORRENT_CHECK_CACHELINE], [

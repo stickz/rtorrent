@@ -130,11 +130,10 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
   
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([
       int main() { 
-        #if defined(__AVX2__)
+        if(__builtin_cpu_supports("avx2")){
           return 0;
-        #else
-          return -1;
-        #endif
+        }
+        return -1;
     ])],
     [
       AC_MSG_RESULT(yes)

@@ -118,7 +118,7 @@ uint8_t lookup8bit[256] = {
 };
 
 template<typename T>
-uint64_t popcnt_AVX2_lookup(T data, const size_t n) {
+uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
 
     size_t i = 0;
 
@@ -294,10 +294,9 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
   return __base;
 }
 
-template<typename T>
-inline int popcount_wrapper(T t) {
+inline int popcount_wrapper(unsigned int* t) {
 #if USE_AVX2_POPCOUNT
-  return popcnt_AVX2_lookup(t, sizeof(T));
+  return popcnt_AVX2_lookup(t, sizeof(t));
 #else	
 #if USE_BUILTIN_POPCOUNT
   if (std::numeric_limits<T>::digits <= std::numeric_limits<unsigned int>::digits)

@@ -117,8 +117,7 @@ uint8_t lookup8bit[256] = {
 	/* fc */ 6, /* fd */ 7, /* fe */ 7, /* ff */ 8
 };
 
-template<typename T>
-uint64_t popcnt_AVX2_lookup(const unsigned int* data, const size_t n) {
+uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
 
     size_t i = 0;
 

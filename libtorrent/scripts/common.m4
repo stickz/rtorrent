@@ -129,9 +129,12 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
   AC_MSG_CHECKING(for popcnt_AVX2_lookup)
   
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-      #include <immintrin.h>
-      #include <x86intrin.h>
-      int main() { __m256i local = _mm256_setzero_si256(); return 0; }
+      int main() { 
+        #if defined(__AVX2__)
+          return 0;
+        #else
+          return -1;
+        #endif
     ])],
     [
       AC_MSG_RESULT(yes)

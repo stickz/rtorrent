@@ -50,7 +50,7 @@
 namespace rak {
 
 #if USE_AVX2_POPCOUNT
-uint8_t lookup8bit[256] = {
+inline uint8_t lookup8bit[256] = {
 	/* 0 */ 0, /* 1 */ 1, /* 2 */ 1, /* 3 */ 2,
 	/* 4 */ 1, /* 5 */ 2, /* 6 */ 2, /* 7 */ 3,
 	/* 8 */ 1, /* 9 */ 2, /* a */ 2, /* b */ 3,
@@ -117,7 +117,7 @@ uint8_t lookup8bit[256] = {
 	/* fc */ 6, /* fd */ 7, /* fe */ 7, /* ff */ 8
 };
 
-uint64_t popcnt_AVX2_lookup(const unsigned int* data, const size_t n) {
+inline uint64_t popcnt_AVX2_lookup(const unsigned int* data, const size_t n) {
 
     size_t i = 0;
 

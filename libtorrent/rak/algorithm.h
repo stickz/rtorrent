@@ -293,11 +293,13 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
   return __base;
 }
 
-inline int popcount_wrapper(unsigned int t) {
 #if USE_AVX2_POPCOUNT
-  unsigned int* data = (unsigned int*)t;
-  return t==0 ? 0 : popcnt_AVX2_lookup(data, sizeof(data));
-#else	
+inline int popcount_wrapper_avx2(unsigned int* data) {
+  return popcnt_AVX2_lookup(data, sizeof(data));
+}
+#else
+template<typename T>
+inline int popcount_wrapper(T t) {
 #if USE_BUILTIN_POPCOUNT
   if (std::numeric_limits<T>::digits <= std::numeric_limits<unsigned int>::digits)
     return __builtin_popcount(t);
@@ -314,8 +316,8 @@ inline int popcount_wrapper(unsigned int t) {
 
   return count;
 #endif
-#endif
 }
+#endif
 
 }
 

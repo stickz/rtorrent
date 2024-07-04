@@ -94,12 +94,20 @@ Bitfield::update() {
   iterator last = end();
 
   while (itr + sizeof(unsigned int) <= last) {
+    #if USE_AVX2_POPCOUNT
+    m_set += rak::popcount_wrapper_avx2(*itr);
+    #else
     m_set += rak::popcount_wrapper(*reinterpret_cast<unsigned int*>(itr));
+    #endif
     itr += sizeof(unsigned int);
   }
 
   while (itr != last) {
-    m_set += rak::popcount_wrapper(*itr++);
+   #if USE_AVX2_POPCOUNT
+   m_set += rak::popcount_wrapper_avx2(*itr++);
+   #else
+   m_set += rak::popcount_wrapper(*itr++);
+   #endif
   }
 }
 

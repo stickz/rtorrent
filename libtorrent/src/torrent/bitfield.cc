@@ -99,8 +99,7 @@ Bitfield::update() {
   }
 
   while (itr != last) {
-    m_set += rak::popcount_wrapper(*reinterpret_cast<unsigned int*>(itr));
-    itr++;
+    m_set += rak::popcount_wrapper(*itr++);
   }
 }
 

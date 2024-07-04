@@ -88,28 +88,23 @@ Bitfield::update() {
   // Clears the unused bits.
   clear_tail();
 
+  #if USE_AVX2_POPCOUNT
+  m_set = rak::popcount_wrapper_avx2(m_data);
+  #else
   m_set = 0;
 
   iterator itr = m_data;
   iterator last = end();
 
   while (itr + sizeof(unsigned int) <= last) {
-    #if USE_AVX2_POPCOUNT
-    m_set += rak::popcount_wrapper_avx2(reinterpret_cast<unsigned int*>(itr));
-    #else
     m_set += rak::popcount_wrapper(*reinterpret_cast<unsigned int*>(itr));
-    #endif
     itr += sizeof(unsigned int);
   }
 
   while (itr != last) {
-   #if USE_AVX2_POPCOUNT
-   m_set += rak::popcount_wrapper_avx2(reinterpret_cast<unsigned int*>(itr));
-   itr++;
-   #else
    m_set += rak::popcount_wrapper(*itr++);
-   #endif
   }
+  #endif
 }
 
 void

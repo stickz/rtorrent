@@ -44,6 +44,7 @@
 #if USE_AVX2_POPCOUNT
 #include <immintrin.h>
 #include <x86intrin.h>
+#include <cstdint>
 #endif
 
 namespace rak {

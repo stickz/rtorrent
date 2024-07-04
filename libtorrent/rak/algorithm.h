@@ -117,7 +117,7 @@ inline uint8_t lookup8bit[256] = {
 	/* fc */ 6, /* fd */ 7, /* fe */ 7, /* ff */ 8
 };
 
-inline uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
+inline uint32_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
 
     size_t i = 0;
 
@@ -165,12 +165,12 @@ inline uint64_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
 
 #undef ITER
 
-    uint64_t result = 0;
+    uint32_t result = 0;
 
-    result += static_cast<uint64_t>(_mm256_extract_epi64(acc, 0));
-    result += static_cast<uint64_t>(_mm256_extract_epi64(acc, 1));
-    result += static_cast<uint64_t>(_mm256_extract_epi64(acc, 2));
-    result += static_cast<uint64_t>(_mm256_extract_epi64(acc, 3));
+    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 0));
+    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 1));
+    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 2));
+    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 3));
 
     for (/**/; i < n; i++) {
         result += lookup8bit[data[i]];
@@ -294,7 +294,7 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
 }
 
 #if USE_AVX2_POPCOUNT
-inline int popcount_wrapper_avx2(uint8_t* data) {
+inline uint32_t popcount_wrapper_avx2(uint8_t* data) {
   return popcnt_AVX2_lookup(data, sizeof(data));
 }
 #else

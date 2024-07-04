@@ -296,7 +296,7 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
 inline int popcount_wrapper(unsigned int t) {
 #if USE_AVX2_POPCOUNT
   unsigned int* data = (unsigned int*)t;
-  return popcnt_AVX2_lookup(data, sizeof(data));
+  return t==0 ? 0 : popcnt_AVX2_lookup(data, sizeof(data));
 #else	
 #if USE_BUILTIN_POPCOUNT
   if (std::numeric_limits<T>::digits <= std::numeric_limits<unsigned int>::digits)

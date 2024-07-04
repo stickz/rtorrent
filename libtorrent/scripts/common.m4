@@ -131,7 +131,7 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT_AVX2], [
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([
       #include <immintrin.h>
       #include <x86intrin.h>
-      const __m256i low_mask = _mm256_set1_epi8(0x0f);
+      void f() { const __m256i low_mask = _mm256_set1_epi8(0x0f); }
     ])],
     [
       AC_MSG_RESULT(yes)

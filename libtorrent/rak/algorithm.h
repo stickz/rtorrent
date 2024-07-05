@@ -156,8 +156,22 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
   return __base;
 }
 
+#if USE_CPU_POPCOUNT
+inline int countBit1Fast(unsigned int n) {
+    n = (n & 0x55555555u) + ((n >> 1) & 0x55555555u);
+    n = (n & 0x33333333u) + ((n >> 2) & 0x33333333u);
+    n = (n & 0x0f0f0f0fu) + ((n >> 4) & 0x0f0f0f0fu);
+    n = (n & 0x00ff00ffu) + ((n >> 8) & 0x00ff00ffu);
+    n = (n & 0x0000ffffu) + ((n >>16) & 0x0000ffffu);
+    return n;
+}
+#endif
+
 template<typename T>
 inline int popcount_wrapper(T t) {
+#if USE_CPU_POPCOUNT
+  return countBit1Fast(t);
+#else	
 #if USE_BUILTIN_POPCOUNT
   if (std::numeric_limits<T>::digits <= std::numeric_limits<unsigned int>::digits)
     return __builtin_popcount(t);
@@ -173,6 +187,7 @@ inline int popcount_wrapper(T t) {
   }
 
   return count;
+#endif
 #endif
 }
 

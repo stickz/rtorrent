@@ -89,7 +89,7 @@ Bitfield::update() {
   clear_tail();
 
   #if USE_AVX2_POPCOUNT
-  m_set = rak::popcnt_AVX2_lookup(m_data, *end());
+  m_set = rak::popcnt_AVX2_lookup(m_data, sizeof(uint32_t));
   #else
   m_set = 0;
 

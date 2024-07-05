@@ -125,6 +125,16 @@ AC_DEFUN([TORRENT_CHECK_POPCOUNT], [
   ])
 ])
 
+AC_DEFUN([TORRENT_CPU_POPCOUNT], [
+  AC_ARG_ENABLE(cpu-popcount,
+    AC_HELP_STRING([--enable-cpu-popcount], [Enable cpu-popcount [[default=check]]]),
+    [
+      if test "$enableval" = "yes"; then
+        AC_DEFINE(USE_CPU_POPCOUNT, 1, Use CPU popcount.)
+      fi
+    ])
+])
+
 AC_DEFUN([TORRENT_CHECK_CACHELINE], [
   AC_MSG_CHECKING(for cacheline)
 

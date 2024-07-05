@@ -110,7 +110,7 @@ Bitfield::update() {
   }
   
   #if USE_AVX2_POPCOUNT
-  m_set = rak::popcount_wrapper_avx2(reinterpret_cast<unsigned int*>(itr));
+  m_set = rak::popcount_wrapper_avx2(reinterpret_cast<uint8_t*>(itr));
   #endif
 }
 

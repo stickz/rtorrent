@@ -95,6 +95,7 @@ Bitfield::update() {
 
   while (itr + sizeof(unsigned int) <= last) {
     #if USE_AVX2_POPCOUNT
+    m_set += rak::popcount_wrapper_avx2(reinterpret_cast<uint8_t*>(itr));
     #else
     m_set += rak::popcount_wrapper(*reinterpret_cast<unsigned int*>(itr));
     #endif
@@ -103,15 +104,11 @@ Bitfield::update() {
 
   while (itr != last) {
     #if USE_AVX2_POPCOUNT
-    itr++;
+    m_set += rak::popcount_wrapper_avx2(reinterpret_cast<uint8_t*>(itr++));
     #else
     m_set += rak::popcount_wrapper(*itr++);
     #endif
   }
-  
-  #if USE_AVX2_POPCOUNT
-  m_set = rak::popcount_wrapper_avx2(reinterpret_cast<uint8_t*>(itr));
-  #endif
 }
 
 void

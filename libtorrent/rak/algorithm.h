@@ -152,7 +152,7 @@ inline uint32_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
         __m256i local = _mm256_setzero_si256();
         ITER ITER ITER ITER
         ITER ITER ITER ITER
-        acc = _mm256_add_epi64(acc, _mm256_sad_epu8(local, _mm256_setzero_si256()));
+        acc = _mm256_add_epi32(acc, _mm256_sad_epu8(local, _mm256_setzero_si256()));
     }
 
     __m256i local = _mm256_setzero_si256();
@@ -161,16 +161,16 @@ inline uint32_t popcnt_AVX2_lookup(const uint8_t* data, const size_t n) {
         ITER;
     }
 
-    acc = _mm256_add_epi64(acc, _mm256_sad_epu8(local, _mm256_setzero_si256()));
+    acc = _mm256_add_epi32(acc, _mm256_sad_epu8(local, _mm256_setzero_si256()));
 
 #undef ITER
 
     uint32_t result = 0;
 
-    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 0));
-    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 1));
-    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 2));
-    result += static_cast<uint32_t>(_mm256_extract_epi64(acc, 3));
+    result += static_cast<uint32_t>(_mm256_extract_epi32(acc, 0));
+    result += static_cast<uint32_t>(_mm256_extract_epi32(acc, 1));
+    result += static_cast<uint32_t>(_mm256_extract_epi32(acc, 2));
+    result += static_cast<uint32_t>(_mm256_extract_epi32(acc, 3));
 
     for (/**/; i < n; i++) {
         result += lookup8bit[data[i]];

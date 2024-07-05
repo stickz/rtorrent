@@ -37,7 +37,6 @@
 #include "config.h"
 
 #include <algorithm>
-#include <stdint.h>
 
 #include "rak/algorithm.h"
 #include "utils/instrumentation.h"
@@ -90,7 +89,7 @@ Bitfield::update() {
   clear_tail();
 
   #if USE_AVX2_POPCOUNT
-  m_set = rak::popcnt_AVX2_lookup(m_data, UINT32_MAX);
+  m_set = rak::popcnt_AVX2_lookup(m_data, 32);
   #else
   m_set = 0;
 

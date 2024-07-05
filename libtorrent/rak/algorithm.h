@@ -297,7 +297,7 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
 inline uint32_t popcount_wrapper_avx2(uint8_t* data) {
   return popcnt_AVX2_lookup(data, sizeof(data));
 }
-#else
+#endif
 template<typename T>
 inline int popcount_wrapper(T t) {
 #if USE_BUILTIN_POPCOUNT
@@ -317,7 +317,6 @@ inline int popcount_wrapper(T t) {
   return count;
 #endif
 }
-#endif
 
 }
 

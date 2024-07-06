@@ -40,6 +40,7 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <rak/libpopcnt.h>
 
 namespace rak {
 
@@ -156,18 +157,9 @@ make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
   return __base;
 }
 
-inline int countBit1Fast(unsigned int n) {
-    n = (n & 0x55555555u) + ((n >> 1) & 0x55555555u);
-    n = (n & 0x33333333u) + ((n >> 2) & 0x33333333u);
-    n = (n & 0x0f0f0f0fu) + ((n >> 4) & 0x0f0f0f0fu);
-    n = (n & 0x00ff00ffu) + ((n >> 8) & 0x00ff00ffu);
-    n = (n & 0x0000ffffu) + ((n >>16) & 0x0000ffffu);
-    return n;
-}
-
 template<typename T>
 inline int popcount_wrapper(T t) {
-  return countBit1Fast(t);
+  return popcnt64(t);
 }
 
 }

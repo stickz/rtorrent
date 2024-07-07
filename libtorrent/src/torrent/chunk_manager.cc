@@ -61,8 +61,10 @@ ChunkManager::ChunkManager() :
   m_preloadMinSize(256 << 10),
   m_preloadRequiredRate(5 << 10),
 
+#ifndef USE_HOSTED_MODE
   m_statsPreloaded(0),
   m_statsNotPreloaded(0),
+#endif
 
   m_timerStarved(0),
   m_lastFreed(0) {

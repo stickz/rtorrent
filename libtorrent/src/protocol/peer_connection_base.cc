@@ -367,7 +367,33 @@ PeerConnectionBase::receive_download_choke(bool choke) {
 }
 
 void
-PeerConnectionBase::load_up_chunk() {
+PeerConnectionBase::load_up_chunk() {	
+
+// In hosted mode here we acomplish four speedups:
+// 1) We disable piece preloading and leave it to the linux kernel buffers/caches.
+// 2) We disable logging instrumentation for mincore to reduce chuck loading overhead.
+// 3) We disable chunk preloading statistics to reduce chuck loading overhead
+// 4) We release the chunk on the spot (after we know it's valid) to avoid a redundant check.
+#if USE_HOSTED_MODE
+  if (m_upChunk.is_valid())
+  {
+    if (m_upChunk.index() == m_upPiece.index())
+      return;
+
+    // Release up chunk here instead of calling m_upChunk.is_valid() a second time with up_chunk_release()
+    m_download->chunk_list()->release(&m_upChunk);    
+  }
+
+  m_upChunk = m_download->chunk_list()->get(m_upPiece.index());
+  if (!m_upChunk.is_valid())
+    throw storage_error("File chunk read error: " + std::string(m_upChunk.error_number().c_str()));
+
+  if (is_encrypted() && m_encryptBuffer == NULL) {
+    m_encryptBuffer = new EncryptBuffer();
+    m_encryptBuffer->reset();
+  }
+
+#else	
   if (m_upChunk.is_valid() && m_upChunk.index() == m_upPiece.index()) {
     // Better checking needed.
     //     m_upChunk.chunk()->preload(m_upPiece.offset(), m_upChunk.chunk()->size());
@@ -415,6 +441,7 @@ PeerConnectionBase::load_up_chunk() {
 
   m_upChunk.object()->set_time_preloaded(cachedTime);
   m_upChunk.chunk()->preload(m_upPiece.offset(), m_upChunk.chunk()->chunk_size(), cm->preload_type() == 1);
+#endif
 }
 
 void

@@ -53,6 +53,7 @@ HashQueueNode::clear() {
   m_chunk = NULL;
 }
 
+#ifndef USE_HOSTED_MODE
 uint32_t
 HashQueueNode::call_willneed() {
   if (!m_willneed) {
@@ -62,5 +63,6 @@ HashQueueNode::call_willneed() {
 
   return m_chunk->remaining();
 }
+#endif
 
 }

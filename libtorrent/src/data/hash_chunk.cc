@@ -62,6 +62,7 @@ HashChunk::perform(uint32_t length, bool force) {
   return complete;
 }
 
+#ifndef USE_HOSTED_MODE
 void
 HashChunk::advise_willneed(uint32_t length) {
   if (!m_chunk.is_valid())
@@ -84,6 +85,7 @@ HashChunk::advise_willneed(uint32_t length) {
     ++itr;
   }
 }
+#endif
 
 uint32_t
 HashChunk::perform_part(Chunk::iterator itr, uint32_t length) {

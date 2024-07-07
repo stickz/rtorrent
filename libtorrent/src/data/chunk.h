@@ -97,7 +97,9 @@ public:
 
   bool                sync(int flags);
 
+#ifndef USE_HOSTED_MODE
   void                preload(uint32_t position, uint32_t length, bool useAdvise);
+#endif
 
   bool                to_buffer(void* buffer, uint32_t position, uint32_t length);
   bool                from_buffer(const void* buffer, uint32_t position, uint32_t length);

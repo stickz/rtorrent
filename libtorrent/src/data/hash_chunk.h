@@ -65,7 +65,9 @@ public:
   // If force is true, then the return value is always true.
   bool                perform(uint32_t length, bool force = true);
 
+#ifndef USE_HOSTED_MODE
   void                advise_willneed(uint32_t length);
+#endif
 
   uint32_t            remaining();
 

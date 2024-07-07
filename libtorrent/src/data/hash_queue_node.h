@@ -68,9 +68,11 @@ public:
 
   void                clear();
 
+#ifndef USE_HOSTED_MODE
   // Does not call multiple times on the same chunk. Returns the
   // number of bytes not checked in this chunk.
   uint32_t            call_willneed();
+#endif
 
   slot_done_type&     slot_done()                   { return m_slot_done; }
 

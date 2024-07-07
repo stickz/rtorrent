@@ -55,6 +55,7 @@ class MemoryChunk {
   static const int prot_none              = PROT_NONE;
   static const int map_shared             = MAP_SHARED;
 
+#ifndef USE_HOSTED_MODE
 #ifdef USE_MADVISE
   static const int advice_normal          = MADV_NORMAL;
   static const int advice_random          = MADV_RANDOM;
@@ -67,6 +68,7 @@ class MemoryChunk {
   static const int advice_sequential      = 2;
   static const int advice_willneed        = 3;
   static const int advice_dontneed        = 4;
+#endif
 #endif
   static const int sync_sync              = MS_SYNC;
   static const int sync_async             = MS_ASYNC;
@@ -100,7 +102,9 @@ class MemoryChunk {
 
   // Use errno and strerror if you want to know why these failed.
   void                incore(char* buf, uint32_t offset, uint32_t length);
+#ifndef USE_HOSTED_MODE
   bool                advise(uint32_t offset, uint32_t length, int advice);
+#endif
   bool                sync(uint32_t offset, uint32_t length, int flags);
 
   bool                is_incore(uint32_t offset, uint32_t length);

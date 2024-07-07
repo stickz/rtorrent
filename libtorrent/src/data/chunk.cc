@@ -179,6 +179,7 @@ Chunk::sync(int flags) {
   return success;
 }
 
+#ifndef USE_HOSTED_MODE
 void
 Chunk::preload(uint32_t position, uint32_t length, bool useAdvise) {
   if (position >= m_chunkSize)
@@ -208,6 +209,7 @@ Chunk::preload(uint32_t position, uint32_t length, bool useAdvise) {
 
   } while (itr.next());
 }
+#endif
 
 // Consider using uint32_t returning first mismatch or length if
 // matching.

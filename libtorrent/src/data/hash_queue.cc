@@ -68,6 +68,7 @@ struct HashQueueEqual {
   uint32_t              m_index;
 };
 
+#ifndef USE_HOSTED_MODE
 struct HashQueueWillneed {
   HashQueueWillneed(int bytes) : m_bytes(bytes) {}
 
@@ -75,6 +76,7 @@ struct HashQueueWillneed {
 
   int m_bytes;
 };
+#endif
 
 // If madvise is not available it will always mark the pages as being
 // in memory, thus we don't need to modify m_maxTries to have full

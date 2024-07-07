@@ -135,6 +135,16 @@ AC_DEFUN([TORRENT_CPU_POPCOUNT], [
     ])
 ])
 
+AC_DEFUN([TORRENT_HOSTED_MODE], [
+  AC_ARG_ENABLE(hosted-mode,
+    AC_HELP_STRING([--enable-hosted-mode], [Enable hosted mode [[default=check]]]),
+    [
+      if test "$enableval" = "yes"; then
+        AC_DEFINE(USE_HOSTED_MODE, 1, Use hosted mode.)
+      fi
+    ])
+])
+
 AC_DEFUN([TORRENT_CHECK_CACHELINE], [
   AC_MSG_CHECKING(for cacheline)
 

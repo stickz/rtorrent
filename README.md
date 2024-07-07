@@ -24,13 +24,20 @@ make install
 ```
 
 ### Installing libtorrent
-We strongly advise to configure with aligned memory access to avoid critical stability issues.
+We strongly advise to configure with aligned memory access (`--enable-aligned`) to avoid critical stability issues.
+
+We do not recommend using file preload. It's better to leave this decision to the Linux Kernel. You can reduce the overhead of the peer connection protocol, by disabling it entirely at compile time with (`--enable-hosted-mode`). If `pieces.preload.type` is changed from ruTorrent or .rtorrent.rc it will accept the value and ignore it for 100% backwards compatibility.
 ```
 cd libtorrent
 ./autogen.sh
-./configure --prefix=/usr --enable-aligned
+./configure --prefix=/usr --enable-aligned --enable-hosted-mode
 make -j$(nproc) CXXFLAGS="-O3"
 make install
+```
+
+Optionally, you may build with LTO (Link Time Optimizations) as supported by the project. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these. Disable the feature for stability purposes, if the build fails. If the build passes, you're good to go.
+```
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 ```
 
 ### Installing rTorrent
@@ -43,27 +50,9 @@ make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```
 
-## Building with LTO
-This project supports building libtorrent and rTorrent with LTO (Link Time Optimizations). This support is still at the experimental stage. Please file an issue report if the build fails and disable LTO. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these.
-
-### Installing libtorrent
-We strongly advise to configure with aligned memory access to avoid critical stability issues.
+Optionally, you may build with LTO (Link Time Optimizations) as supported by the project. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these. Disable the feature for stability purposes, if the build fails. If the build passes, you're good to go.
 ```
-cd libtorrent
-./autogen.sh
-./configure --prefix=/usr --enable-aligned
 make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-make install
-```
-
-### Installing rTorrent
-We strongly advise to configure with xmlrpc-c to ensure ruTorrent is supported.
-```
-cd rtorrent
-./autogen.sh
-./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-make install
 ```
 
 ## Configuring

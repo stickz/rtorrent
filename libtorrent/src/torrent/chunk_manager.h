@@ -134,6 +134,7 @@ public:
   
   void                periodic_sync();
 
+#ifndef USE_HOSTED_MODE
   // Not sure if I wnt these here. Consider implementing a generic
   // statistics API.
   uint32_t            stats_preloaded() const                   { return m_statsPreloaded; }
@@ -141,6 +142,10 @@ public:
 
   uint32_t            stats_not_preloaded() const               { return m_statsNotPreloaded; }
   void                inc_stats_not_preloaded()                 { m_statsNotPreloaded++; }
+#else
+  uint8_t             stats_preloaded() const                   { return 0; }
+  uint8_t             stats_not_preloaded() const               { return 0; }
+#endif
 
 private:
   ChunkManager(const ChunkManager&);
@@ -161,8 +166,10 @@ private:
   uint32_t            m_preloadMinSize;
   uint32_t            m_preloadRequiredRate;
 
+#ifndef USE_HOSTED_MODE
   uint32_t            m_statsPreloaded;
   uint32_t            m_statsNotPreloaded;
+#endif
 
   int32_t             m_timerStarved;
   size_type           m_lastFreed;

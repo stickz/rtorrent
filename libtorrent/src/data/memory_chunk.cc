@@ -66,11 +66,13 @@ const int MemoryChunk::prot_write;
 const int MemoryChunk::prot_none;
 const int MemoryChunk::map_shared;
 
+#ifndef USE_HOSTED_MODE
 const int MemoryChunk::advice_normal;
 const int MemoryChunk::advice_random;
 const int MemoryChunk::advice_sequential;
 const int MemoryChunk::advice_willneed;
 const int MemoryChunk::advice_dontneed;
+#endif
 
 inline void
 MemoryChunk::align_pair(uint32_t* offset, uint32_t* length) const {
@@ -132,6 +134,7 @@ MemoryChunk::incore(char* buf, uint32_t offset, uint32_t length) {
 #endif
 }
 
+#ifndef USE_HOSTED_MODE
 bool
 MemoryChunk::advise(uint32_t offset, uint32_t length, int advice) {
   if (!is_valid())
@@ -157,6 +160,7 @@ MemoryChunk::advise(uint32_t offset, uint32_t length, int advice) {
 
 #endif
 }
+#endif
 
 bool
 MemoryChunk::sync(uint32_t offset, uint32_t length, int flags) {

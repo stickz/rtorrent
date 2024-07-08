@@ -95,7 +95,7 @@ Listen::open(uint16_t first, uint16_t last, int backlog, const rak::socket_addre
       manager->poll()->insert_read(this);
       manager->poll()->insert_error(this);
 
-      lt_log_print(LOG_CONNECTION_INFO, "listen port %" PRIu16 " opened with backlog set to %i",
+      lt_log_print(LOG_CONNECTION_LISTEN, "listen port %" PRIu16 " opened with backlog set to %i",
                    m_port, backlog);
 
       return true;
@@ -107,7 +107,7 @@ Listen::open(uint16_t first, uint16_t last, int backlog, const rak::socket_addre
   get_fd().close();
   get_fd().clear();
 
-  lt_log_print(LOG_CONNECTION_INFO, "failed to open listen port");
+  lt_log_print(LOG_CONNECTION_LISTEN, "failed to open listen port");
 
   return false;
 }

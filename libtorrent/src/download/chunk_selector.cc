@@ -88,7 +88,7 @@ ChunkSelector::update_priorities() {
 }
 
 uint32_t
-ChunkSelector::find(PeerChunks* pc, __UNUSED bool highPriority) {
+ChunkSelector::find(PeerChunks* pc, bool highPriority) {
   // This needs to be re-enabled.
   if (m_position == invalid_chunk)
     return invalid_chunk;
@@ -128,24 +128,15 @@ ChunkSelector::find(PeerChunks* pc, __UNUSED bool highPriority) {
 
   queue->clear();
 
-  (search_linear(pc->bitfield(), queue, m_data->high_priority(), m_position, size()) &&
-   search_linear(pc->bitfield(), queue, m_data->high_priority(), 0, m_position));
-
-  if (queue->prepare_pop()) {
-    // Set that the peer has high priority pieces cached.
-
-  } else {
-    // Set that the peer has normal priority pieces cached.
-
-    // Urgh...
-    queue->clear();
-
+  if (highPriority)
+    (search_linear(pc->bitfield(), queue, m_data->high_priority(), m_position, size()) &&
+     search_linear(pc->bitfield(), queue, m_data->high_priority(), 0, m_position));
+  else
     (search_linear(pc->bitfield(), queue, m_data->normal_priority(), m_position, size()) &&
      search_linear(pc->bitfield(), queue, m_data->normal_priority(), 0, m_position));
-
-    if (!queue->prepare_pop())
-      return invalid_chunk;
-  }
+	 
+  if (!queue->prepare_pop())
+    return invalid_chunk;
 
   uint32_t pos = queue->pop();
   

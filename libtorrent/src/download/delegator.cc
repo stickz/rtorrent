@@ -78,12 +78,15 @@ Delegator::delegate(PeerChunks* peerChunks, uint32_t affinity, uint32_t maxPiece
         delegate_from_blocklist(new_transfers, maxPieces, itr, peerInfo);
     }
     // Create new high priority pieces.
-    delegate_new_chunks(new_transfers, maxPieces, peerChunks, true);
+    delegate_new_chunks(new_transfers, maxPieces, peerChunks, true);	
+    if (new_transfers.size() >= maxPieces)
+      return new_transfers;
+	
     // Create new normal priority pieces.
     delegate_new_chunks(new_transfers, maxPieces, peerChunks, false);
+    if (new_transfers.size() >= maxPieces)
+      return new_transfers;
   }
-  if (new_transfers.size() >= maxPieces)
-    return new_transfers;
 
   // Find existing high priority pieces.
   for (BlockList* itr : m_transfers) {

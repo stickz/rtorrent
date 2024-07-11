@@ -36,6 +36,8 @@
 
 #include "config.h"
 
+#include <climits>
+
 #include <rak/timer.h> 
 
 #include "net/throttle_internal.h"
@@ -77,18 +79,18 @@ Throttle::create_slave() {
 
 bool
 Throttle::is_throttled() {
-  return m_maxRate != 0 && m_maxRate != std::numeric_limits<uint32_t>::max();
+  return m_maxRate != 0 && m_maxRate < UINT_MAX;
 }
 
 void
-Throttle::set_max_rate(uint32_t v) {
+Throttle::set_max_rate(uint64_t v) {
   if (v == m_maxRate)
     return;
 
-  if (v > (1 << 30))
-    throw input_error("Throttle rate must be between 0 and 2^30.");
+  if (v != 0 && (v < THROTTLE_MIN_VALUE || v > (UINT_MAX - 1)))
+    throw input_error("Throttle rate must be between 2097152 and 4294967295.");
 
-  uint32_t oldRate = m_maxRate;
+  uint64_t oldRate = m_maxRate;
   m_maxRate = v;
 
   m_throttleList->set_min_chunk_size(calculate_min_chunk_size());
@@ -110,27 +112,6 @@ Throttle::rate() const {
 
 uint32_t
 Throttle::calculate_min_chunk_size() const {
-  // Just for each modification, make this into a function, rather
-  // than if-else chain.
-  if (m_maxRate <= (8 << 10))
-    return (1 << 9);
-
-  else if (m_maxRate <= (32 << 10))
-    return (2 << 9);
-
-  else if (m_maxRate <= (64 << 10))
-    return (3 << 9);
-
-  else if (m_maxRate <= (128 << 10))
-    return (4 << 9);
-
-  else if (m_maxRate <= (512 << 10))
-    return (8 << 9);
-
-  else if (m_maxRate <= (2048 << 10))
-    return (16 << 9);
-
-  else
     return (32 << 9);
 }
 

@@ -686,7 +686,7 @@ print_help() {
   std::cout << "  o                 View trackers" << std::endl;
   std::cout << std::endl;
 
-   std::cout << "Report bugs to <https://github.com/stickz/rtorrent/issues/new?assignees=&labels=&projects=&template=bug_report.yml>." << std::endl; 
+   std::cout << "Report bugs to <https://github.com/stickz/rtorrent/issues>." << std::endl; 
 
 
   exit(0);

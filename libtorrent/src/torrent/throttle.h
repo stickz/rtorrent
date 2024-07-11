@@ -65,8 +65,6 @@ protected:
   Throttle() {}
   ~Throttle() {}
   
-  const uint32_t THROTTLE_MIN_VALUE = 2097152;
-
   ThrottleInternal*       m_ptr()       { return reinterpret_cast<ThrottleInternal*>(this); }
   const ThrottleInternal* c_ptr() const { return reinterpret_cast<const ThrottleInternal*>(this); }
 

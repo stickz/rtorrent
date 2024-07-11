@@ -87,8 +87,8 @@ Throttle::set_max_rate(uint64_t v) {
   if (v == m_maxRate)
     return;
 
-  if (v != 0 && (v < THROTTLE_MIN_VALUE || v > (UINT_MAX - 1)))
-    throw input_error("Throttle rate must be between 2097152 and 4294967295.");
+  if (v > (UINT_MAX - 1))
+    throw input_error("Throttle rate must be between 0 and 4294967295.");
 
   uint64_t oldRate = m_maxRate;
   m_maxRate = v;
@@ -112,6 +112,27 @@ Throttle::rate() const {
 
 uint32_t
 Throttle::calculate_min_chunk_size() const {
+  // Just for each modification, make this into a function, rather
+  // than if-else chain.
+  if (m_maxRate <= (8 << 10))
+    return (1 << 9);
+
+  else if (m_maxRate <= (32 << 10))
+    return (2 << 9);
+
+  else if (m_maxRate <= (64 << 10))
+    return (3 << 9);
+
+  else if (m_maxRate <= (128 << 10))
+    return (4 << 9);
+
+  else if (m_maxRate <= (512 << 10))
+    return (8 << 9);
+
+  else if (m_maxRate <= (2048 << 10))
+    return (16 << 9);
+
+  else
     return (32 << 9);
 }
 

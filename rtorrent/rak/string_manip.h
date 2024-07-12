@@ -82,37 +82,6 @@ Sequence trim(const Sequence& seq) {
   return trim_begin(trim_end(seq));
 }
 
-template <typename Sequence>
-Sequence trim_begin_classic(const Sequence& seq) {
-  if (seq.empty() || !std::isspace(*seq.begin(), std::locale::classic()))
-    return seq;
-
-  typename Sequence::size_type pos = 0;
-
-  while (pos != seq.length() && std::isspace(seq[pos], std::locale::classic()))
-    pos++;
-
-  return seq.substr(pos, seq.length() - pos);
-}
-
-template <typename Sequence>
-Sequence trim_end_classic(const Sequence& seq) {
-  if (seq.empty() || !std::isspace(*(--seq.end()), std::locale::classic()))
-    return seq;
-
-  typename Sequence::size_type pos = seq.size();
-
-  while (pos != 0 && std::isspace(seq[pos - 1], std::locale::classic()))
-    pos--;
-
-  return seq.substr(0, pos);
-}
-
-template <typename Sequence>
-Sequence trim_classic(const Sequence& seq) {
-  return trim_begin_classic(trim_end_classic(seq));
-}
-
 // Consider rewritting such that m_seq is replaced by first/last.
 template <typename Sequence>
 class split_iterator_t {
@@ -313,51 +282,6 @@ transform_hex_str(const Sequence& seq) {
   return dest;
 }
 
-template <typename Sequence>
-Sequence
-generate_random(size_t length) {
-  std::random_device rd;
-  std::mt19937 mt(rd());
-  using bytes_randomizer = std::independent_bits_engine<std::mt19937, CHAR_BIT, uint8_t>;
-  bytes_randomizer bytes(mt);
-  Sequence s;
-  s.reserve(length);
-  std::generate_n(std::back_inserter(s), length, std::ref(bytes));
-  return s;
-}
-
-template <typename Iterator>
-inline bool
-is_all_alpha(Iterator first, Iterator last) {
-  while (first != last)
-    if (!std::isalpha(*first++, std::locale::classic()))
-      return false;
-
-  return true;
-}
-
-template <typename Sequence>
-inline bool
-is_all_alpha(const Sequence& src) {
-  return is_all_alpha(src.begin(), src.end());
-}
-
-template <typename Iterator>
-inline bool
-is_all_alnum(Iterator first, Iterator last) {
-  while (first != last)
-    if (!std::isalnum(*first++, std::locale::classic()))
-      return false;
-
-  return true;
-}
-
-template <typename Sequence>
-inline bool
-is_all_alnum(const Sequence& src) {
-  return is_all_alnum(src.begin(), src.end());
-}
-
 template <typename Iterator>
 inline bool
 is_all_name(Iterator first, Iterator last) {
@@ -375,51 +299,6 @@ template <typename Sequence>
 inline bool
 is_all_name(const Sequence& src) {
   return is_all_name(src.begin(), src.end());
-}
-
-template <typename Iterator>
-std::string
-sanitize(Iterator first, Iterator last) {
-  std::string dest;
-  for (; first != last; ++first) {
-    if (std::isprint(*first) && *first != '\r' && *first != '\n' && *first != '\t')
-      dest += *first;
-    else
-      dest += " ";
-  }
-
-  return dest;
-}
-
-template <typename Sequence>
-std::string
-sanitize(const Sequence& src) {
-    return trim(sanitize(src.begin(), src.end()));
-}
-
-template <typename Iterator>
-std::string striptags(Iterator first, Iterator last) {
-  bool copychar = true;
-  std::string dest;
-
-  for (; first != last; ++first) {
-    if (std::isprint(*first) && *first == '<') {
-      copychar = false;
-    } else if (std::isprint(*first) && *first == '>') {
-      copychar = true;
-      continue;
-    }
-
-    if (copychar)
-      dest += *first;
-  }
-
-  return dest;
-}
-
-template <typename Sequence>
-std::string striptags(const Sequence& src) {
-    return striptags(src.begin(), src.end());
 }
 
 }

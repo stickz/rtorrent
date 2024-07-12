@@ -44,84 +44,6 @@
 
 namespace rak {
 
-template <typename _InputIter, typename _Function>
-_Function
-for_each_pre(_InputIter __first, _InputIter __last, _Function __f) {
-  _InputIter __tmp;
-
-  while (__first != __last) {
-    __tmp = __first++;
-    
-    __f(*__tmp);
-  }
-
-  return __f;
-}
-
-// Return a range with a distance of no more than __distance and
-// between __first and __last, centered on __middle1.
-template <typename _InputIter, typename _Distance>
-std::pair<_InputIter, _InputIter>
-advance_bidirectional(_InputIter __first, _InputIter __middle1, _InputIter __last, _Distance __distance) {
-  _InputIter __middle2 = __middle1;
-
-  do {
-    if (!__distance)
-      break;
-
-    if (__middle2 != __last) {
-      ++__middle2;
-      --__distance;
-
-    } else if (__middle1 == __first) {
-      break;
-    }
-
-    if (!__distance)
-      break;
-
-    if (__middle1 != __first) {
-      --__middle1;
-      --__distance;
-
-    } else if (__middle2 == __last) {
-      break;
-    }
-
-  } while (true);
-
-  return std::make_pair(__middle1, __middle2);
-}
-
-template <typename _InputIter, typename _Distance>
-_InputIter
-advance_forward(_InputIter __first, _InputIter __last, _Distance __distance) {
-  while (__first != __last && __distance != 0) {
-    __first++;
-    __distance--;
-  }
-
-  return __first;
-}
-
-template <typename _InputIter, typename _Distance>
-_InputIter
-advance_backward(_InputIter __first, _InputIter __last, _Distance __distance) {
-  while (__first != __last && __distance != 0) {
-    __first--;
-    __distance--;
-  }
-
-  return __first;
-}
-
-template <typename _Value>
-struct compare_base : public std::binary_function<_Value, _Value, bool> {
-  bool operator () (const _Value& complete, const _Value& base) const {
-    return !complete.compare(0, base.size(), base);
-  }
-};
-
 // Count the number of elements from the start of the containers to
 // the first inequal element.
 template <typename _InputIter1, typename _InputIter2>
@@ -136,25 +58,6 @@ count_base(_InputIter1 __first1, _InputIter1 __last1,
       return __n;
 
   return __n;
-}
-
-template <typename _Return, typename _InputIter, typename _Ftor>
-_Return
-make_base(_InputIter __first, _InputIter __last, _Ftor __ftor) {
-  if (__first == __last)
-    return "";
-
-  _Return __base = __ftor(*__first++);
-
-  for ( ;__first != __last; ++__first) {
-    typename std::iterator_traits<_InputIter>::difference_type __pos = count_base(__base.begin(), __base.end(),
-										  __ftor(*__first).begin(), __ftor(*__first).end());
-
-    if (__pos < (typename std::iterator_traits<_InputIter>::difference_type)__base.size())
-      __base.resize(__pos);
-  }
-
-  return __base;
 }
 
 template<typename T>

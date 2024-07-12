@@ -113,58 +113,6 @@ Sequence trim_classic(const Sequence& seq) {
   return trim_begin_classic(trim_end_classic(seq));
 }
 
-// Consider rewritting such that m_seq is replaced by first/last.
-template <typename Sequence>
-class split_iterator_t {
-public:
-  typedef typename Sequence::const_iterator const_iterator;
-  typedef typename Sequence::value_type     value_type;
-
-  split_iterator_t() {}
-
-  split_iterator_t(const Sequence& seq, value_type delim) :
-    m_seq(&seq),
-    m_delim(delim),
-    m_pos(seq.begin()),
-    m_next(std::find(seq.begin(), seq.end(), delim)) {
-  }
-
-  Sequence operator * () { return Sequence(m_pos, m_next); }
-
-  split_iterator_t& operator ++ () {
-    m_pos = m_next;
-
-    if (m_pos == m_seq->end())
-      return *this;
-
-    m_pos++;
-    m_next = std::find(m_pos, m_seq->end(), m_delim);
-
-    return *this;
-  }
-
-  bool operator == (__UNUSED const split_iterator_t& itr) const { return m_pos == m_seq->end(); }
-  bool operator != (__UNUSED const split_iterator_t& itr) const { return m_pos != m_seq->end(); }
-
-private:
-  const Sequence* m_seq;
-  value_type      m_delim;
-  const_iterator  m_pos;
-  const_iterator  m_next;
-};
-
-template <typename Sequence>
-inline split_iterator_t<Sequence>
-split_iterator(const Sequence& seq, typename Sequence::value_type delim) {
-  return split_iterator_t<Sequence>(seq, delim);
-}
-
-template <typename Sequence>
-inline split_iterator_t<Sequence>
-split_iterator(__UNUSED const Sequence& seq) {
-  return split_iterator_t<Sequence>();
-}
-
 // Could optimize this abit.
 inline char
 hexchar_to_value(char c) {
@@ -324,57 +272,6 @@ generate_random(size_t length) {
   s.reserve(length);
   std::generate_n(std::back_inserter(s), length, std::ref(bytes));
   return s;
-}
-
-template <typename Iterator>
-inline bool
-is_all_alpha(Iterator first, Iterator last) {
-  while (first != last)
-    if (!std::isalpha(*first++, std::locale::classic()))
-      return false;
-
-  return true;
-}
-
-template <typename Sequence>
-inline bool
-is_all_alpha(const Sequence& src) {
-  return is_all_alpha(src.begin(), src.end());
-}
-
-template <typename Iterator>
-inline bool
-is_all_alnum(Iterator first, Iterator last) {
-  while (first != last)
-    if (!std::isalnum(*first++, std::locale::classic()))
-      return false;
-
-  return true;
-}
-
-template <typename Sequence>
-inline bool
-is_all_alnum(const Sequence& src) {
-  return is_all_alnum(src.begin(), src.end());
-}
-
-template <typename Iterator>
-inline bool
-is_all_name(Iterator first, Iterator last) {
-  while (first != last) {
-    if (!std::isalnum(*first, std::locale::classic()) && *first != '_')
-      return false;
-
-    first++;
-  }
-
-  return true;
-}
-
-template <typename Sequence>
-inline bool
-is_all_name(const Sequence& src) {
-  return is_all_name(src.begin(), src.end());
 }
 
 template <typename Iterator>

@@ -34,18 +34,6 @@
 
 #include <stdint.h>
 
-#ifndef __has_builtin
-  #define __has_builtin(x) 0
-#endif
-
-#ifndef __has_attribute
-  #define __has_attribute(x) 0
-#endif
-
-#ifndef __has_include
-  #define __has_include(x) 0
-#endif
-
 #ifdef __GNUC__
   #define LIBPOPCNT_GNUC_PREREQ(x, y) \
       (__GNUC__ > x || (__GNUC__ == x && __GNUC_MINOR__ >= y))
@@ -73,45 +61,8 @@
 #endif
 
 #if LIBPOPCNT_GNUC_PREREQ(4, 2) || \
-    __has_builtin(__builtin_popcount)
-  #define LIBPOPCNT_HAVE_BUILTIN_POPCOUNT
-#endif
-
-#if LIBPOPCNT_GNUC_PREREQ(4, 2) || \
     LIBPOPCNT_CLANG_PREREQ(3, 0)
   #define LIBPOPCNT_HAVE_ASM_POPCNT
-#endif
-
-#if defined(LIBPOPCNT_X86_OR_X64) && \
-   (defined(LIBPOPCNT_HAVE_ASM_POPCNT) || \
-    defined(_MSC_VER))
-  #define LIBPOPCNT_HAVE_POPCNT
-#endif
-
-/* GCC compiler */
-#if defined(LIBPOPCNT_X86_OR_X64) && \
-    LIBPOPCNT_GNUC_PREREQ(5, 0)
-  #define LIBPOPCNT_HAVE_AVX2
-#endif
-
-/* GCC compiler */
-#if defined(LIBPOPCNT_X86_OR_X64) && \
-    LIBPOPCNT_GNUC_PREREQ(11, 0)
-  #define LIBPOPCNT_HAVE_AVX512
-#endif
-
-/* Clang (Unix-like OSes) */
-#if defined(LIBPOPCNT_X86_OR_X64) && !defined(_MSC_VER)
-  #if LIBPOPCNT_CLANG_PREREQ(3, 8) && \
-      __has_attribute(target) && \
-      (!defined(__apple_build_version__) || __apple_build_version__ >= 8000000)
-    #define LIBPOPCNT_HAVE_AVX2
-  #endif
-  #if LIBPOPCNT_CLANG_PREREQ(9, 0) && \
-      __has_attribute(target) && \
-      (!defined(__apple_build_version__) || __apple_build_version__ >= 8000000)
-    #define LIBPOPCNT_HAVE_AVX512
-  #endif
 #endif
 
 /*

@@ -47,7 +47,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 
-#ifdef HAVE_FALLOCATE
+#ifdef HAVE_GNU_FALLOCATE
 #define _GNU_SOURCE
 #include <linux/falloc.h>
 #endif
@@ -99,45 +99,60 @@ SocketFile::size() const {
   rak::file_stat fs;
 
   return fs.update(m_fd) ? fs.size() : 0;
-}  
+}
 
 bool
-SocketFile::set_size(uint64_t size, int flags) const {
+SocketFile::set_size_fallocate(uint64_t size) const {
   if (!is_open())
     throw internal_error("SocketFile::set_size() called on a closed file");
 
-#ifdef HAVE_FALLOCATE
-  if (flags & flag_fallocate && fallocate(m_fd, 0, 0, size) == 0)
+// During compile time setup our fallback methods for fallocate to avoid execution costs at runtime
+// 1) Use GNU fallocate if available, which is the fastest method available
+// 2) Use posix fallocate as the second option, where GNU fallocate is not supported
+// 3) As a last resort, if we're running darwin, try fcntl before reverting to a slower method
+#ifdef HAVE_GNU_FALLOCATE
+  if (fallocate(m_fd, 0, 0, size) == 0)
     return true;
-#endif
-
-#ifdef USE_POSIX_FALLOCATE
-  if (flags & flag_fallocate &&
-      flags & flag_fallocate_blocking &&
-      posix_fallocate(m_fd, 0, size) == 0)
+#else
+#ifdef HAVE_POSIX_FALLOCATE
+  if (posix_fallocate(m_fd, 0, size) == 0)
     return true;
-#endif
-
+#else
 #ifdef SYS_DARWIN
-  if (flags & flag_fallocate) {
-    fstore_t fstore;
-    fstore.fst_flags = F_ALLOCATECONTIG;
-    fstore.fst_posmode = F_PEOFPOSMODE;
-    fstore.fst_offset = 0;
-    fstore.fst_length = size;
-    fstore.fst_bytesalloc = 0;
+  fstore_t fstore;
+  fstore.fst_flags = F_ALLOCATECONTIG;
+  fstore.fst_posmode = F_PEOFPOSMODE;
+  fstore.fst_offset = 0;
+  fstore.fst_length = size;
+  fstore.fst_bytesalloc = 0;
 
-    // Hmm... this shouldn't really be something we fail the set_size
-    // on...
-    //
-    // Yet is somehow fails with ENOSPC...
-//     if (fcntl(m_fd, F_PREALLOCATE, &fstore) == -1)
-//       throw internal_error("hack: fcntl failed" + std::string(strerror(errno)));
+  // Hmm... this shouldn't really be something we fail the set_size
+  // on...
+  //
+  // Yet is somehow fails with ENOSPC...
+  //     if (fcntl(m_fd, F_PREALLOCATE, &fstore) == -1)
+  //       throw internal_error("hack: fcntl failed" + std::string(strerror(errno)));
 
-    fcntl(m_fd, F_PREALLOCATE, &fstore); // Ignore result for now...
-  }
+  fcntl(m_fd, F_PREALLOCATE, &fstore); // Ignore result for now...
+#endif
+#endif
 #endif
 
+  // If none of our fallocate methods are available, then revert to ftruncate as a last resort
+  return set_size_internal(size);
+}  
+
+bool
+SocketFile::set_size(uint64_t size) const {
+  if (!is_open())
+    throw internal_error("SocketFile::set_size() called on a closed file");
+
+  // If we don't have fallocate enabled, we're using ftruncate after checking the socket is open
+  return set_size_internal(size);
+}
+
+inline bool
+SocketFile::set_size_internal(uint64_t size) const {
   if (ftruncate(m_fd, size) == 0)
     return true;
   

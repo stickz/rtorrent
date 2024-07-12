@@ -179,7 +179,7 @@ AC_DEFUN([TORRENT_CHECK_FALLOCATE], [
               ],[ fallocate(0, FALLOC_FL_KEEP_SIZE, 0, 0); return 0;
               ],
     [
-      AC_DEFINE(HAVE_FALLOCATE, 1, Linux's fallocate supported.)
+      AC_DEFINE(HAVE_GNU_FALLOCATE, 1, Linux's fallocate supported.)
       AC_MSG_RESULT(yes)
     ], [
       AC_MSG_RESULT(no)
@@ -194,23 +194,13 @@ AC_DEFUN([TORRENT_CHECK_POSIX_FALLOCATE], [
               ],[ posix_fallocate(0, 0, 0);
               ],
     [
-      AC_DEFINE(USE_POSIX_FALLOCATE, 1, posix_fallocate supported.)
+      AC_DEFINE(HAVE_POSIX_FALLOCATE, 1, posix_fallocate supported.)
       AC_MSG_RESULT(yes)
     ], [
       AC_MSG_RESULT(no)
     ])
 ])
 
-
-AC_DEFUN([TORRENT_WITH_POSIX_FALLOCATE], [
-  AC_ARG_WITH(posix-fallocate,
-    AC_HELP_STRING([--with-posix-fallocate], [check for and use posix_fallocate to allocate files]),
-    [
-      if test "$withval" = "yes"; then
-        TORRENT_CHECK_POSIX_FALLOCATE
-      fi
-    ])
-])
 
 AC_DEFUN([TORRENT_CHECK_STATVFS], [
   AC_CHECK_HEADERS(sys/vfs.h sys/statvfs.h sys/statfs.h)

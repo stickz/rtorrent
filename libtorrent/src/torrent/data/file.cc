@@ -168,7 +168,7 @@ File::set_match_depth(File* left, File* right) {
   right->m_matchDepthPrev = level;
 }
 
-bool
+inline bool
 File::resize_file() {
   if (!is_open())
     return false;
@@ -177,16 +177,8 @@ File::resize_file() {
   if (m_size == SocketFile(m_fd).size())
     return true;
 
-  int flags = 0;
-
-  // Set FS supported non-blocking allocation flag and potentially
-  // blocking allocation flag if fallocate flag is set.
-  if (m_flags & flag_fallocate) {
-    flags |= SocketFile::flag_fallocate;
-    flags |= SocketFile::flag_fallocate_blocking;
-  }
-
-  return SocketFile(m_fd).set_size(m_size, flags);
+  // Prefer non-blocking allocation first, blocking allocation second or no allocation at all if disabled
+  return m_flags & flag_fallocate ? SocketFile(m_fd).set_size_fallocate(m_size) : SocketFile(m_fd).set_size(m_size);
 }
 
 }

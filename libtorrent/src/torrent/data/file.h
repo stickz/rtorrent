@@ -138,7 +138,7 @@ private:
   File(const File&);
   void operator = (const File&);
 
-  bool                resize_file();
+  inline bool         resize_file();
 
   int                 m_fd;
   int                 m_protection;

@@ -43,20 +43,6 @@
 
 namespace rak {
 
-template <typename _InputIter, typename _Function>
-_Function
-for_each_pre(_InputIter __first, _InputIter __last, _Function __f) {
-  _InputIter __tmp;
-
-  while (__first != __last) {
-    __tmp = __first++;
-    
-    __f(*__tmp);
-  }
-
-  return __f;
-}
-
 // Return a range with a distance of no more than __distance and
 // between __first and __last, centered on __middle1.
 template <typename _InputIter, typename _Distance>
@@ -113,13 +99,6 @@ advance_backward(_InputIter __first, _InputIter __last, _Distance __distance) {
 
   return __first;
 }
-
-template <typename _Value>
-struct compare_base : public std::binary_function<_Value, _Value, bool> {
-  bool operator () (const _Value& complete, const _Value& base) const {
-    return !complete.compare(0, base.size(), base);
-  }
-};
 
 // Count the number of elements from the start of the containers to
 // the first inequal element.

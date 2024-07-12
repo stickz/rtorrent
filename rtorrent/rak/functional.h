@@ -67,23 +67,6 @@ value(Type v) {
   return value_t<Type>(v);
 }
 
-template <typename Type, typename Ftor>
-struct accumulate_t {
-  accumulate_t(Type t, Ftor f) : result(t), m_f(f) {}
-
-  template <typename Arg>
-  void operator () (const Arg& a) { result += m_f(a); }
-
-  Type result;
-  Ftor m_f;
-};
-
-template <typename Type, typename Ftor>
-inline accumulate_t<Type, Ftor>
-accumulate(Type t, Ftor f) {
-  return accumulate_t<Type, Ftor>(t, f);
-}
-
 // Operators:
 
 template <typename Type, typename Ftor>
@@ -105,48 +88,6 @@ template <typename Type, typename Ftor>
 inline equal_t<Type, Ftor>
 equal(Type t, Ftor f) {
   return equal_t<Type, Ftor>(t, f);
-}
-
-template <typename Type, typename Ftor>
-struct equal_ptr_t {
-  typedef bool result_type;
-
-  equal_ptr_t(Type* t, Ftor f) : m_t(t), m_f(f) {}
-
-  template <typename Arg>
-  bool operator () (const Arg& a) {
-    return *m_t == *m_f(a);
-  }
-
-  Type* m_t;
-  Ftor  m_f;
-};
-
-template <typename Type, typename Ftor>
-inline equal_ptr_t<Type, Ftor>
-equal_ptr(Type* t, Ftor f) {
-  return equal_ptr_t<Type, Ftor>(t, f);
-}
-
-template <typename Type, typename Ftor>
-struct not_equal_t {
-  typedef bool result_type;
-
-  not_equal_t(Type t, Ftor f) : m_t(t), m_f(f) {}
-
-  template <typename Arg>
-  bool operator () (Arg& a) {
-    return m_t != m_f(a);
-  }
-
-  Type m_t;
-  Ftor m_f;
-};
-
-template <typename Type, typename Ftor>
-inline not_equal_t<Type, Ftor>
-not_equal(Type t, Ftor f) {
-  return not_equal_t<Type, Ftor>(t, f);
 }
 
 template <typename Type, typename Ftor>
@@ -189,45 +130,6 @@ less2(FtorA f_a, FtorB f_b) {
 }
 
 template <typename Type, typename Ftor>
-struct _greater {
-  typedef bool result_type;
-
-  _greater(Type t, Ftor f) : m_t(t), m_f(f) {}
-
-  template <typename Arg>
-  bool operator () (Arg& a) {
-    return m_t > m_f(a);
-  }
-
-  Type m_t;
-  Ftor m_f;
-};
-
-template <typename Type, typename Ftor>
-inline _greater<Type, Ftor>
-greater(Type t, Ftor f) {
-  return _greater<Type, Ftor>(t, f);
-}
-
-template <typename FtorA, typename FtorB>
-struct greater2_t : public std::binary_function<typename FtorA::argument_type, typename FtorB::argument_type, bool> {
-  greater2_t(FtorA f_a, FtorB f_b) : m_f_a(f_a), m_f_b(f_b) {}
-
-  bool operator () (typename FtorA::argument_type a, typename FtorB::argument_type b) {
-    return m_f_a(a) > m_f_b(b);
-  }
-
-  FtorA m_f_a;
-  FtorB m_f_b;
-};
-
-template <typename FtorA, typename FtorB>
-inline greater2_t<FtorA, FtorB>
-greater2(FtorA f_a, FtorB f_b) {
-  return greater2_t<FtorA,FtorB>(f_a,f_b);
-}
-
-template <typename Type, typename Ftor>
 struct less_equal_t {
   typedef bool result_type;
 
@@ -246,27 +148,6 @@ template <typename Type, typename Ftor>
 inline less_equal_t<Type, Ftor>
 less_equal(Type t, Ftor f) {
   return less_equal_t<Type, Ftor>(t, f);
-}
-
-template <typename Type, typename Ftor>
-struct greater_equal_t {
-  typedef bool result_type;
-
-  greater_equal_t(Type t, Ftor f) : m_t(t), m_f(f) {}
-
-  template <typename Arg>
-  bool operator () (Arg& a) {
-    return m_t >= m_f(a);
-  }
-
-  Type m_t;
-  Ftor m_f;
-};
-
-template <typename Type, typename Ftor>
-inline greater_equal_t<Type, Ftor>
-greater_equal(Type t, Ftor f) {
-  return greater_equal_t<Type, Ftor>(t, f);
 }
 
 template<typename Tp>
@@ -293,26 +174,6 @@ template <typename Src, typename Dest>
 inline on_t<Src, Dest>
 on(Src s, Dest d) {
   return on_t<Src, Dest>(s, d);
-}  
-
-template <typename Src, typename Dest>
-struct on2_t : public std::binary_function<typename Src::argument_type, typename Dest::second_argument_type, typename Dest::result_type> {
-  typedef typename Dest::result_type result_type;
-
-  on2_t(Src s, Dest d) : m_dest(d), m_src(s) {}
-
-  result_type operator () (typename reference_fix<typename Src::argument_type>::type first, typename reference_fix<typename Dest::second_argument_type>::type second) {
-    return m_dest(m_src(first), second);
-  }
-
-  Dest m_dest;
-  Src m_src;
-};
-    
-template <typename Src, typename Dest>
-inline on2_t<Src, Dest>
-on2(Src s, Dest d) {
-  return on2_t<Src, Dest>(s, d);
 }  
 
 // Creates a functor for accessing a member.
@@ -369,26 +230,6 @@ template <typename Class, typename Member>
 inline const_mem_ref_t<Class, Member>
 const_mem_ref(const Member Class::*m) {
   return const_mem_ref_t<Class, Member>(m);
-}
-
-template <typename Cond, typename Then>
-struct if_then_t {
-  if_then_t(Cond c, Then t) : m_cond(c), m_then(t) {}
-
-  template <typename Arg>
-  void operator () (Arg& a) {
-    if (m_cond(a))
-      m_then(a);
-  }
-
-  Cond m_cond;
-  Then m_then;
-};
-
-template <typename Cond, typename Then>
-inline if_then_t<Cond, Then>
-if_then(Cond c, Then t) {
-  return if_then_t<Cond, Then>(c, t);
 }
 
 template <typename T>
@@ -587,10 +428,6 @@ private:
   Function m_function;
 };
 
-template <typename Ret>
-inline ptr_fun0<Ret>
-ptr_fun(Ret (*f)()) { return ptr_fun0<Ret>(f); }
-
 template <typename Object, typename Ret>
 inline mem_fun0<Object, Ret>
 make_mem_fun(Object* o, Ret (Object::*f)()) {
@@ -625,57 +462,6 @@ template <typename Object, typename Ret, typename Arg1, typename Arg2, typename 
 inline mem_fun3<Object, Ret, Arg1, Arg2, Arg3>
 make_mem_fun(Object* o, Ret (Object::*f)(Arg1, Arg2, Arg3)) {
  return mem_fun3<Object, Ret, Arg1, Arg2, Arg3>(o, f);
-}
-
-template <typename Container>
-inline void
-slot_list_call(const Container& slot_list) {
-  if (slot_list.empty())
-    return;
-
-  typename Container::const_iterator first = slot_list.begin();
-  typename Container::const_iterator next = slot_list.begin();
-
-  while (++next != slot_list.end()) {
-    (*first)();
-    first = next;
-  }
-
-  (*first)();
-}
-
-template <typename Container, typename Arg1>
-inline void
-slot_list_call(const Container& slot_list, Arg1 arg1) {
-  if (slot_list.empty())
-    return;
-
-  typename Container::const_iterator first = slot_list.begin();
-  typename Container::const_iterator next = slot_list.begin();
-
-  while (++next != slot_list.end()) {
-    (*first)(arg1);
-    first = next;
-  }
-
-  (*first)(arg1);
-}
-
-template <typename Container, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-inline void
-slot_list_call(const Container& slot_list, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
-  if (slot_list.empty())
-    return;
-
-  typename Container::const_iterator first = slot_list.begin();
-  typename Container::const_iterator next = slot_list.begin();
-
-  while (++next != slot_list.end()) {
-    (*first)(arg1, arg2, arg3, arg4);
-    first = next;
-  }
-
-  (*first)(arg1, arg2, arg3, arg4);
 }
 
 }

@@ -111,30 +111,6 @@ AC_DEFUN([TORRENT_CHECK_MADVISE], [
   ])
 ])
 
-AC_DEFUN([TORRENT_CHECK_POPCOUNT], [
-  AC_MSG_CHECKING(for __builtin_popcount)
-
-  AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-      int f() { return __builtin_popcount(0); }
-    ])],
-    [
-      AC_MSG_RESULT(yes)
-      AC_DEFINE(USE_BUILTIN_POPCOUNT, 1, Use __builtin_popcount.)
-    ], [
-      AC_MSG_RESULT(no)
-  ])
-])
-
-AC_DEFUN([TORRENT_CPU_POPCOUNT], [
-  AC_ARG_ENABLE(cpu-popcount,
-    AC_HELP_STRING([--enable-cpu-popcount], [Enable cpu-popcount [[default=check]]]),
-    [
-      if test "$enableval" = "yes"; then
-        AC_DEFINE(USE_CPU_POPCOUNT, 1, Use CPU popcount.)
-      fi
-    ])
-])
-
 AC_DEFUN([TORRENT_HOSTED_MODE], [
   AC_ARG_ENABLE(hosted-mode,
     AC_HELP_STRING([--enable-hosted-mode], [Enable hosted mode [[default=check]]]),

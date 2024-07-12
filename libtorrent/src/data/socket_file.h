@@ -58,9 +58,6 @@ public:
   static const int o_truncate             = O_TRUNC;
   static const int o_nonblock             = O_NONBLOCK;
 
-  static const int flag_fallocate          = (1 << 0);
-  static const int flag_fallocate_blocking = (1 << 1);
-
   SocketFile() : m_fd(invalid_fd) {}
   SocketFile(fd_type fd) : m_fd(fd) {}
 
@@ -70,7 +67,8 @@ public:
   void                close();
   
   uint64_t            size() const;
-  bool                set_size(uint64_t s, int flags = 0) const;
+  bool                set_size(uint64_t s) const;
+  bool                set_size_fallocate(uint64_t s) const;
 
   MemoryChunk         create_chunk(uint64_t offset, uint32_t length, int prot, int flags) const;
   
@@ -81,6 +79,8 @@ private:
 
   SocketFile(const SocketFile&);
   void operator = (const SocketFile&);
+  
+  inline bool         set_size_internal(uint64_t s) const;
 
   fd_type             m_fd;
 };

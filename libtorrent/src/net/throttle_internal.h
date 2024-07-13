@@ -62,7 +62,7 @@ public:
 
 private:
   // Fraction is a fixed-precision value with the given number of bits after the decimal point.
-  static const uint32_t fraction_bits = 16;
+  static const uint8_t  fraction_bits = 16;
   static const uint32_t fraction_base = (1 << fraction_bits);
 
   typedef std::vector<ThrottleInternal*>  SlaveList;

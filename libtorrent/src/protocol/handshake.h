@@ -54,19 +54,19 @@ class DownloadMain;
 
 class Handshake : public SocketStream {
 public:
-  static const uint32_t part1_size     = 20 + 28;
-  static const uint32_t part2_size     = 20;
-  static const uint32_t handshake_size = part1_size + part2_size;
+  static const uint8_t part1_size     = 20 + 28;
+  static const uint8_t part2_size     = 20;
+  static const uint8_t handshake_size = part1_size + part2_size;
 
-  static const uint32_t protocol_bitfield  = 5;
-  static const uint32_t protocol_port      = 9;
-  static const uint32_t protocol_extension = 20;
+  static const uint8_t protocol_bitfield  = 5;
+  static const uint8_t protocol_port      = 9;
+  static const uint8_t protocol_extension = 20;
 
-  static const uint32_t enc_negotiation_size = 8 + 4 + 2;
-  static const uint32_t enc_pad_size         = 512;
-  static const uint32_t enc_pad_read_size    = 96 + enc_pad_size + 20;
+  static const uint8_t enc_negotiation_size = 8 + 4 + 2;
+  static const uint16_t enc_pad_size         = 512;
+  static const uint16_t enc_pad_read_size    = 96 + enc_pad_size + 20;
 
-  static const uint32_t buffer_size = enc_pad_read_size + 20 + enc_negotiation_size + enc_pad_size + 2 + handshake_size + 5;
+  static const uint16_t buffer_size = enc_pad_read_size + 20 + enc_negotiation_size + enc_pad_size + 2 + handshake_size + 5;
 
   typedef ProtocolBuffer<buffer_size> Buffer;
 

@@ -78,7 +78,7 @@ public:
 #endif
 
   // Find an optimal number for this.
-  static const uint32_t read_size = 64;
+  static const uint8_t read_size = 64;
 
   // Bitmasks for peer exchange messages to send.
   static const int PEX_DO      = (1 << 0);

@@ -49,14 +49,14 @@ class LIBTORRENT_EXPORT Poll {
 public:
   typedef std::function<Poll* ()> slot_poll;
 
-  static const int      poll_worker_thread     = 0x1;
-  static const uint32_t flag_waive_global_lock = 0x1;
+  static const int          poll_worker_thread     = 0x1;
+  static const uint8_t      flag_waive_global_lock = 0x1;
 
   Poll() : m_flags(0) {}
   virtual ~Poll() {}
 
-  uint32_t            flags() const { return m_flags; }
-  void                set_flags(uint32_t flags) { m_flags = flags; }
+  uint8_t             flags() const { return m_flags; }
+  void                set_flags(uint8_t flags) { m_flags = flags; }
 
   virtual unsigned int do_poll(int64_t timeout_usec, int flags = 0) = 0;
 
@@ -97,7 +97,7 @@ public:
 private:
   static slot_poll    m_slot_create_poll;
 
-  uint32_t            m_flags;
+  uint8_t             m_flags;
 };
 
 }

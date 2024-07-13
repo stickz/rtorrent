@@ -84,6 +84,7 @@ public:
   typedef uint32_t size_type;
   typedef uint16_t port_type;
   typedef uint8_t  priority_type;
+  typedef uint8_t  encryption_type;
 
   static const priority_type iptos_default     = 0;
   static const priority_type iptos_lowdelay    = IPTOS_LOWDELAY;
@@ -98,17 +99,17 @@ public:
   static const priority_type iptos_mincost     = iptos_throughput;
 #endif
 
-  static const uint32_t encryption_none             = 0;
-  static const uint32_t encryption_allow_incoming   = (1 << 0);
-  static const uint32_t encryption_try_outgoing     = (1 << 1);
-  static const uint32_t encryption_require          = (1 << 2);
-  static const uint32_t encryption_require_RC4      = (1 << 3);
-  static const uint32_t encryption_enable_retry     = (1 << 4);
-  static const uint32_t encryption_prefer_plaintext = (1 << 5);
+  static const encryption_type encryption_none             = 0;
+  static const encryption_type encryption_allow_incoming   = (1 << 0);
+  static const encryption_type encryption_try_outgoing     = (1 << 1);
+  static const encryption_type encryption_require          = (1 << 2);
+  static const encryption_type encryption_require_RC4      = (1 << 3);
+  static const encryption_type encryption_enable_retry     = (1 << 4);
+  static const encryption_type encryption_prefer_plaintext = (1 << 5);
 
   // Internal to libtorrent.
-  static const uint32_t encryption_use_proxy        = (1 << 6);
-  static const uint32_t encryption_retrying         = (1 << 7);
+  static const encryption_type encryption_use_proxy        = (1 << 6);
+  static const encryption_type encryption_retrying         = (1 << 7);
 
   enum {
     handshake_incoming           = 1,

@@ -49,6 +49,7 @@ class ProtocolBase {
 public:
   typedef ProtocolBuffer<512> Buffer;
   typedef uint32_t            size_type;
+  typedef uint8_t             sizeof_type;
 
   static const size_type buffer_size = 512;
 
@@ -116,22 +117,22 @@ public:
   void                write_port(uint16_t port);
   void                write_extension(uint8_t id, uint32_t length);
 
-  static const size_type sizeof_keepalive    = 4;
-  static const size_type sizeof_choke        = 5;
-  static const size_type sizeof_interested   = 5;
-  static const size_type sizeof_have         = 9;
-  static const size_type sizeof_have_body    = 4;
-  static const size_type sizeof_bitfield     = 5;
-  static const size_type sizeof_request      = 17;
-  static const size_type sizeof_request_body = 12;
-  static const size_type sizeof_cancel       = 17;
-  static const size_type sizeof_cancel_body  = 12;
-  static const size_type sizeof_piece        = 13;
-  static const size_type sizeof_piece_body   = 8;
-  static const size_type sizeof_port         = 7;
-  static const size_type sizeof_port_body    = 2;
-  static const size_type sizeof_extension    = 6;
-  static const size_type sizeof_extension_body=1;
+  static const sizeof_type sizeof_keepalive    = 4;
+  static const sizeof_type sizeof_choke        = 5;
+  static const sizeof_type sizeof_interested   = 5;
+  static const sizeof_type sizeof_have         = 9;
+  static const sizeof_type sizeof_have_body    = 4;
+  static const sizeof_type sizeof_bitfield     = 5;
+  static const sizeof_type sizeof_request      = 17;
+  static const sizeof_type sizeof_request_body = 12;
+  static const sizeof_type sizeof_cancel       = 17;
+  static const sizeof_type sizeof_cancel_body  = 12;
+  static const sizeof_type sizeof_piece        = 13;
+  static const sizeof_type sizeof_piece_body   = 8;
+  static const sizeof_type sizeof_port         = 7;
+  static const sizeof_type sizeof_port_body    = 2;
+  static const sizeof_type sizeof_extension    = 6;
+  static const sizeof_type sizeof_extension_body = 1;
 
   bool                can_write_keepalive() const             { return m_buffer.reserved_left() >= sizeof_keepalive; }
   bool                can_write_choke() const                 { return m_buffer.reserved_left() >= sizeof_choke; }

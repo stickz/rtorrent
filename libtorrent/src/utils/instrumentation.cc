@@ -57,6 +57,7 @@ void
 instrumentation_tick() {
   // Since the values are updated with __sync_add, they can be read
   // without any memory barriers.
+#ifdef LT_INSTRUMENTATION
   lt_log_print(LOG_INSTRUMENTATION_MEMORY,
                "%" PRIi64 " %" PRIi64 " %" PRIi64  " %" PRIi64 " %" PRIi64,
                instrumentation_values[INSTRUMENTATION_MEMORY_CHUNK_USAGE],
@@ -83,6 +84,7 @@ instrumentation_tick() {
 
                instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_ALLOCATIONS),
                instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_DEALLOCATIONS));
+#endif
 
   lt_log_print(LOG_INSTRUMENTATION_POLLING,
                "%"  PRIi64 " %" PRIi64
@@ -101,6 +103,7 @@ instrumentation_tick() {
                instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_EVENTS_DISK),
                instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_EVENTS_OTHERS));
 
+#ifdef LT_INSTRUMENTATION
   lt_log_print(LOG_INSTRUMENTATION_TRANSFERS,
                "%"  PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64
                " %"  PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64
@@ -137,10 +140,12 @@ instrumentation_tick() {
                instrumentation_values[INSTRUMENTATION_TRANSFER_REQUESTS_CHOKED_TOTAL],
 
                instrumentation_values[INSTRUMENTATION_TRANSFER_PEER_INFO_UNACCOUNTED]);
+#endif
 }
 
 void
 instrumentation_reset() {
+#ifdef LT_INSTRUMENTATION
   instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_INCORE_TOUCHED);
   instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_INCORE_NEW);
   instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_NOT_INCORE_TOUCHED);
@@ -155,6 +160,7 @@ instrumentation_reset() {
 
   instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_ALLOCATIONS);
   instrumentation_fetch_and_clear(INSTRUMENTATION_MINCORE_DEALLOCATIONS);
+#endif
 
   instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_INTERRUPT_POKE);
   instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_INTERRUPT_READ_EVENT);
@@ -169,6 +175,7 @@ instrumentation_reset() {
   instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_EVENTS_DISK);
   instrumentation_fetch_and_clear(INSTRUMENTATION_POLLING_EVENTS_OTHERS);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_DELEGATED);
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_DOWNLOADING);
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_FINISHED);
@@ -188,6 +195,7 @@ instrumentation_reset() {
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_CHOKED_ADDED);
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_CHOKED_MOVED);
   instrumentation_fetch_and_clear(INSTRUMENTATION_TRANSFER_REQUESTS_CHOKED_REMOVED);
+#endif
 }
 
 }

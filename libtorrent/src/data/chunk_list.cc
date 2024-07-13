@@ -342,12 +342,14 @@ ChunkList::sync_chunks(int flags) {
       std::iter_swap(itr, split++);
   }
 
+#ifdef LT_INSTRUMENTATION
   if (lt_log_is_valid(LOG_INSTRUMENTATION_MINCORE)) {
     instrumentation_update(INSTRUMENTATION_MINCORE_SYNC_SUCCESS, std::distance(split, m_queue.end()));
     instrumentation_update(INSTRUMENTATION_MINCORE_SYNC_FAILED, failed);
     instrumentation_update(INSTRUMENTATION_MINCORE_SYNC_NOT_SYNCED, std::distance(m_queue.begin(), split));
     instrumentation_update(INSTRUMENTATION_MINCORE_SYNC_NOT_DEALLOCATED, std::count_if(split, m_queue.end(), std::mem_fun(&ChunkListNode::is_valid)));
   }
+#endif
 
   m_queue.erase(split, m_queue.end());
 

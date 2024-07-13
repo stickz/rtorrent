@@ -52,6 +52,7 @@
 
 namespace torrent {
 
+#ifdef LT_INSTRUMENTATION
 const int request_list_constants::bucket_count;
 
 const instrumentation_enum request_list_constants::instrumentation_added[bucket_count] = {
@@ -78,6 +79,7 @@ const instrumentation_enum request_list_constants::instrumentation_total[bucket_
   INSTRUMENTATION_TRANSFER_REQUESTS_STALLED_TOTAL,
   INSTRUMENTATION_TRANSFER_REQUESTS_CHOKED_TOTAL
 };
+#endif
 
 // Make inline...
 template <>
@@ -132,7 +134,9 @@ RequestList::delegate(uint32_t maxPieces) {
   if (transfers.empty())
     return pieces;
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_DELEGATED, 1);
+#endif
 
   for (auto& itr : transfers) {
     m_queues.push_back(bucket_queued, itr);
@@ -225,7 +229,9 @@ void
 RequestList::delay_process_unordered() {
   m_last_unordered_position = std::min(m_last_unordered_position, unordered_size());
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_FINISHED, m_last_unordered_position);
+#endif
 
   m_queues.destroy(bucket_unordered,
                    m_queues.begin(bucket_unordered),
@@ -254,7 +260,9 @@ RequestList::downloading(const Piece& piece) {
   if (m_transfer != NULL)
     throw internal_error("RequestList::downloading(...) m_transfer != NULL.");
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_DOWNLOADING, 1);
+#endif
 
   std::pair<int, queues_type::iterator> itr =
     queue_bucket_find_if_in_any(m_queues, request_list_same_piece(piece));
@@ -320,7 +328,9 @@ RequestList::downloading(const Piece& piece) {
   m_transfer = new BlockTransfer();
   Block::create_dummy(m_transfer, m_peerChunks->peer_info(), piece);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_UNKNOWN, 1);
+#endif
 
   return false;
 }
@@ -339,7 +349,9 @@ RequestList::finished() {
 
   m_delegator->transfer_list()->finished(transfer);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_FINISHED, 1);
+#endif
 }
 
 void
@@ -350,7 +362,9 @@ RequestList::skipped() {
   Block::release(m_transfer);
   m_transfer = NULL;
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_REQUESTS_SKIPPED, 1);
+#endif
 }
 
 // Data downloaded by this non-leading transfer does not match what we

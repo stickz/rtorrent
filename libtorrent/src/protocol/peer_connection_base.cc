@@ -73,6 +73,8 @@
 
 namespace torrent {
 
+#ifdef LT_INSTRUMENTATION
+#ifndef USE_HOSTED_MODE
 inline void
 log_mincore_stats_func(bool is_incore, bool new_index, bool& continous) {
   if (!new_index && is_incore) {
@@ -93,6 +95,8 @@ log_mincore_stats_func(bool is_incore, bool new_index, bool& continous) {
 
   continous = is_incore;
 }
+#endif
+#endif
 
 PeerConnectionBase::PeerConnectionBase() :
   m_download(NULL),
@@ -397,9 +401,10 @@ PeerConnectionBase::load_up_chunk() {
   if (m_upChunk.is_valid() && m_upChunk.index() == m_upPiece.index()) {
     // Better checking needed.
     //     m_upChunk.chunk()->preload(m_upPiece.offset(), m_upChunk.chunk()->size());
-
+#ifdef LT_INSTRUMENTATION
     if (lt_log_is_valid(LOG_INSTRUMENTATION_MINCORE))
       log_mincore_stats_func(m_upChunk.chunk()->is_incore(m_upPiece.offset(), m_upPiece.length()), false, m_incoreContinous);
+#endif
 
     return;
   }
@@ -416,12 +421,14 @@ PeerConnectionBase::load_up_chunk() {
     m_encryptBuffer->reset();
   }
 
+#ifdef LT_INSTRUMENTATION
   m_incoreContinous = false;
 
   if (lt_log_is_valid(LOG_INSTRUMENTATION_MINCORE))
     log_mincore_stats_func(m_upChunk.chunk()->is_incore(m_upPiece.offset(), m_upPiece.length()), true, m_incoreContinous);
 
   m_incoreContinous = true;
+#endif
 
   // Also check if we've already preloaded in the recent past, even
   // past unmaps.

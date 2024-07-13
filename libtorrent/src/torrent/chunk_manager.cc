@@ -148,20 +148,25 @@ ChunkManager::allocate(uint32_t size, int flags) {
     try_free_memory((1 * m_maxMemoryUsage) / 4);
 
   if (m_memoryUsage + size > m_maxMemoryUsage) {
+#ifdef LT_INSTRUMENTATION
     if (!(flags & allocate_dont_log))
       instrumentation_update(INSTRUMENTATION_MINCORE_ALLOC_FAILED, 1);
-
+#endif
     return false;
   }
 
+#ifdef LT_INSTRUMENTATION
   if (!(flags & allocate_dont_log))
     instrumentation_update(INSTRUMENTATION_MINCORE_ALLOCATIONS, size);
+#endif
 
   m_memoryUsage += size;
   m_memoryBlockCount++;
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_MEMORY_CHUNK_COUNT, 1);
   instrumentation_update(INSTRUMENTATION_MEMORY_CHUNK_USAGE, size);
+#endif
 
   return true;
 }
@@ -171,18 +176,22 @@ ChunkManager::deallocate(uint32_t size, int flags) {
   if (size > m_memoryUsage)
     throw internal_error("ChunkManager::deallocate(...) size > m_memoryUsage.");
 
+#ifdef LT_INSTRUMENTATION
   if (!(flags & allocate_dont_log)) {
     if (flags & allocate_revert_log)
       instrumentation_update(INSTRUMENTATION_MINCORE_ALLOCATIONS, -size);
     else
       instrumentation_update(INSTRUMENTATION_MINCORE_DEALLOCATIONS, size);
   }
+#endif
 
   m_memoryUsage -= size;
   m_memoryBlockCount--;
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_MEMORY_CHUNK_COUNT, -1);
   instrumentation_update(INSTRUMENTATION_MEMORY_CHUNK_USAGE, -(int64_t)size);
+#endif
 }
 
 void

@@ -54,10 +54,12 @@ class Delegator;
 struct request_list_constants {
   static const int bucket_count = 4;
 
+#ifdef LT_INSTRUMENTATION
   static const torrent::instrumentation_enum instrumentation_added[bucket_count];
   static const torrent::instrumentation_enum instrumentation_moved[bucket_count];
   static const torrent::instrumentation_enum instrumentation_removed[bucket_count];
   static const torrent::instrumentation_enum instrumentation_total[bucket_count];
+#endif
 
   template <typename Type>
   static void destroy(Type& obj);

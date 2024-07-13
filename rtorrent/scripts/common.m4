@@ -199,26 +199,6 @@ AC_DEFUN([TORRENT_ENABLE_ALIGNED], [
   ])
 ])
 
-
-AC_DEFUN([TORRENT_DISABLE_INSTRUMENTATION], [
-  AC_MSG_CHECKING([if instrumentation should be included])
-
-  AC_ARG_ENABLE(instrumentation,
-    AC_HELP_STRING([--disable-instrumentation], [disable instrumentation [[default=enabled]]]),
-    [
-      if test "$enableval" = "yes"; then
-        AC_DEFINE(LT_INSTRUMENTATION, 1, enable instrumentation)
-	AC_MSG_RESULT(yes)
-      else
-	AC_MSG_RESULT(no)
-      fi
-    ],[
-      AC_DEFINE(LT_INSTRUMENTATION, 1, enable instrumentation)
-      AC_MSG_RESULT(yes)
-    ])
-])
-
-
 AC_DEFUN([TORRENT_ENABLE_INTERRUPT_SOCKET], [
   AC_ARG_ENABLE(interrupt-socket,
     AC_HELP_STRING([--enable-interrupt-socket], [enable interrupt socket [[default=no]]]),

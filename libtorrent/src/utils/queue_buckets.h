@@ -176,8 +176,10 @@ inline void
 queue_buckets<Type, Constants>::pop_front(int idx) {
   queue_at(idx).pop_front();
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(constants::instrumentation_removed[idx], 1);
   instrumentation_update(constants::instrumentation_total[idx], -1);
+#endif
 }
 
 template <typename Type, typename Constants>
@@ -185,8 +187,10 @@ inline void
 queue_buckets<Type, Constants>::pop_back(int idx) {
   queue_at(idx).pop_back();
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(constants::instrumentation_removed[idx], 1);
   instrumentation_update(constants::instrumentation_total[idx], -1);
+#endif
 }
 
 template <typename Type, typename Constants>
@@ -210,8 +214,10 @@ inline void
 queue_buckets<Type, Constants>::push_front(int idx, const value_type& value) {
   queue_at(idx).push_front(value);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(constants::instrumentation_added[idx], 1);
   instrumentation_update(constants::instrumentation_total[idx], 1);
+#endif
 }
 
 template <typename Type, typename Constants>
@@ -219,8 +225,10 @@ inline void
 queue_buckets<Type, Constants>::push_back(int idx, const value_type& value) {
   queue_at(idx).push_back(value);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(constants::instrumentation_added[idx], 1);
   instrumentation_update(constants::instrumentation_total[idx], 1);
+#endif
 }
 
 template <typename Type, typename Constants>
@@ -229,8 +237,10 @@ queue_buckets<Type, Constants>::take(int idx, iterator itr) {
   value_type v = *itr;
   queue_at(idx).erase(itr);
 
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(constants::instrumentation_removed[idx], 1);
   instrumentation_update(constants::instrumentation_total[idx], -1);
+#endif
 
   // TODO: Add 'taken' instrumentation.
 
@@ -246,9 +256,12 @@ queue_buckets<Type, Constants>::clear(int idx) {
 template <typename Type, typename Constants>
 inline void
 queue_buckets<Type, Constants>::destroy(int idx, iterator begin, iterator end) {
+  
+#ifdef LT_INSTRUMENTATION
   difference_type difference = std::distance(begin, end);
   instrumentation_update(constants::instrumentation_removed[idx], difference);
   instrumentation_update(constants::instrumentation_total[idx], -difference);
+#endif
 
   // Consider moving these to a temporary dequeue before releasing:
   std::for_each(begin, end, std::function<void (value_type&)>(&constants::template destroy<value_type>));
@@ -259,11 +272,13 @@ template <typename Type, typename Constants>
 inline void
 queue_buckets<Type, Constants>::move_to(int src_idx, iterator src_begin, iterator src_end,
                                         int dst_idx) {
+#ifdef LT_INSTRUMENTATION
   difference_type difference = std::distance(src_begin, src_end);
   instrumentation_update(constants::instrumentation_moved[src_idx], difference);
   instrumentation_update(constants::instrumentation_total[src_idx], -difference);
   instrumentation_update(constants::instrumentation_added[dst_idx], difference);
   instrumentation_update(constants::instrumentation_total[dst_idx], difference);
+#endif
 
   // TODO: Check for better move operations:
   if (queue_at(dst_idx).empty() &&

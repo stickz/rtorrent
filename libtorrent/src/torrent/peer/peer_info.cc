@@ -71,8 +71,9 @@ PeerInfo::PeerInfo(const sockaddr* address) :
 PeerInfo::~PeerInfo() {
   // if (m_transferCounter != 0)
   //   throw internal_error("PeerInfo::~PeerInfo() m_transferCounter != 0.");
-
+#ifdef LT_INSTRUMENTATION
   instrumentation_update(INSTRUMENTATION_TRANSFER_PEER_INFO_UNACCOUNTED, m_transferCounter);
+#endif
 
   if (is_blocked())
     throw internal_error("PeerInfo::~PeerInfo() peer is blocked.");

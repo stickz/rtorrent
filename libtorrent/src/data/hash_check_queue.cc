@@ -66,9 +66,11 @@ HashCheckQueue::push_back(HashChunk* hash_chunk) {
 
   base_type::push_back(hash_chunk);
 
+#ifdef LT_INSTRUMENTATION
   int64_t size = hash_chunk->chunk()->chunk()->chunk_size();
   instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_COUNT, 1);
   instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_USAGE, size);
+#endif
 
   pthread_mutex_unlock(&m_lock);
 }
@@ -97,10 +99,11 @@ HashCheckQueue::remove(HashChunk* hash_chunk) {
   if (itr != end()) {
     base_type::erase(itr);
     result = true;
-
+#ifdef LT_INSTRUMENTATION
     int64_t size = hash_chunk->chunk()->chunk()->chunk_size();
     instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_COUNT, -1);
     instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_USAGE, -size);
+#endif
 
   } else {
     result = false;
@@ -121,9 +124,11 @@ HashCheckQueue::perform() {
     if (!hash_chunk->chunk()->is_loaded())
       throw internal_error("HashCheckQueue::perform(): !entry.node->is_loaded().");
 
+#ifdef LT_INSTRUMENTATION
     int64_t size = hash_chunk->chunk()->chunk()->chunk_size();
     instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_COUNT, -1);
     instrumentation_update(INSTRUMENTATION_MEMORY_HASHING_CHUNK_USAGE, -size);
+#endif
 
     pthread_mutex_unlock(&m_lock);
 

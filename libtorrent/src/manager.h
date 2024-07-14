@@ -72,7 +72,7 @@ public:
   DownloadManager*    download_manager()                        { return m_downloadManager; }
   FileManager*        file_manager()                            { return m_fileManager; }
   HandshakeManager*   handshake_manager()                       { return m_handshakeManager; }
-  HashQueue*          hash_queue()                              { return m_hashQueue; }
+  HashQueue*          hash_queue()                              { return ++m_hashQueueCount % 2 == 0 ? m_hashQueue : m_hashQueueTwo; }
   ResourceManager*    resource_manager()                        { return m_resourceManager; }
 
   ChunkManager*       chunk_manager()                           { return m_chunkManager; }
@@ -84,6 +84,7 @@ public:
 
   thread_main*        main_thread_main()                        { return &m_main_thread_main; }
   thread_disk*        main_thread_disk()                        { return &m_main_thread_disk; }
+  thread_disk*        sub_thread_disk()                         { return &m_sub_thread_disk; }
 
   EncodingList*       encoding_list()                           { return &m_encodingList; }
 
@@ -100,6 +101,7 @@ private:
   FileManager*        m_fileManager;
   HandshakeManager*   m_handshakeManager;
   HashQueue*          m_hashQueue;
+  HashQueue*          m_hashQueueTwo;
   ResourceManager*    m_resourceManager;
 
   ChunkManager*       m_chunkManager;
@@ -109,12 +111,15 @@ private:
 
   thread_main         m_main_thread_main;
   thread_disk         m_main_thread_disk;
+  thread_disk         m_sub_thread_disk;
 
   EncodingList        m_encodingList;
 
   Throttle*           m_uploadThrottle;
   Throttle*           m_downloadThrottle;
 
+  uint64_t            m_hashQueueCount;
+	
   unsigned int        m_ticks;
   rak::priority_item  m_taskTick;
 };

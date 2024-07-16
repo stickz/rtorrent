@@ -46,7 +46,7 @@ void a4_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a4 *result, void *data)
   if (result == NULL || result->dnsa4_nrr == 0) {
     if (query->a6_query == NULL) {
       // nothing more to do: call the callback with a failure status
-      (*(query->callback))(NULL, udnserror_to_gaierror(::dns_status(ctx)));
+      if (*query->callback) { (*(query->callback))(NULL, udnserror_to_gaierror(::dns_status(ctx))); }
       delete query;
     }
     // else: return and wait to see if we get an a6 response
@@ -57,7 +57,7 @@ void a4_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a4 *result, void *data)
     if (query->a6_query != NULL) {
       ::dns_cancel(ctx, query->a6_query);
     }
-    (*query->callback)(static_cast<sockaddr_in*>(&sa), 0);
+    if (*query->callback) { (*query->callback)(static_cast<sockaddr_in*>(&sa), 0); }
     delete query;
   }
 }

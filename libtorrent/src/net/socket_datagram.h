@@ -48,6 +48,9 @@ public:
   // used.
   int                 read_datagram(void* buffer, unsigned int length, rak::socket_address* sa = NULL);
   int                 write_datagram(const void* buffer, unsigned int length, rak::socket_address* sa = NULL);
+  
+  int                 read_datagram_inet(void* buffer, unsigned int length, rak::socket_address_inet* sa = NULL);
+  int                 write_datagram_inet(const void* buffer, unsigned int length, rak::socket_address_inet* sa = NULL);
 };
 
 }

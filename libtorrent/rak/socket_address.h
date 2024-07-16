@@ -127,6 +127,9 @@ public:
 
   static socket_address*       cast_from(sockaddr* sa)        { return reinterpret_cast<socket_address*>(sa); }
   static const socket_address* cast_from(const sockaddr* sa)  { return reinterpret_cast<const socket_address*>(sa); }
+  
+  static socket_address_inet*       cast_from_in(sockaddr_in* sa)        { return reinterpret_cast<socket_address_inet*>(sa); }
+  static const socket_address_inet* cast_from_in(const sockaddr_in* sa)  { return reinterpret_cast<const socket_address_inet*>(sa); }
 
   // The different families will be sorted according to the
   // sa_family_t's numeric value.
@@ -161,7 +164,9 @@ public:
   uint16_t            port_n() const                          { return m_sockaddr.sin_port; }
   void                set_port(uint16_t p)                    { m_sockaddr.sin_port = htons(p); }
   void                set_port_n(uint16_t p)                  { m_sockaddr.sin_port = p; }
-
+  
+  uint32_t            length() const                          { return sizeof(sockaddr_in); }
+  
   // Should address() return the uint32_t?
   in_addr             address() const                         { return m_sockaddr.sin_addr; }
   uint32_t            address_h() const                       { return ntohl(m_sockaddr.sin_addr.s_addr); }

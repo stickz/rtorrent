@@ -61,7 +61,7 @@ class UdnsAsyncResolver : public AsyncResolver {
 public:
   UdnsAsyncResolver(ConnectionManager *cm) : AsyncResolver(cm) {}
 
-  void *enqueue(const char *name, int family, resolver_callback *cbck) {
+  void *enqueue(const char *name, int family, async_resolver_callback *cbck) {
     return m_udnsevent.enqueue_resolve(name, family, cbck);
   }
 
@@ -83,12 +83,12 @@ public:
   struct mock_resolve {
     std::string hostname;
     int family;
-    resolver_callback *callback;
+    async_resolver_callback *callback;
   };
 
   StubAsyncResolver(ConnectionManager *cm): AsyncResolver(cm), m_connection_manager(cm) {}
 
-  void *enqueue(const char *name, int family, resolver_callback *cbck) {
+  void *enqueue(const char *name, int family, async_resolver_callback *cbck) {
     mock_resolve *mr = new mock_resolve {name, family, cbck};
     m_mock_resolve_queue.emplace_back(mr);
     return mr;

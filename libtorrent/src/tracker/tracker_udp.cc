@@ -107,13 +107,13 @@ TrackerUdp::send_state(int state) {
 }
 
 void
-TrackerUdp::start_announce(const sockaddr* sa, int err) {
+TrackerUdp::start_announce(const sockaddr_in* sa, int err) {
   m_resolver_query = NULL;
 
   if (sa == NULL)
     return receive_failed("could not resolve hostname");
 
-  m_connectAddress = *rak::socket_address::cast_from(sa);
+  m_connectAddress = *rak::socket_address::cast_from_in(sa);
   m_connectAddress.set_port(m_port);
 
   LT_LOG_TRACKER(DEBUG, "address found (address:%s)", m_connectAddress.address_str().c_str());
@@ -209,9 +209,8 @@ TrackerUdp::receive_timeout() {
 
 void
 TrackerUdp::event_read() {
-  rak::socket_address sa;
-
-  int s = read_datagram(m_readBuffer->begin(), m_readBuffer->reserved(), &sa);
+  rak::socket_address_inet sa;
+  int s = read_datagram_inet(m_readBuffer->begin(), m_readBuffer->reserved(), &sa);
 
   if (s < 0)
     return;
@@ -262,7 +261,7 @@ TrackerUdp::event_write() {
   if (m_writeBuffer->size_end() == 0)
     throw internal_error("TrackerUdp::write() called but the write buffer is empty.");
 
-  int __UNUSED s = write_datagram(m_writeBuffer->begin(), m_writeBuffer->size_end(), &m_connectAddress);
+  int __UNUSED s = write_datagram_inet(m_writeBuffer->begin(), m_writeBuffer->size_end(), &m_connectAddress);
 
   manager->poll()->remove_write(this);
 }

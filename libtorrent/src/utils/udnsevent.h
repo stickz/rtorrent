@@ -18,7 +18,7 @@ namespace torrent {
 struct udns_query {
     ::dns_query *a4_query;
     ::dns_query *a6_query;
-    resolver_callback  *callback;
+    async_resolver_callback  *callback;
     int                 error;
 };
 
@@ -37,7 +37,7 @@ public:
 
   // wraps udns's dns_submit_a[46] functions. they and it return control immediately,
   // without either sending outgoing UDP packets or executing callbacks:
-  udns_query*         enqueue_resolve(const char *name, int family, resolver_callback *callback);
+  udns_query*         enqueue_resolve(const char *name, int family, async_resolver_callback *callback);
   // wraps the dns_timeouts function. it sends packets and can execute arbitrary
   // callbacks:
   void                flush_resolves();

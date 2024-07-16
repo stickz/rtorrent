@@ -82,7 +82,7 @@ private:
   void                receive_failed(const std::string& msg);
   void                receive_timeout();
 
-  void                start_announce(const sockaddr* sa, int err);
+  void                start_announce(const sockaddr_in* sa, int err);
 
   void                prepare_connect_input();
   void                prepare_announce_input();
@@ -93,13 +93,13 @@ private:
 
   bool                parse_udp_url(const std::string& url, hostname_type& hostname, int& port) const;
 
-  rak::socket_address m_connectAddress;
+  rak::socket_address_inet m_connectAddress;
   int                 m_port;
   std::string         m_hostname;
 
   int                 m_sendState;
 
-  resolver_callback   m_resolver_callback;
+  async_resolver_callback   m_resolver_callback;
   void*               m_resolver_query;
 
   uint32_t            m_action;

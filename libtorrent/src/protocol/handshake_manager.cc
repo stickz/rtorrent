@@ -93,6 +93,11 @@ HandshakeManager::erase(Handshake* handshake) {
   base_type::erase(itr);
 }
 
+void
+HandshakeManager::call_slot_succeeded(Handshake* h) {
+  m_slot_succeeded(h);
+}
+
 struct handshake_manager_equal : std::binary_function<const rak::socket_address*, const Handshake*, bool> {
   bool operator () (const rak::socket_address* sa1, const Handshake* p2) const {
     return p2->peer_info() != NULL && *sa1 == *rak::socket_address::cast_from(p2->peer_info()->socket_address());

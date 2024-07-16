@@ -60,6 +60,7 @@ public:
   typedef uint32_t                          size_type;
 
   typedef std::function<DownloadMain* (const char*)> slot_download;
+  typedef std::function<void (Handshake*)>    slot_handshake;
 
   // Do not connect to peers with this many or more failed chunks.
   static const unsigned int max_failed = 3;
@@ -84,12 +85,14 @@ public:
 
   slot_download&      slot_download_id()         { return m_slot_download_id; }
   slot_download&      slot_download_obfuscated() { return m_slot_download_obfuscated; }
+  slot_handshake&     slot_succeeded()           { return m_slot_succeeded; }
 
   // This needs to be filterable slot.
   DownloadMain*       download_info(const char* hash)                   { return m_slot_download_id(hash); }
   DownloadMain*       download_info_obfuscated(const char* hash)        { return m_slot_download_obfuscated(hash); }
 
   void                receive_succeeded(Handshake* h);
+  void                call_slot_succeeded(Handshake* h);
   void                receive_failed(Handshake* h, int message, int error);
   void                receive_timeout(Handshake* h);
 
@@ -105,6 +108,7 @@ private:
 
   slot_download       m_slot_download_id;
   slot_download       m_slot_download_obfuscated;
+  slot_handshake      m_slot_succeeded;
 };
 
 }

@@ -102,6 +102,7 @@ Manager::Manager() :
     std::bind(&DownloadManager::find_main, m_downloadManager, std::placeholders::_1);
   m_handshakeManager->slot_download_obfuscated() =
     std::bind(&DownloadManager::find_main_obfuscated, m_downloadManager, std::placeholders::_1);
+  m_handshakeManager->slot_succeeded() = std::bind(&HandshakeManager::receive_succeeded, m_handshakeManager, std::placeholders::_1);
   m_connectionManager->listen()->slot_accepted() =
     std::bind(&HandshakeManager::add_incoming, m_handshakeManager, std::placeholders::_1, std::placeholders::_2);
 

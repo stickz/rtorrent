@@ -855,7 +855,7 @@ restart:
     }
 
   } catch (handshake_succeeded& e) {
-    m_manager->receive_succeeded(this);
+    m_manager->call_slot_succeeded(this);
 
   } catch (handshake_error& e) {
     m_manager->receive_failed(this, e.type(), e.error());
@@ -962,7 +962,7 @@ Handshake::event_write() {
     }
 
   } catch (handshake_succeeded& e) {
-    m_manager->receive_succeeded(this);
+    m_manager->call_slot_succeeded(this);
 
   } catch (handshake_error& e) {
     m_manager->receive_failed(this, e.type(), e.error());

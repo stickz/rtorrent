@@ -57,7 +57,7 @@ void a4_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a4 *result, void *data)
     if (query->a6_query != NULL) {
       ::dns_cancel(ctx, query->a6_query);
     }
-    if (*query->callback) { (*query->callback)(reinterpret_cast<sockaddr_in*>(&sa), 0); }
+    if (*query->callback) { (*query->callback)(reinterpret_cast<sockaddr*>(&sa), 0); }
     delete query;
   }
 }

@@ -57,8 +57,7 @@ typedef std::pair<Throttle*, Throttle*> ThrottlePair;
 
 // The sockaddr argument in the result call is NULL if the resolve failed,
 // and the int holds the error code.
-typedef std::function<void (const sockaddr*, int)>    resolver_callback;
-typedef std::function<void (const sockaddr_in*, int)> async_resolver_callback;
+typedef std::function<void (const sockaddr*, int)> resolver_callback;
 
 // Encapsulates whether we do genuine async resolution or fall back to sync.
 // In a build with USE_UDNS, these do genuine asynchronous DNS resolution.
@@ -71,7 +70,7 @@ public:
   // this queues a DNS resolve but doesn't send it. it doesn't execute any callbacks
   // and returns control immediately. the return value is an opaque identifier that
   // can be used to cancel the query (as long as the callback hasn't been executed yet):
-  virtual void*   enqueue(const char *name, int family, async_resolver_callback *cbck) = 0;
+  virtual void*   enqueue(const char *name, int family, resolver_callback *cbck) = 0;
   // this sends any queued resolves. it can execute arbitrary callbacks
   // before returning control:
   virtual void    flush() = 0;
@@ -179,7 +178,7 @@ public:
   void                set_listen_port(port_type p)            { m_listen_port = p; }
   void                set_listen_backlog(int v);
 
-  void*               enqueue_async_resolve(const char *name, int family, async_resolver_callback *cbck);
+  void*               enqueue_async_resolve(const char *name, int family, resolver_callback *cbck);
   void                flush_async_resolves();
   void                cancel_async_resolve(void *query);
 

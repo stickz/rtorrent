@@ -86,38 +86,4 @@ SocketDatagram::write_datagram(const void* buffer, unsigned int length, rak::soc
   return r;
 }
 
-int
-SocketDatagram::read_datagram_inet(void* buffer, unsigned int length, rak::socket_address_inet* sa) {
-  if (length == 0)
-    throw internal_error("Tried to receive buffer length 0");
-
-  int r;
-  socklen_t fromlen;
-
-  if (sa != NULL) {
-    fromlen = sizeof(rak::socket_address);
-    r = ::recvfrom(m_fileDesc, buffer, length, 0, sa->c_sockaddr(), &fromlen);
-  } else {
-    r = ::recv(m_fileDesc, buffer, length, 0);
-  }
-
-  return r;
-}
-
-int
-SocketDatagram::write_datagram_inet(const void* buffer, unsigned int length, rak::socket_address_inet* sa) {
-  if (length == 0)
-    throw internal_error("Tried to send buffer length 0");
-
-  int r;
-
-  if (sa != NULL) {
-    r = ::sendto(m_fileDesc, buffer, length, 0, sa->c_sockaddr(), sa->length());
-  } else {
-    r = ::send(m_fileDesc, buffer, length, 0);
-  }
-
-  return r;
-}
-
 }

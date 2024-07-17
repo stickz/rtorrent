@@ -57,10 +57,36 @@ void a4_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a4 *result, void *data)
     if (query->a6_query != NULL) {
       ::dns_cancel(ctx, query->a6_query);
     }
-    if (*query->callback) { (*query->callback)(static_cast<sockaddr_in*>(&sa), 0); }
+    if (*query->callback) { (*query->callback)(reinterpret_cast<sockaddr_in*>(&sa), 0); }
     delete query;
   }
 }
+
+void a6_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a6 *result, void *data) {
+  struct sockaddr_in6 sa;
+  udns_query *query = static_cast<udns_query*>(data);
+  // udns will free the a6_query after this callback exits
+  query->a6_query = NULL;
+
+  if (result == NULL || result->dnsa6_nrr == 0) {
+    if (query->a4_query == NULL) {
+      // nothing more to do: call the callback with a failure status
+      (*(query->callback))(NULL, udnserror_to_gaierror(::dns_status(ctx)));
+      delete query;
+    }
+    // else: return and wait to see if we get an a6 response
+  } else {
+    sa.sin6_family = AF_INET6;
+    sa.sin6_port = 0;
+    sa.sin6_addr = result->dnsa6_addr[0];
+    if (query->a4_query != NULL) {
+      ::dns_cancel(ctx, query->a4_query);
+    }
+    (*query->callback)(reinterpret_cast<sockaddr*>(&sa), 0);
+    delete query;
+  }
+}
+
 
 UdnsEvent::UdnsEvent() {
   // reinitialize the default context, no-op
@@ -95,7 +121,7 @@ void UdnsEvent::event_write() {
 void UdnsEvent::event_error() {
 }
 
-struct udns_query *UdnsEvent::enqueue_resolve(const char *name, int family, async_resolver_callback *callback) {
+struct udns_query *UdnsEvent::enqueue_resolve(const char *name, int family, resolver_callback *callback) {
   struct udns_query *query = new udns_query { NULL, NULL, callback, 0 };
 
   if (family == AF_INET || family == AF_UNSPEC) {
@@ -113,6 +139,21 @@ struct udns_query *UdnsEvent::enqueue_resolve(const char *name, int family, asyn
       } else {
         // unrecoverable errors, like ENOMEM
         throw new internal_error("dns_submit_a4 failed");
+      }
+    }
+  }
+
+  if (family == AF_INET6) {
+    query->a6_query = ::dns_submit_a6(m_ctx, name, 0, a6_callback_wrapper, query);
+    if (query->a6_query == NULL) {
+      // it should be impossible for dns_submit_a6 to fail if dns_submit_a4
+      // succeeded, but just in case, make it a hard failure:
+      if (::dns_status(m_ctx) == DNS_E_BADQUERY && query->a4_query == NULL) {
+        query->error = EAI_NONAME;
+        m_malformed_queries.push_back(query);
+        return query;
+      } else {
+        throw new internal_error("dns_submit_a6 failed");
       }
     }
   }

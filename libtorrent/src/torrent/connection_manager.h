@@ -187,7 +187,10 @@ public:
   void                cancel_async_resolve(void *query);
 
 #ifdef USE_UDNS
-  void                start_udp_announce(TrackerUdp *tracker, const sockaddr* sa, int err);
+  void                start_udp_announce(uint64_t idx, const sockaddr* sa, int err);
+  void                null_udp_tracker(uint64_t idx)          { m_tracker_udp_list[idx] = NULL; }
+  void                add_udp_tracker(TrackerUdp* tracker)    { m_tracker_udp_list.push_back(tracker); }
+  uint64_t            get_udp_tracker_count()                 { return m_tracker_udp_list.size(); }
 #endif
 
   // Legacy synchronous resolver interface.
@@ -226,6 +229,10 @@ private:
   slot_filter_type    m_slot_filter;
   slot_resolver_type  m_slot_resolver;
   slot_throttle_type  m_slot_address_throttle;
+
+#ifdef USE_UDNS
+  std::vector<TrackerUdp*> m_tracker_udp_list;
+#endif
 
   std::unique_ptr<AsyncResolver> m_async_resolver;
 };

@@ -77,7 +77,9 @@ TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int fla
   m_taskTimeout.slot() = std::bind(&TrackerUdp::receive_timeout, this);
 
 #ifdef USE_UDNS
-  m_resolver_callback = std::bind(&ConnectionManager::start_udp_announce, manager->connection_manager(), this, std::placeholders::_1, std::placeholders::_2);
+  manager->connection_manager()->add_udp_tracker(this);
+  m_vec_idx = manager->connection_manager()->get_udp_tracker_count() - 1;
+  m_resolver_callback = std::bind(&ConnectionManager::start_udp_announce, manager->connection_manager(), m_vec_idx, std::placeholders::_1, std::placeholders::_2);
 #else
   m_resolver_callback = std::bind(&TrackerUdp::start_announce, this, std::placeholders::_1, std::placeholders::_2);
 #endif
@@ -86,6 +88,9 @@ TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int fla
 }
 
 TrackerUdp::~TrackerUdp() {
+#ifdef USE_UDNS
+  manager->connection_manager()->null_udp_tracker(m_vec_idx);
+#endif
   close_directly();
 }
   

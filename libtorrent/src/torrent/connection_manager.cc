@@ -61,8 +61,8 @@ class UdnsAsyncResolver : public AsyncResolver {
 public:
   UdnsAsyncResolver(ConnectionManager *cm) : AsyncResolver(cm) {}
 
-  void *enqueue(const char *name, int family, resolver_callback *cbck, TrackerUdp *pointer) {
-    return m_udnsevent.enqueue_resolve(name, family, cbck, pointer);
+  void *enqueue(const char *name, int family, resolver_callback *cbck) {
+    return m_udnsevent.enqueue_resolve(name, family, cbck);
   }
 
   void flush() {

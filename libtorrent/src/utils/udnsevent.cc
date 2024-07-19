@@ -42,11 +42,8 @@ void a4_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a4 *result, void *data)
   udns_query *query = static_cast<udns_query*>(data);
   // udns will free the a4_query after this callback exits
   query->a4_query = NULL;
-  
-  if (query->pointer == NULL)
-    delete query;
 
-  else if (result == NULL || result->dnsa4_nrr == 0) {
+  if (result == NULL || result->dnsa4_nrr == 0) {
     if (query->a6_query == NULL) {
       // nothing more to do: call the callback with a failure status
       if (*query->callback) { (*(query->callback))(NULL, udnserror_to_gaierror(::dns_status(ctx))); }
@@ -70,11 +67,8 @@ void a6_callback_wrapper(struct ::dns_ctx *ctx, ::dns_rr_a6 *result, void *data)
   udns_query *query = static_cast<udns_query*>(data);
   // udns will free the a6_query after this callback exits
   query->a6_query = NULL;
-  
-  if (query->pointer == NULL)
-      delete query;
 
-  else if (result == NULL || result->dnsa6_nrr == 0) {
+  if (result == NULL || result->dnsa6_nrr == 0) {
     if (query->a4_query == NULL) {
       // nothing more to do: call the callback with a failure status
       (*(query->callback))(NULL, udnserror_to_gaierror(::dns_status(ctx)));
@@ -127,8 +121,8 @@ void UdnsEvent::event_write() {
 void UdnsEvent::event_error() {
 }
 
-struct udns_query *UdnsEvent::enqueue_resolve(const char *name, int family, resolver_callback *callback, TrackerUdp *pointer) {
-  struct udns_query *query = new udns_query { NULL, NULL, callback, pointer, 0 };
+struct udns_query *UdnsEvent::enqueue_resolve(const char *name, int family, resolver_callback *callback) {
+  struct udns_query *query = new udns_query { NULL, NULL, callback, 0 };
 
   if (family == AF_INET || family == AF_UNSPEC) {
     query->a4_query = ::dns_submit_a4(m_ctx, name, 0, a4_callback_wrapper, query);

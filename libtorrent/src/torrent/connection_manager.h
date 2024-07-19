@@ -59,8 +59,6 @@ typedef std::pair<Throttle*, Throttle*> ThrottlePair;
 // and the int holds the error code.
 typedef std::function<void (const sockaddr*, int)> resolver_callback;
 
-class TrackerUdp;
-
 // Encapsulates whether we do genuine async resolution or fall back to sync.
 // In a build with USE_UDNS, these do genuine asynchronous DNS resolution.
 // In a build without it, they're stubbed out to use a synchronous getaddrinfo(3)
@@ -72,11 +70,7 @@ public:
   // this queues a DNS resolve but doesn't send it. it doesn't execute any callbacks
   // and returns control immediately. the return value is an opaque identifier that
   // can be used to cancel the query (as long as the callback hasn't been executed yet):
-#ifdef USE_UDNS
-  virtual void*   enqueue(const char *name, int family, resolver_callback *cbck, TrackerUdp *pointer) = 0;
-#else
   virtual void*   enqueue(const char *name, int family, resolver_callback *cbck) = 0;
-#endif
   // this sends any queued resolves. it can execute arbitrary callbacks
   // before returning control:
   virtual void    flush() = 0;

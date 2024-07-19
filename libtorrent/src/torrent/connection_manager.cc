@@ -50,6 +50,7 @@
 
 #ifdef USE_UDNS
 #include "utils/udnsevent.h"
+#include "tracker/tracker_udp.h"
 #endif
 
 namespace torrent {
@@ -76,6 +77,14 @@ public:
 protected:
   UdnsEvent           m_udnsevent;
 };
+
+void
+ConnectionManager::start_udp_announce(TrackerUdp *tracker, const sockaddr* sa, int err) {
+  if (tracker != NULL) {
+    tracker->start_announce(sa, err);
+  }
+}
+
 #define ASYNC_RESOLVER_IMPL UdnsAsyncResolver
 #else
 class StubAsyncResolver : public AsyncResolver {

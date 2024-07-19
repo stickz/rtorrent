@@ -75,14 +75,14 @@ public:
   virtual void        event_read();
   virtual void        event_write();
   virtual void        event_error();
+  
+  void                start_announce(const sockaddr* sa, int err);
 
 private:
   void                close_directly();
 
   void                receive_failed(const std::string& msg);
   void                receive_timeout();
-
-  void                start_announce(const sockaddr* sa, int err);
 
   void                prepare_connect_input();
   void                prepare_announce_input();

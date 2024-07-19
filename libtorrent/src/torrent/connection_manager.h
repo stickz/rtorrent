@@ -51,6 +51,10 @@
 
 namespace torrent {
 
+#ifdef USE_UDNS
+class TrackerUdp;
+#endif
+
 // Standard pair of up/down throttles.
 // First element is upload throttle, second element is download throttle.
 typedef std::pair<Throttle*, Throttle*> ThrottlePair;
@@ -181,6 +185,10 @@ public:
   void*               enqueue_async_resolve(const char *name, int family, resolver_callback *cbck);
   void                flush_async_resolves();
   void                cancel_async_resolve(void *query);
+
+#ifdef USE_UDNS
+  void                start_udp_announce(TrackerUdp *tracker, const sockaddr* sa, int err);
+#endif
 
   // Legacy synchronous resolver interface.
   slot_resolver_type& resolver()          { return m_slot_resolver; }

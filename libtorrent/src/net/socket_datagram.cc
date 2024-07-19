@@ -53,10 +53,9 @@ SocketDatagram::read_datagram(void* buffer, unsigned int length, rak::socket_add
     throw internal_error("Tried to receive buffer length 0");
 
   int r;
-  socklen_t fromlen;
 
   if (sa != NULL) {
-    fromlen = sizeof(rak::socket_address);
+    socklen_t fromlen = sizeof(rak::socket_address);
     r = ::recvfrom(m_fileDesc, buffer, length, 0, sa->c_sockaddr(), &fromlen);
   } else {
     r = ::recv(m_fileDesc, buffer, length, 0);
@@ -85,5 +84,16 @@ SocketDatagram::write_datagram(const void* buffer, unsigned int length, rak::soc
 
   return r;
 }
+
+#ifdef USE_UDNS
+int
+SocketDatagram::write_datagram_ipv4(const void* buffer, unsigned int length, rak::socket_address* sa) {
+  if (length == 0)
+    throw internal_error("Tried to send buffer length 0");
+
+  return sa != NULL ? ::sendto(m_fileDesc, buffer, length, 0, sa->c_sockaddr(), sa->length())
+                    : ::send(m_fileDesc, buffer, length, 0);
+}
+#endif
 
 }

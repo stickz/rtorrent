@@ -162,6 +162,14 @@ SocketFd::open_datagram() {
   return true;
 }
 
+#ifdef USE_UDNS
+bool
+SocketFd::open_datagram_ipv4() {
+  m_ipv6_socket = false;
+  return (m_fd = socket(rak::socket_address::pf_inet, SOCK_DGRAM, 0)) != -1;
+}
+#endif
+
 bool
 SocketFd::open_local() {
   return (m_fd = socket(rak::socket_address::pf_local, SOCK_STREAM, 0)) != -1;
@@ -197,6 +205,15 @@ SocketFd::bind(const rak::socket_address& sa) {
 
   return !::bind(m_fd, sa.c_sockaddr(), sa.length());
 }
+
+#ifdef USE_UDNS
+bool
+SocketFd::bind_ipv4(const rak::socket_address& sa) {
+  check_valid();
+
+  return !::bind(m_fd, sa.c_sockaddr(), sa.length());
+}
+#endif
 
 bool
 SocketFd::bind(const rak::socket_address& sa, unsigned int length) {

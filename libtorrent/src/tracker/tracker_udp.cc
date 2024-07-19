@@ -127,12 +127,20 @@ TrackerUdp::start_announce(const sockaddr* sa, int err) {
     return receive_failed("invalid tracker address");
 
   // TODO: Make each of these a separate error... at the very least separate open and bind.
+#ifdef USE_UDNS
+  if (!get_fd().open_datagram_ipv4() || !get_fd().set_nonblock())
+#else
   if (!get_fd().open_datagram() || !get_fd().set_nonblock())
+#endif
     return receive_failed("could not open UDP socket");
 
   auto bind_address = rak::socket_address::cast_from(manager->connection_manager()->bind_address());
 
+#ifdef USE_UDNS
+  if (bind_address->is_bindable() && !get_fd().bind_ipv4(*bind_address))
+#else
   if (bind_address->is_bindable() && !get_fd().bind(*bind_address))
+#endif
     return receive_failed("failed to bind socket to udp address '" + bind_address->pretty_address_str() + "' with error '" + rak::error_number::current().c_str() + "'");
 
   m_readBuffer = new ReadBuffer;
@@ -267,7 +275,11 @@ TrackerUdp::event_write() {
   if (m_writeBuffer->size_end() == 0)
     throw internal_error("TrackerUdp::write() called but the write buffer is empty.");
 
+#ifdef USE_UDNS
+  int __UNUSED s = write_datagram_ipv4(m_writeBuffer->begin(), m_writeBuffer->size_end(), &m_connectAddress);
+#else
   int __UNUSED s = write_datagram(m_writeBuffer->begin(), m_writeBuffer->size_end(), &m_connectAddress);
+#endif
 
   manager->poll()->remove_write(this);
 }

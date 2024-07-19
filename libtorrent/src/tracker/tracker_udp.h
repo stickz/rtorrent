@@ -105,6 +105,10 @@ private:
   uint32_t            m_action;
   uint64_t            m_connectionId;
   uint32_t            m_transactionId;
+  
+#ifdef USE_UDNS
+  uint64_t            m_vec_idx;
+#endif  
 
   ReadBuffer*         m_readBuffer;
   WriteBuffer*        m_writeBuffer;

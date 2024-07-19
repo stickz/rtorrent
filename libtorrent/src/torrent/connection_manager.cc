@@ -79,9 +79,9 @@ protected:
 };
 
 void
-ConnectionManager::start_udp_announce(TrackerUdp *tracker, const sockaddr* sa, int err) {
-  if (tracker != NULL) {
-    tracker->start_announce(sa, err);
+ConnectionManager::start_udp_announce(uint64_t idx, const sockaddr* sa, int err) {
+  if (m_tracker_udp_list[idx] != NULL) {
+    m_tracker_udp_list[idx]->start_announce(sa, err);
   }
 }
 

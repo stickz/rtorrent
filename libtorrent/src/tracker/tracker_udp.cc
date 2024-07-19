@@ -76,7 +76,12 @@ TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int fla
 
   m_taskTimeout.slot() = std::bind(&TrackerUdp::receive_timeout, this);
 
+#ifdef USE_UDNS
+  m_resolver_callback = std::bind(&ConnectionManager::start_udp_announce, manager->connection_manager(), this, std::placeholders::_1, std::placeholders::_2);
+#else
   m_resolver_callback = std::bind(&TrackerUdp::start_announce, this, std::placeholders::_1, std::placeholders::_2);
+#endif
+
   m_resolver_query = NULL;
 }
 

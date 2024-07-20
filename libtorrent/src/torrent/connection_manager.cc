@@ -85,6 +85,12 @@ ConnectionManager::start_udp_announce(uint64_t idx, const sockaddr* sa, int err)
   }
 }
 
+void 
+ConnectionManager::add_resolver_callback(uint64_t idx) {
+  resolver_callback c = std::bind(&ConnectionManager::start_udp_announce, this, idx, std::placeholders::_1, std::placeholders::_2);
+  m_resolver_callback_list.push_back(c);
+}
+
 #define ASYNC_RESOLVER_IMPL UdnsAsyncResolver
 #else
 class StubAsyncResolver : public AsyncResolver {

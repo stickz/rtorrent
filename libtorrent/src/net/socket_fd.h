@@ -72,6 +72,10 @@ public:
   bool                open_stream();
   bool                open_datagram();
   bool                open_local();
+  
+#ifdef USE_UDNS
+  bool                open_datagram_ipv4();
+#endif
 
   static bool         open_socket_pair(int& fd1, int& fd2);
 
@@ -82,6 +86,10 @@ public:
   bool                bind(const rak::socket_address& sa, unsigned int length);
   bool                connect(const rak::socket_address& sa);
   bool                getsockname(rak::socket_address* sa);
+  
+#ifdef USE_UDNS
+  bool                bind_ipv4(const rak::socket_address& sa);
+#endif
 
   bool                listen(int size);
   SocketFd            accept(rak::socket_address* sa);

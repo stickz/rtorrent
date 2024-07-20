@@ -191,6 +191,9 @@ public:
   void                null_udp_tracker(uint64_t idx)          { m_tracker_udp_list[idx] = NULL; }
   void                add_udp_tracker(TrackerUdp* tracker)    { m_tracker_udp_list.push_back(tracker); }
   uint64_t            get_udp_tracker_count()                 { return m_tracker_udp_list.size(); }
+  
+  void                add_resolver_callback(uint64_t idx);
+  resolver_callback*  get_resolver_callback(uint64_t idx)     { return &m_resolver_callback_list[idx]; }
 #endif
 
   // Legacy synchronous resolver interface.
@@ -232,6 +235,7 @@ private:
 
 #ifdef USE_UDNS
   std::vector<TrackerUdp*> m_tracker_udp_list;
+  std::vector<resolver_callback>  m_resolver_callback_list;
 #endif
 
   std::unique_ptr<AsyncResolver> m_async_resolver;

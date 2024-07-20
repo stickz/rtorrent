@@ -79,7 +79,7 @@ TrackerUdp::TrackerUdp(TrackerList* parent, rak::udp_tracker_info& info, int fla
 #ifdef USE_UDNS
   manager->connection_manager()->add_udp_tracker(this);
   m_vec_idx = manager->connection_manager()->get_udp_tracker_count() - 1;
-  m_resolver_callback = std::bind(&ConnectionManager::start_udp_announce, manager->connection_manager(), m_vec_idx, std::placeholders::_1, std::placeholders::_2);
+  manager->connection_manager()->add_resolver_callback(m_vec_idx);
 #else
   m_resolver_callback = std::bind(&TrackerUdp::start_announce, this, std::placeholders::_1, std::placeholders::_2);
 #endif
@@ -111,7 +111,11 @@ TrackerUdp::send_state(int state) {
   m_resolver_query = manager->connection_manager()->async_resolver().enqueue(
       m_hostname.c_str(),
       AF_UNSPEC,
+#ifdef USE_UDNS
+      manager->connection_manager()->get_resolver_callback(m_vec_idx)
+#else
       &m_resolver_callback
+#endif
   );
   manager->connection_manager()->async_resolver().flush();
 }

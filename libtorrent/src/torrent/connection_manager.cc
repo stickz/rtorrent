@@ -62,8 +62,8 @@ class UdnsAsyncResolver : public AsyncResolver {
 public:
   UdnsAsyncResolver(ConnectionManager *cm) : AsyncResolver(cm) {}
 
-  void *enqueue(const char *name, int family, resolver_callback *cbck) {
-    return m_udnsevent.enqueue_resolve(name, family, cbck);
+  void *enqueue(const char *name, resolver_callback *cbck) {
+    return m_udnsevent.enqueue_resolve(name, cbck);
   }
 
   void flush() {
@@ -79,7 +79,7 @@ protected:
 };
 
 void
-ConnectionManager::start_udp_announce(uint64_t idx, const sockaddr* sa, int err) {
+ConnectionManager::start_udp_announce(uint64_t idx, const sockaddr_in* sa, int err) {
   if (m_tracker_udp_list[idx] != NULL) {
     m_tracker_udp_list[idx]->start_announce(sa, err);
   }
@@ -135,7 +135,11 @@ protected:
 #endif
 
 static void
+#ifdef USE_UDNS
+resolve_host(const char* host, int family, int socktype, legacy_resolver_callback slot) {
+#else
 resolve_host(const char* host, int family, int socktype, resolver_callback slot) {
+#endif
   if (manager->main_thread_main()->is_current())
     thread_base::release_global_lock();
 

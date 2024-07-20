@@ -155,6 +155,10 @@ public:
   bool                is_port_any() const                     { return port() == 0; }
   bool                is_address_any() const                  { return m_sockaddr.sin_addr.s_addr == htonl(INADDR_ANY); }
 
+#ifdef USE_UDNS
+  bool                is_bindable() const                     { return !is_address_any(); }
+#endif
+
   void                clear()                                 { std::memset(this, 0, sizeof(socket_address_inet)); set_family(); }
 
   uint16_t            port() const                            { return ntohs(m_sockaddr.sin_port); }
@@ -168,6 +172,10 @@ public:
   uint32_t            address_n() const                       { return m_sockaddr.sin_addr.s_addr; }
   std::string         address_str() const;
   bool                address_c_str(char* buf, socklen_t size) const;
+  
+#ifdef USE_UDNS
+  std::string         pretty_address_str() const              { return address_str(); }
+#endif
 
   void                set_address(in_addr a)                  { m_sockaddr.sin_addr = a; }
   void                set_address_h(uint32_t a)               { m_sockaddr.sin_addr.s_addr = htonl(a); }
@@ -180,6 +188,10 @@ public:
   sa_family_t         family() const                          { return m_sockaddr.sin_family; }
   void                set_family()                            { m_sockaddr.sin_family = AF_INET; }
 
+#ifdef USE_UDNS
+  uint32_t            length() const                          { return sizeof(sockaddr_in); }
+#endif
+
   sockaddr*           c_sockaddr()                            { return reinterpret_cast<sockaddr*>(&m_sockaddr); }
   sockaddr_in*        c_sockaddr_inet()                       { return &m_sockaddr; }
 
@@ -187,6 +199,13 @@ public:
   const sockaddr_in*  c_sockaddr_inet() const                 { return &m_sockaddr; }
   
   socket_address_inet6 to_mapped_address() const;
+  
+#ifdef USE_UDNS
+  static socket_address_inet*       cast_from(sockaddr* sa)        { return reinterpret_cast<socket_address_inet*>(sa); }
+  static const socket_address_inet* cast_from(const sockaddr* sa)  { return reinterpret_cast<const socket_address_inet*>(sa); }
+  static socket_address_inet*       cast_from_inet(sockaddr_in* sa)        { return reinterpret_cast<socket_address_inet*>(sa); }
+  static const socket_address_inet* cast_from_inet(const sockaddr_in* sa)  { return reinterpret_cast<const socket_address_inet*>(sa); }
+#endif
 
   bool                operator == (const socket_address_inet& rhs) const;
   bool                operator < (const socket_address_inet& rhs) const;

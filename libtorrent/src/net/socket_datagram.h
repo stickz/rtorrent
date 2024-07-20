@@ -49,7 +49,7 @@ public:
   int                 read_datagram(void* buffer, unsigned int length, rak::socket_address* sa = NULL);
   int                 write_datagram(const void* buffer, unsigned int length, rak::socket_address* sa = NULL);
 #ifdef USE_UDNS
-  int                 write_datagram_ipv4(const void* buffer, unsigned int length, rak::socket_address* sa = NULL);
+  int                 write_datagram_ipv4(const void* buffer, unsigned int length, rak::socket_address_inet* sa = NULL);
 #endif
 };
 

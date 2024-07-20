@@ -208,7 +208,7 @@ SocketFd::bind(const rak::socket_address& sa) {
 
 #ifdef USE_UDNS
 bool
-SocketFd::bind_ipv4(const rak::socket_address& sa) {
+SocketFd::bind_ipv4(const rak::socket_address_inet& sa) {
   check_valid();
 
   return !::bind(m_fd, sa.c_sockaddr(), sa.length());

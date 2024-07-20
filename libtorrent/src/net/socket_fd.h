@@ -41,6 +41,9 @@
 
 namespace rak {
   class socket_address;
+#ifdef USE_UDNS
+  class socket_address_inet;
+#endif
 }
 
 namespace torrent {
@@ -88,7 +91,7 @@ public:
   bool                getsockname(rak::socket_address* sa);
   
 #ifdef USE_UDNS
-  bool                bind_ipv4(const rak::socket_address& sa);
+  bool                bind_ipv4(const rak::socket_address_inet& sa);
 #endif
 
   bool                listen(int size);

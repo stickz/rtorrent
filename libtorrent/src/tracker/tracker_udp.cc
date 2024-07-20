@@ -110,16 +110,55 @@ TrackerUdp::send_state(int state) {
 
   m_resolver_query = manager->connection_manager()->async_resolver().enqueue(
       m_hostname.c_str(),
-      AF_UNSPEC,
 #ifdef USE_UDNS
       manager->connection_manager()->get_resolver_callback(m_vec_idx)
 #else
+      AF_UNSPEC,
       &m_resolver_callback
 #endif
   );
   manager->connection_manager()->async_resolver().flush();
 }
 
+#ifdef USE_UDNS
+void
+TrackerUdp::start_announce(const sockaddr_in* sa, int err) {
+  m_resolver_query = NULL;
+
+  if (sa == NULL)
+    return receive_failed("could not resolve hostname");
+
+  m_connectAddress = *rak::socket_address_inet::cast_from_inet(sa);
+  m_connectAddress.set_port(m_port);
+
+  LT_LOG_TRACKER(DEBUG, "address found (address:%s)", m_connectAddress.address_str().c_str());
+
+  if (!m_connectAddress.is_valid())
+    return receive_failed("invalid tracker address");
+
+  // TODO: Make each of these a separate error... at the very least separate open and bind.
+  if (!get_fd().open_datagram_ipv4() || !get_fd().set_nonblock())
+    return receive_failed("could not open UDP socket");
+
+  auto bind_address = rak::socket_address_inet::cast_from(manager->connection_manager()->bind_address());
+
+  if (bind_address->is_bindable() && !get_fd().bind_ipv4(*bind_address))
+    return receive_failed("failed to bind socket to udp address '" + bind_address->pretty_address_str() + "' with error '" + rak::error_number::current().c_str() + "'");
+
+  m_readBuffer = new ReadBuffer;
+  m_writeBuffer = new WriteBuffer;
+
+  prepare_connect_input();
+
+  manager->poll()->open(this);
+  manager->poll()->insert_read(this);
+  manager->poll()->insert_write(this);
+  manager->poll()->insert_error(this);
+
+  m_tries = m_parent->info()->udp_tries();
+  priority_queue_insert(&taskScheduler, &m_taskTimeout, (cachedTime + rak::timer::from_seconds(m_parent->info()->udp_timeout())).round_seconds());
+}
+#else
 void
 TrackerUdp::start_announce(const sockaddr* sa, int err) {
   m_resolver_query = NULL;
@@ -136,20 +175,12 @@ TrackerUdp::start_announce(const sockaddr* sa, int err) {
     return receive_failed("invalid tracker address");
 
   // TODO: Make each of these a separate error... at the very least separate open and bind.
-#ifdef USE_UDNS
-  if (!get_fd().open_datagram_ipv4() || !get_fd().set_nonblock())
-#else
   if (!get_fd().open_datagram() || !get_fd().set_nonblock())
-#endif
     return receive_failed("could not open UDP socket");
 
   auto bind_address = rak::socket_address::cast_from(manager->connection_manager()->bind_address());
 
-#ifdef USE_UDNS
-  if (bind_address->is_bindable() && !get_fd().bind_ipv4(*bind_address))
-#else
   if (bind_address->is_bindable() && !get_fd().bind(*bind_address))
-#endif
     return receive_failed("failed to bind socket to udp address '" + bind_address->pretty_address_str() + "' with error '" + rak::error_number::current().c_str() + "'");
 
   m_readBuffer = new ReadBuffer;
@@ -165,6 +196,7 @@ TrackerUdp::start_announce(const sockaddr* sa, int err) {
   m_tries = m_parent->info()->udp_tries();
   priority_queue_insert(&taskScheduler, &m_taskTimeout, (cachedTime + rak::timer::from_seconds(m_parent->info()->udp_timeout())).round_seconds());
 }
+#endif	
 
 void
 TrackerUdp::close() {

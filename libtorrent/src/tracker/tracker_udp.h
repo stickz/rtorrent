@@ -75,8 +75,12 @@ public:
   virtual void        event_read();
   virtual void        event_write();
   virtual void        event_error();
-  
+
+#ifdef USE_UDNS
+  void                start_announce(const sockaddr_in* sa, int err);
+#else
   void                start_announce(const sockaddr* sa, int err);
+#endif
 
 private:
   void                close_directly();
@@ -93,7 +97,12 @@ private:
 
   bool                parse_udp_url(const std::string& url, hostname_type& hostname, int& port) const;
 
+#ifdef USE_UDNS
+  rak::socket_address_inet m_connectAddress;
+#else
   rak::socket_address m_connectAddress;
+#endif
+
   int                 m_port;
   std::string         m_hostname;
 

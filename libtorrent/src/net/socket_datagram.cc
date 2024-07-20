@@ -87,7 +87,7 @@ SocketDatagram::write_datagram(const void* buffer, unsigned int length, rak::soc
 
 #ifdef USE_UDNS
 int
-SocketDatagram::write_datagram_ipv4(const void* buffer, unsigned int length, rak::socket_address* sa) {
+SocketDatagram::write_datagram_ipv4(const void* buffer, unsigned int length, rak::socket_address_inet* sa) {
   if (length == 0)
     throw internal_error("Tried to send buffer length 0");
 

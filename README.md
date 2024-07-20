@@ -25,13 +25,16 @@ make install
 
 ### Installing libtorrent
 We strongly advise to configure with aligned memory access (`--enable-aligned`) to avoid critical stability issues.
+
 We recommend to configure with instrumentation disabled (`--disable-instrumentation`) to improve performance. This feature has been fixed since version 5.3.
+
+We recommend to configure with UDNS enabled (`--enable-udns`) to improve stability and performance of UDP trackers. This feature is stable as of version 6.0.
 
 We do not recommend using file preload. It's better to leave this decision to the Linux Kernel. You can reduce the overhead of the peer connection protocol, by disabling it entirely at compile time with (`--enable-hosted-mode`). If `pieces.preload.type` is changed from ruTorrent or .rtorrent.rc it will accept the value and ignore it for 100% backwards compatibility.
 ```
 cd libtorrent
 ./autogen.sh
-./configure --prefix=/usr --enable-aligned --enable-hosted-mode --disable-instrumentation
+./configure --prefix=/usr --enable-aligned --enable-hosted-mode --disable-instrumentation --enable-udns
 make -j$(nproc) CXXFLAGS="-O3"
 make install
 ```

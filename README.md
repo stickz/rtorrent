@@ -21,7 +21,7 @@ We recommend disabling c++, wininet and libwww support. And to use your curl ins
 #### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/advanced/version.mk      3) xmlrpc-c_Advanced = v1.63 (the last one was published on the 25 June 2024)
 #### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/trunk/version.mk         4) xmlrpc-c_Trunk = v1.64.xx
 #### --------------------------------------------------------------------------------------------------------####
-#### https://xmlrpc-c.sourceforge.io/change.html (the main reference which remain the more accurate)
+#### https://xmlrpc-c.sourceforge.io/change.html (Globally that's the main reference which remain the more accurate)
 #### --------------------------------------------------------------------------------------------------------####
 svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable xmlrpc-c_super_stable;
 cd xmlrpc-c_super_stable;

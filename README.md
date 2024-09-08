@@ -4,23 +4,30 @@ This project does not offer pre-built binaries at this moment in time. It's requ
 ### Installing UDNS
 We strongly advise to build rTorrent with UDNS for asynchronous DNS resolution of UDP trackers. This is an important stability change for the torrent client. Skip this step and use the development package from your Linux distribution if applicable.
 ```
-git clone https://github.com/shadowsocks/libudns
-cd libudns
-./autogen.sh
-./configure --prefix=/usr
-make -j$(nproc) CFLAGS="-O3 -fPIC"
-make -j$(nproc) install
+git clone https://github.com/shadowsocks/libudns;
+cd libudns;
+./autogen.sh;
+./configure --prefix=/usr;
+make -j$(nproc) CFLAGS="-O3 -fPIC";
+make -j$(nproc) install;
 ```
 
 ### Installing xmlrpc-c
 We strong advise that you use xmlrpc-c super stable branch to ensure the torrent client is stable.
 We recommend disabling c++, wininet and libwww support. And to use your curl installation.
 ```
-svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable
-cd super_stable
-./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
-make -j$(nproc) CFLAGS="-O3"
-make install
+#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/super_stable/version.mk  1) xmlrpc-c_super_stable = v1.59.xx
+#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/stable/version.mk        2) xmlrpc-c_Stable = v1.60.xx
+#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/advanced/version.mk      3) xmlrpc-c_Advanced = v1.63 (the last one was published on the 25 June 2024)
+#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/trunk/version.mk         4) xmlrpc-c_Trunk = v1.64.xx
+#### --------------------------------------------------------------------------------------------------------####
+#### https://xmlrpc-c.sourceforge.io/change.html (Globally that's the main reference which remain the more accurate)
+#### --------------------------------------------------------------------------------------------------------####
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable xmlrpc-c_super_stable;
+cd xmlrpc-c_super_stable;
+./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client;
+make -j$(nproc) CFLAGS="-O3";
+make -j$(nproc) install;
 ```
 
 ### Installing libtorrent
@@ -32,31 +39,36 @@ We recommend to configure with UDNS enabled (`--enable-udns`) to improve stabili
 
 We do not recommend using file preload. It's better to leave this decision to the Linux Kernel. You can reduce the overhead of the peer connection protocol, by disabling it entirely at compile time with (`--enable-hosted-mode`). If `pieces.preload.type` is changed from ruTorrent or .rtorrent.rc it will accept the value and ignore it for 100% backwards compatibility.
 ```
-cd libtorrent
-./autogen.sh
-./configure --prefix=/usr --enable-aligned --enable-hosted-mode --disable-instrumentation --enable-udns
-make -j$(nproc) CXXFLAGS="-O3"
-make install
+#### At the first look, the people won't understand this project provide the both (libtorrent and rtorrent).
+#### Without a deeper look, they can miss the both subfolder (neither understand where to grab it).
+#### Basically it's a bad practice to not precise the sources (any official links must be always present).
+#### --------------------------------------------------------------------------------------------------------####
+git clone https://github.com/stickz/rtorrent stickz-rtorrent;
+cd stickz-rtorrent/libtorrent;
+./autogen.sh;\
+./configure --prefix=/usr --enable-aligned --enable-hosted-mode --disable-instrumentation --enable-udns;\
+make -j$(nproc) CXXFLAGS="-O3";\
+make -j$(nproc) install;
 ```
 
 Optionally, you may build with LTO (Link Time Optimizations) as supported by the project. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these. Disable the feature for stability purposes, if the build fails. If the build passes, you're good to go.
 ```
-make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing";
 ```
 
 ### Installing rTorrent
 We strongly advise to configure with xmlrpc-c to ensure ruTorrent is supported.
 ```
-cd rtorrent
-./autogen.sh
-./configure --prefix=/usr --with-xmlrpc-c
-make -j$(nproc) CXXFLAGS="-O3"
-make install
+cd ../rtorrent;\
+./autogen.sh;\
+./configure --prefix=/usr --with-xmlrpc-c --with-ncurses;\
+make -j$(nproc) CXXFLAGS="-O3";\
+make -j$(nproc) install;
 ```
 
 Optionally, you may build with LTO (Link Time Optimizations) as supported by the project. We mark some warnings as errors, to ensure compatibility. It's imperative not to bypass these. Disable the feature for stability purposes, if the build fails. If the build passes, you're good to go.
 ```
-make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing";
 ```
 
 ## Configuring

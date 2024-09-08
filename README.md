@@ -15,16 +15,31 @@ make -j$(nproc) install;
 ### Installing xmlrpc-c
 We strong advise that you use xmlrpc-c super stable branch to ensure the torrent client is stable.
 We recommend disabling c++, wininet and libwww support. And to use your curl installation.
+
+**Please start by picking ONE of the following xmlrpc-c branches:**
+#### 1) super_stable - v1.59.xx (recommended for hosted solutions)
 ```
-#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/super_stable/version.mk  1) xmlrpc-c_super_stable = v1.59.xx
-#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/stable/version.mk        2) xmlrpc-c_Stable = v1.60.xx
-#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/advanced/version.mk      3) xmlrpc-c_Advanced = v1.63 (the last one was published on the 25 June 2024)
-#### https://sourceforge.net/p/xmlrpc-c/code/HEAD/tree/trunk/version.mk         4) xmlrpc-c_Trunk = v1.64.xx
-#### --------------------------------------------------------------------------------------------------------####
-#### https://xmlrpc-c.sourceforge.io/change.html (Globally that's the main reference which remain the more accurate)
-#### --------------------------------------------------------------------------------------------------------####
 svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable xmlrpc-c_super_stable;
 cd xmlrpc-c_super_stable;
+```
+#### 2) stable - v1.60.xx (recommended for common platforms)
+```
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/stable xmlrpc-c_stable;
+cd xmlrpc-c_stable;
+```
+#### 3) advanced - v1.63.xx (recommended for home users)
+```
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c_advanced;
+cd xmlrpc-c_advanced;
+```
+#### 4) trunk - v1.64.xx (developers only, not recommended)
+```
+svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/trunk xmlrpc-c_trunk;
+cd xmlrpc-c_trunk;
+```
+
+**Afterwards, install xmlrpc-c using the following commands:**
+```
 ./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client;
 make -j$(nproc) CFLAGS="-O3";
 make -j$(nproc) install;
@@ -39,10 +54,6 @@ We recommend to configure with UDNS enabled (`--enable-udns`) to improve stabili
 
 We do not recommend using file preload. It's better to leave this decision to the Linux Kernel. You can reduce the overhead of the peer connection protocol, by disabling it entirely at compile time with (`--enable-hosted-mode`). If `pieces.preload.type` is changed from ruTorrent or .rtorrent.rc it will accept the value and ignore it for 100% backwards compatibility.
 ```
-#### At the first look, the people won't understand this project provide the both (libtorrent and rtorrent).
-#### Without a deeper look, they can miss the both subfolder (neither understand where to grab it).
-#### Basically it's a bad practice to not precise the sources (any official links must be always present).
-#### --------------------------------------------------------------------------------------------------------####
 git clone https://github.com/stickz/rtorrent stickz-rtorrent;
 cd stickz-rtorrent/libtorrent;
 ./autogen.sh;\

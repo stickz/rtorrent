@@ -661,10 +661,7 @@ FileList::create_chunk_index(uint32_t index, int prot) {
 void
 FileList::mark_completed(uint32_t index) {
   if (index >= size_chunks() || completed_chunks() >= size_chunks())
-  {
-    LT_LOG_FL(ERROR, "FileList::mark_completed(...) received an invalid index: %s", data()->hash());
-    return;
-  }
+    throw internal_error("FileList::mark_completed(...) received an invalid index.", data()->hash());
 
   if (bitfield()->empty())
     throw internal_error("FileList::mark_completed(...) bitfield is empty.", data()->hash());

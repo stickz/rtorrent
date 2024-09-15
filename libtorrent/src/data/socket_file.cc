@@ -139,20 +139,6 @@ SocketFile::set_size_fallocate(uint64_t size) const {
 #endif
 
   // If none of our fallocate methods are available, then revert to ftruncate as a last resort
-  return set_size_internal(size);
-}  
-
-bool
-SocketFile::set_size(uint64_t size) const {
-  if (!is_open())
-    throw internal_error("SocketFile::set_size() called on a closed file");
-
-  // If we don't have fallocate enabled, we're using ftruncate after checking the socket is open
-  return set_size_internal(size);
-}
-
-inline bool
-SocketFile::set_size_internal(uint64_t size) const {
   if (ftruncate(m_fd, size) == 0)
     return true;
   

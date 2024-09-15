@@ -178,7 +178,7 @@ File::resize_file() {
     return true;
 
   // Prefer non-blocking allocation first, blocking allocation second or no allocation at all if disabled
-  return m_flags & flag_fallocate ? SocketFile(m_fd).set_size_fallocate(m_size) : SocketFile(m_fd).set_size(m_size);
+  return m_flags & flag_fallocate ? SocketFile(m_fd).set_size_fallocate(m_size) : false;
 }
 
 }

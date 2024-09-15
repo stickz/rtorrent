@@ -67,7 +67,6 @@ public:
   void                close();
   
   uint64_t            size() const;
-  bool                set_size(uint64_t s) const;
   bool                set_size_fallocate(uint64_t s) const;
 
   MemoryChunk         create_chunk(uint64_t offset, uint32_t length, int prot, int flags) const;
@@ -80,8 +79,6 @@ private:
   SocketFile(const SocketFile&);
   void operator = (const SocketFile&);
   
-  inline bool         set_size_internal(uint64_t s) const;
-
   fd_type             m_fd;
 };
 

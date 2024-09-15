@@ -110,8 +110,6 @@ initialize() {
 
   manager->main_thread_disk()->init_thread();
   manager->main_thread_disk()->start_thread();
-  manager->sub_thread_disk()->init_thread();
-  manager->sub_thread_disk()->start_thread();
 }
 
 // Clean up and close stuff. Stopping all torrents and waiting for
@@ -122,7 +120,6 @@ cleanup() {
     throw internal_error("torrent::cleanup() called but the library is not initialized.");
 
   manager->main_thread_disk()->stop_thread_wait();
-  manager->sub_thread_disk()->stop_thread_wait();
 
   delete manager;
   manager = NULL;

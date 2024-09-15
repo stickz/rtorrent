@@ -87,13 +87,6 @@ Manager::Manager() :
               m_main_thread_main.signal_bitfield()->add_signal(std::bind(&HashQueue::work, m_hashQueue)),
               std::placeholders::_1);
 
-  m_hashQueueTwo = new HashQueue(&m_sub_thread_disk);
-  m_hashQueueTwo->slot_has_work() =
-    std::bind(&thread_base::send_event_signal,
-              &m_main_thread_main,
-              m_main_thread_main.signal_bitfield()->add_signal(std::bind(&HashQueue::work, m_hashQueueTwo)),
-              std::placeholders::_1);
-
   m_taskTick.slot() = std::bind(&Manager::receive_tick, this);
 
   priority_queue_insert(&taskScheduler, &m_taskTick, cachedTime.round_seconds());

@@ -40,7 +40,6 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
-#include <rak/libpopcnt.h>
 
 namespace rak {
 
@@ -62,7 +61,7 @@ count_base(_InputIter1 __first1, _InputIter1 __last1,
 
 template<typename T>
 inline int popcount_wrapper(T t) {
-  return popcnt64(t);
+  return __builtin_popcountll(t);
 }
 
 }

@@ -40,7 +40,7 @@ cd xmlrpc-c_trunk;
 
 **Afterwards, install xmlrpc-c using the following commands:**
 ```
-./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client;
+./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client --disable-abyss-server --disable-cgi-server;
 make -j$(nproc) CFLAGS="-O3";
 make -j$(nproc) install;
 ```

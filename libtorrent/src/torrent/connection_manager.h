@@ -49,6 +49,10 @@
 #include lt_tr1_functional
 #include <torrent/common.h>
 
+#ifdef USE_UDNS
+#include <vector>
+#endif
+
 namespace torrent {
 
 #ifdef USE_UDNS

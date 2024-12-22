@@ -96,7 +96,7 @@ public:
 
 inline DhtNode*
 DhtNodeList::add_node(DhtNode* n) {
-  insert(std::make_pair((const HashString*)n, (DhtNode*)n));
+  emplace((const HashString*)n, (DhtNode*)n);
   return n;
 }
 

@@ -96,7 +96,7 @@ DhtRouter::DhtRouter(const Object& cache, const rak::socket_address* sa) :
   LT_LOG_THIS("creating (address:%s)", sa->pretty_address_str().c_str());
 
   set_bucket(new DhtBucket(zero_id, ones_id));
-  m_routingTable.insert(std::make_pair(bucket()->id_range_end(), bucket()));
+  m_routingTable.emplace(bucket()->id_range_end(), bucket());
 
   if (cache.has_key("nodes")) {
     const Object::map_type& nodes = cache.get_key_map("nodes");
@@ -121,7 +121,7 @@ DhtRouter::DhtRouter(const Object& cache, const rak::socket_address* sa) :
         Object::list_type::const_iterator litr = itr->as_list().begin();
         const std::string& host = litr->as_string();
         int port = (++litr)->as_value();
-        m_contacts->push_back(std::make_pair(host, port));
+        m_contacts->emplace_back(host, port);
       }
     }
   }
@@ -181,7 +181,7 @@ DhtRouter::get_tracker(const HashString& hash, bool create) {
   if (!create)
     return NULL;
 
-  std::pair<DhtTrackerList::accessor, bool> res = m_trackers.insert(std::make_pair(hash, new DhtTracker()));
+  std::pair<DhtTrackerList::accessor, bool> res = m_trackers.emplace(hash, new DhtTracker());
 
   if (!res.second)
     throw internal_error("DhtRouter::get_tracker did not actually insert tracker.");
@@ -239,7 +239,7 @@ DhtRouter::add_contact(const std::string& host, int port) {
     if (m_contacts->size() >= num_bootstrap_contacts)
       m_contacts->pop_front();
 
-    m_contacts->push_back(std::make_pair(host, port)); 
+    m_contacts->emplace_back(host, port);
   }
 }
 
@@ -364,8 +364,8 @@ DhtRouter::store_cache(Object* container) const {
 
     for (std::deque<contact_t>::const_iterator itr = m_contacts->begin(); itr != m_contacts->end(); ++itr) {
       Object::list_type& list = contacts.insert_back(Object::create_list()).as_list();
-      list.push_back(itr->first);
-      list.push_back(itr->second);
+      list.emplace_back(itr->first);
+      list.emplace_back(itr->second);
     }
   }
 
@@ -547,7 +547,7 @@ DhtRouter::split_bucket(const DhtBucketList::iterator& itr, DhtNode* node) {
     throw internal_error("DhtRouter::split_bucket router ID ended up in wrong bucket.");
 
   // Insert new bucket with iterator hint = just before current bucket.
-  DhtBucketList::iterator other = m_routingTable.insert(itr, std::make_pair(newBucket->id_range_end(), newBucket));
+  DhtBucketList::iterator other = m_routingTable.emplace_hint(itr, newBucket->id_range_end(), newBucket);
 
   // Check that the bucket we're not adding the node to isn't empty.
   if (other->second->is_in_range(node->id())) {

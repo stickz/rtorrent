@@ -108,7 +108,7 @@ inline void group_entry::connection_unchoked(PeerConnectionBase* pcb) {
 
   if (itr != m_unchoked.end()) throw internal_error("group_entry::connection_unchoked(pcb) failed.");
 
-  m_unchoked.push_back(weighted_connection(pcb, uint32_t()));
+  m_unchoked.emplace_back(pcb, uint32_t());
 }
 
 inline void group_entry::connection_queued(PeerConnectionBase* pcb) {
@@ -117,7 +117,7 @@ inline void group_entry::connection_queued(PeerConnectionBase* pcb) {
 
   if (itr != m_queued.end()) throw internal_error("group_entry::connection_queued(pcb) failed.");
 
-  m_queued.push_back(weighted_connection(pcb, uint32_t()));
+  m_queued.emplace_back(pcb, uint32_t());
 }
 
 inline void

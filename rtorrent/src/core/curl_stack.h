@@ -83,6 +83,9 @@ class CurlStack : std::deque<CurlGet*> {
 
   CurlGet*            new_object();
   CurlSocket*         new_socket(int fd);
+  
+  void                shutdown();
+  bool                is_running() const                     { return m_running; }
 
   unsigned int        active() const                         { return m_active; }
   unsigned int        max_active() const                     { return m_maxActive; }
@@ -133,6 +136,7 @@ class CurlStack : std::deque<CurlGet*> {
 
   unsigned int        m_active;
   unsigned int        m_maxActive;
+  bool                m_running;
 
   rak::priority_item  m_taskTimeout;
 

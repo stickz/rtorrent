@@ -54,6 +54,9 @@ int
 CurlSocket::receive_socket(void* easy_handle, curl_socket_t fd, int what, void* userp, void* socketp) {
   CurlStack* stack = (CurlStack*)userp;
   CurlSocket* socket = (CurlSocket*)socketp;
+  
+  if (!stack->is_running())
+    return 0;
 
   if (what == CURL_POLL_REMOVE) {
     // We also probably need the special code here as we're not

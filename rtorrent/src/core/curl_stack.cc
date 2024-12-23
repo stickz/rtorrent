@@ -53,7 +53,8 @@ CurlStack::CurlStack() :
   m_maxActive(32),
   m_ssl_verify_host(true),
   m_ssl_verify_peer(true),
-  m_dns_timeout(60) {
+  m_dns_timeout(60),
+  m_running(true) {
 
   m_taskTimeout.slot() = std::bind(&CurlStack::receive_timeout, this);
 
@@ -66,6 +67,16 @@ CurlStack::CurlStack() :
 }
 
 CurlStack::~CurlStack() {
+  shutdown();
+}
+
+void
+CurlStack::shutdown() {
+  if (!m_running)
+    return;
+
+  m_running = false;
+
   while (!empty())
     front()->close();
 
@@ -80,6 +91,9 @@ CurlStack::new_object() {
 
 CurlSocket*
 CurlStack::new_socket(int fd) {
+  if (!m_running)
+    throw torrent::internal_error("CurlStack::new_socket() called when not running.");
+
   CurlSocket* socket = new CurlSocket(fd, this);
   curl_multi_assign((CURLM*)m_handle, fd, socket);
   return socket;

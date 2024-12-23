@@ -157,6 +157,8 @@ Manager::initialize_second() {
 
 void
 Manager::cleanup() {
+  m_httpStack->shutdown();
+  
   // Need to disconnect log signals? Not really since we won't receive
   // any more.
 

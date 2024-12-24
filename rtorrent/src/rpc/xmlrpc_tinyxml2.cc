@@ -142,11 +142,7 @@ print_object_xml(const torrent::Object& obj, tinyxml2::XMLPrinter* printer) {
     printer->CloseElement(true);
     break;
   case torrent::Object::TYPE_VALUE:
-    if (obj.as_value() > ((torrent::Object::value_type)2 << 30) || obj.as_value() < -((torrent::Object::value_type)2 << 30)) {
-      printer->OpenElement("i8", true);
-    } else {
-      printer->OpenElement("i4", true);
-    }
+    printer->OpenElement("i8", true);
     printer->PushText(std::to_string(obj.as_value()).c_str());
     printer->CloseElement(true);
     break;

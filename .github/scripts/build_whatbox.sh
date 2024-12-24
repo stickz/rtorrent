@@ -19,7 +19,7 @@ make -j$(nproc) install
 #install rtorrent
 cd "$RTORRENTDIR"
 ./autogen.sh
-./configure --prefix="$ROOTDIR" --with-xmlrpc-c
+./configure --prefix="$ROOTDIR" --with-xmlrpc-tinyxml2
 make -j$(nproc) CXXFLAGS="-O3 -flto=\"$(nproc)\" -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing -I$ROOTDIR/include" LDFLAGS="-L$ROOTDIR/lib -ltorrent"
 make -j$(nproc) install
 

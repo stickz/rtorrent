@@ -19,14 +19,6 @@ git clone https://github.com/shadowsocks/libudns $UDNSDIR
 make -j$(nproc) CFLAGS="-O3 -fPIC"
 make -j$(nproc) install
 
-# Install xmlrp-c
-rm -fr "$XMLRPCDIR" && mkdir "$XMLRPCDIR" && cd "$XMLRPCDIR"
-svn checkout svn://svn.code.sf.net/p/xmlrpc-c/code/super_stable $XMLRPCDIR
-./configure --prefix=/usr --disable-cplusplus --disable-wininet-client --disable-libwww-client
-make -j$(nproc) clean
-make -j$(nproc) CFLAGS="-O3" all
-make -j$(nproc) install
-
 #install libtorrent
 cd "$LIBTORRENTDIR"
 ./autogen.sh

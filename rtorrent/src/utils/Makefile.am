@@ -1,6 +1,7 @@
 noinst_LIBRARIES = libsub_utils.a
 
 libsub_utils_a_SOURCES = \
+	base64.h \
 	directory.cc \
 	directory.h \
 	file_status_cache.cc \

@@ -451,3 +451,16 @@ AC_DEFUN([TORRENT_CHECK_PTHREAD_SETNAME_NP], [
     ])
   ])
 ])
+
+AC_DEFUN([TORRENT_WITH_TINYXML2], [
+  AC_MSG_CHECKING(for tinyxml2)
+  AC_ARG_WITH(xmlrpc-tinyxml2,
+    AS_HELP_STRING([--with-xmlrpc-tinyxml2],[enable XMLRPC support via tinyxml2]),
+  [
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_XMLRPC_TINYXML2, 1, Support for XMLRPC via tinyxml2.)
+  ],[
+    AC_MSG_RESULT(ignored)
+  ])
+])
+

@@ -453,11 +453,29 @@ cmd_catch(rpc::target_type target, const torrent::Object& args) {
   }
 }
 
+// This is only used by tinyxml2, xmlrpc-c intercepts the call internally
+#ifdef HAVE_XMLRPC_TINYXML2
+torrent::Object
+system_listMethods() {
+  torrent::Object resultRaw = torrent::Object::create_list();
+  torrent::Object::list_type& result = resultRaw.as_list();
+  result.push_back("system.multicall"); // Handled directly by the XMLRPC code
+  for (auto itr : rpc::commands) {
+    result.push_back(itr.first);
+  }
+  return resultRaw;
+}
+#endif
+
 #define CMD2_METHOD_INSERT(key, flags) \
   CMD2_ANY_LIST(key, std::bind(&system_method_insert_object, std::placeholders::_2, flags));
 
 void
 initialize_command_dynamic() {
+  #ifdef HAVE_XMLRPC_TINYXML2
+  CMD2_ANY         ("system.listMethods", std::bind(&system_listMethods)); // only used by tinyxml2
+  #endif
+
   CMD2_VAR_BOOL    ("method.use_deprecated", false);
   CMD2_VAR_VALUE   ("method.use_intermediate", 1);
 

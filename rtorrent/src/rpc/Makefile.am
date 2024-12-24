@@ -25,6 +25,10 @@ libsub_rpc_a_SOURCES = \
 	scgi_task.cc \
 	scgi_task.h \
 	xmlrpc.h \
-	xmlrpc.cc
+	xmlrpc.cc \
+	xmlrpc_c.cc \
+	xmlrpc_tinyxml2.cc \
+	tinyxml2/tinyxml2.h \
+	tinyxml2/tinyxml2.cc
 
 AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/.. -I$(top_srcdir)

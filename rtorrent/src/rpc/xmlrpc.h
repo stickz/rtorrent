@@ -37,7 +37,11 @@
 #ifndef RTORRENT_RPC_XMLRPC_H
 #define RTORRENT_RPC_XMLRPC_H
 
-#include lt_tr1_functional
+#include <functional>
+
+#include "command.h"
+#include "scgi_task.h"
+
 #include <torrent/hash_string.h>
 
 namespace core {
@@ -73,9 +77,11 @@ public:
   static const int call_file       = 5;
   static const int call_file_itr   = 6;
 
-  XmlRpc() : m_env(NULL), m_registry(NULL), m_dialect(dialect_i8) {}
+  static void object_to_target(const torrent::Object& obj, int callFlags, rpc::target_type* target);
 
-  bool                is_valid() const { return m_env != NULL; }
+  XmlRpc() : m_env(NULL), m_registry(NULL), m_dialect(dialect_i8), m_sizeLimit(SCgiTask::max_content_size) {}
+
+  bool                is_valid() const;
 
   void                initialize();
   void                cleanup();
@@ -92,19 +98,25 @@ public:
   slot_tracker&       slot_find_tracker()  { return m_slotFindTracker; }
   slot_peer&          slot_find_peer()     { return m_slotFindPeer; }
 
-  static int64_t      size_limit();
-  static void         set_size_limit(uint64_t size);
+  int64_t             size_limit();
+  void                set_size_limit(uint64_t size);
 
 private:
+  slot_download       m_slotFindDownload;
+  slot_file           m_slotFindFile;
+  slot_tracker        m_slotFindTracker;
+  slot_peer           m_slotFindPeer;
+
+  // Only used by xmlrpc-c
   void*               m_env;
   void*               m_registry;
 
   int                 m_dialect;
 
-  slot_download       m_slotFindDownload;
-  slot_file           m_slotFindFile;
-  slot_tracker        m_slotFindTracker;
-  slot_peer           m_slotFindPeer;
+  // Only used by tinyxml2
+  bool                m_isValid;
+  uint64_t            m_sizeLimit;
+
 };
 
 }

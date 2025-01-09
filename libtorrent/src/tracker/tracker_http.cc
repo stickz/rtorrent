@@ -40,7 +40,6 @@
 
 #include <iomanip>
 #include <sstream>
-#include <rak/functional.h>
 #include <rak/string_manip.h>
 
 #include "net/address_list.h"

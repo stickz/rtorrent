@@ -177,9 +177,9 @@ Manager::cleanup() {
 void
 Manager::shutdown(bool force) {
   if (!force)
-    std::for_each(m_downloadList->begin(), m_downloadList->end(), std::bind1st(std::mem_fun(&DownloadList::pause_default), m_downloadList));
+    std::for_each(m_downloadList->begin(), m_downloadList->end(), [this](Download* d) { m_downloadList->pause_default(d); });
   else
-    std::for_each(m_downloadList->begin(), m_downloadList->end(), std::bind1st(std::mem_fun(&DownloadList::close_quick), m_downloadList));
+    std::for_each(m_downloadList->begin(), m_downloadList->end(), [this](Download* d) { m_downloadList->close_quick(d); });
 }
 
 void
@@ -343,7 +343,7 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
   if (flags & create_throw)
     f->set_immediate(true);
 
-  f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
+  f->slot_finished([f]() { delete f; });
 
   if (flags & create_raw_data)
     f->load_raw_data(uri);
@@ -367,7 +367,7 @@ Manager::try_create_download_from_meta_download(torrent::Object* bencode, const 
 
   f->set_start(meta.get_key_value("start"));
   f->set_print_log(meta.get_key_value("print_log"));
-  f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
+  f->slot_finished([f]() { delete f; });
 
   // Bit of a waste to create the bencode repesentation here
   // only to have the DownloadFactory decode it.
@@ -420,16 +420,18 @@ path_expand(std::vector<std::string>* paths, const std::string& pattern) {
       // Only include filenames starting with '.' if the pattern
       // starts with the same.
       itr->update((r.pattern()[0] != '.') ? utils::Directory::update_hide_dot : 0);
-      itr->erase(std::remove_if(itr->begin(), itr->end(), rak::on(rak::mem_ref(&utils::directory_entry::s_name), std::not1(r))), itr->end());
+      itr->erase(std::remove_if(itr->begin(), itr->end(), [r](const utils::directory_entry& entry) { return !r(entry.s_name); }), itr->end());
 
-      std::transform(itr->begin(), itr->end(), std::back_inserter(nextCache), rak::bind1st(std::ptr_fun(&path_expand_transform), itr->path() + (itr->path() == "/" ? "" : "/")));
+      std::transform(itr->begin(), itr->end(), std::back_inserter(nextCache), [itr](const utils::directory_entry& entry) {
+          return path_expand_transform(itr->path() + (itr->path() == "/" ? "" : "/"), entry);
+        });
     }
 
     currentCache.clear();
     currentCache.swap(nextCache);
   }
 
-  std::transform(currentCache.begin(), currentCache.end(), std::back_inserter(*paths), std::mem_fun_ref(&utils::Directory::path));
+  std::transform(currentCache.begin(), currentCache.end(), std::back_inserter(*paths), std::mem_fn(&utils::Directory::path));
 }
 
 bool
@@ -463,7 +465,7 @@ Manager::try_create_download_expand(const std::string& uri, int flags, command_l
 void
 Manager::receive_hashing_changed() {
   bool foundHashing = std::find_if(m_hashingView->begin_visible(), m_hashingView->end_visible(),
-                                   std::mem_fun(&Download::is_hash_checking)) != m_hashingView->end_visible();
+                                   std::mem_fn(&Download::is_hash_checking)) != m_hashingView->end_visible();
   
   // Try quick hashing all those with hashing == initial, set them to
   // something else when failed.

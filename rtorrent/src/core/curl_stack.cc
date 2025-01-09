@@ -147,7 +147,7 @@ CurlStack::process_done_handle() {
     throw torrent::internal_error("CurlStack::receive_action() msg->msg != CURLMSG_DONE.");
 
   if (msg->data.result == CURLE_COULDNT_RESOLVE_HOST) {
-    iterator itr = std::find_if(begin(), end(), rak::equal(msg->easy_handle, std::mem_fun(&CurlGet::handle)));
+    iterator itr = std::find_if(begin(), end(), rak::equal(msg->easy_handle, std::mem_fn(&CurlGet::handle)));
  
     if (itr == end())
       throw torrent::internal_error("Could not find CurlGet when calling CurlStack::receive_action.");
@@ -162,7 +162,7 @@ CurlStack::process_done_handle() {
 
 void
 CurlStack::transfer_done(void* handle, const char* msg) {
-  iterator itr = std::find_if(begin(), end(), rak::equal(handle, std::mem_fun(&CurlGet::handle)));
+  iterator itr = std::find_if(begin(), end(), rak::equal(handle, std::mem_fn(&CurlGet::handle)));
 
   if (itr == end())
     throw torrent::internal_error("Could not find CurlGet with the right easy_handle.");
@@ -242,7 +242,7 @@ CurlStack::remove_get(CurlGet* get) {
     throw torrent::internal_error("Error calling curl_multi_remove_handle.");
 
   if (m_active == m_maxActive &&
-      (itr = std::find_if(begin(), end(), std::not1(std::mem_fun(&CurlGet::is_active)))) != end()) {
+      (itr = std::find_if(begin(), end(), std::not_fn(std::mem_fn(&CurlGet::is_active)))) != end()) {
     (*itr)->set_active(true);
 
     if (curl_multi_add_handle((CURLM*)m_handle, (*itr)->handle()) > 0)

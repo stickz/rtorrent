@@ -95,7 +95,7 @@ WindowDownloadChunksSeen::redraw() {
   std::vector<torrent::BlockList*> transferChunks(transfers->size(), 0);
 
   std::copy(transfers->begin(), transfers->end(), transferChunks.begin());
-  std::sort(transferChunks.begin(), transferChunks.end(), rak::less2(std::mem_fun(&torrent::BlockList::index), std::mem_fun(&torrent::BlockList::index)));
+  std::sort(transferChunks.begin(), transferChunks.end(), rak::less2(std::mem_fn(&torrent::BlockList::index), std::mem_fn(&torrent::BlockList::index)));
 
   std::vector<torrent::BlockList*>::const_iterator itrTransfer = transferChunks.begin();
 
@@ -111,7 +111,7 @@ WindowDownloadChunksSeen::redraw() {
       if (bitfield->get(chunk - seen)) {
         attr = A_NORMAL;
       } else if (itrTransfer != transferChunks.end() && (uint32_t)(chunk - seen) == (*itrTransfer)->index()) {
-        if (std::find_if((*itrTransfer)->begin(), (*itrTransfer)->end(), std::mem_fun_ref(&torrent::Block::is_transfering)) != (*itrTransfer)->end())
+        if (std::find_if((*itrTransfer)->begin(), (*itrTransfer)->end(), std::mem_fn(&torrent::Block::is_transfering)) != (*itrTransfer)->end())
           attr = A_REVERSE;
         else
           attr = A_BOLD | A_UNDERLINE;

@@ -37,7 +37,6 @@
 #ifndef RAK_PRIORITY_QUEUE_DEFAULT_H
 #define RAK_PRIORITY_QUEUE_DEFAULT_H
 
-#include lt_tr1_functional
 #include <rak/allocators.h>
 #include <rak/priority_queue.h>
 #include <rak/timer.h>

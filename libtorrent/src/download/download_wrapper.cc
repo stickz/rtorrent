@@ -117,7 +117,7 @@ DownloadWrapper::initialize(const std::string& hash, const std::string& id) {
 
   file_list()->mutable_data()->mutable_hash().assign(hash.c_str());
 
-  m_main->slot_hash_check_add(rak::make_mem_fun(this, &DownloadWrapper::check_chunk_hash));
+  m_main->slot_hash_check_add([this](torrent::ChunkHandle handle) { return check_chunk_hash(handle); });
 
   // Info hash must be calculate from here on.
   m_hashChecker = new HashTorrent(m_main->chunk_list());
@@ -314,10 +314,9 @@ DownloadWrapper::receive_tick(uint32_t ticks) {
   }
 
   DownloadMain::have_queue_type* haveQueue = m_main->have_queue();
-  haveQueue->erase(std::find_if(haveQueue->rbegin(), haveQueue->rend(),
-                                rak::less(cachedTime - rak::timer::from_seconds(600),
-                                             rak::mem_ref(&DownloadMain::have_queue_type::value_type::first))).base(),
-                   haveQueue->end());
+  haveQueue->erase(std::find_if(haveQueue->rbegin(), haveQueue->rend(), [](auto& p) {
+    return (cachedTime - rak::timer::from_seconds(600)) < p.first;
+  }).base(), haveQueue->end());
 
   m_main->receive_connect_peers();
 }
@@ -363,8 +362,9 @@ DownloadWrapper::receive_update_priorities() {
 
   m_main->chunk_selector()->update_priorities();
 
-  std::for_each(m_main->connection_list()->begin(), m_main->connection_list()->end(),
-                rak::on(std::mem_fun(&Peer::m_ptr), std::mem_fun(&PeerConnectionBase::update_interested)));
+  for (const auto& peer : *m_main->connection_list()) {
+    peer->m_ptr()->update_interested();
+  }
 
   // The 'partially_done/restarted' signal only gets triggered when a
   // download is active and not completed.

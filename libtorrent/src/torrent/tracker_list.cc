@@ -37,7 +37,7 @@
 #include "config.h"
 
 #include <functional>
-#include <rak/functional.h>
+#include <random>
 
 #include "net/address_list.h"
 #include "torrent/utils/log.h"
@@ -67,42 +67,37 @@ TrackerList::TrackerList() :
 
 bool
 TrackerList::has_active() const {
-  return std::find_if(begin(), end(), std::mem_fun(&Tracker::is_busy)) != end();
+  return std::find_if(begin(), end(), std::mem_fn(&Tracker::is_busy)) != end();
 }
 
 bool
 TrackerList::has_active_not_scrape() const {
-  return std::find_if(begin(), end(), std::mem_fun(&Tracker::is_busy_not_scrape)) != end();
+  return std::find_if(begin(), end(), std::mem_fn(&Tracker::is_busy_not_scrape)) != end();
 }
 
 bool
 TrackerList::has_active_in_group(uint32_t group) const {
-  return std::find_if(begin_group(group), end_group(group), std::mem_fun(&Tracker::is_busy)) != end_group(group);
+  return std::find_if(begin_group(group), end_group(group), std::mem_fn(&Tracker::is_busy)) != end_group(group);
 }
 
 bool
 TrackerList::has_active_not_scrape_in_group(uint32_t group) const {
-  return std::find_if(begin_group(group), end_group(group), std::mem_fun(&Tracker::is_busy_not_scrape)) != end_group(group);
+  return std::find_if(begin_group(group), end_group(group), std::mem_fn(&Tracker::is_busy_not_scrape)) != end_group(group);
 }
-
-// Need a custom predicate because the is_usable function is virtual.
-struct tracker_usable_t : public std::unary_function<TrackerList::value_type, bool> {
-  bool operator () (const TrackerList::value_type& value) const { return value->is_usable(); }
-};
 
 bool
 TrackerList::has_usable() const {
-  return std::find_if(begin(), end(), tracker_usable_t()) != end();
+  return std::any_of(begin(), end(), std::mem_fn(&Tracker::is_usable));
 }
 
 unsigned int
 TrackerList::count_active() const {
-  return std::count_if(begin(), end(), std::mem_fun(&Tracker::is_busy));
+  return std::count_if(begin(), end(), std::mem_fn(&Tracker::is_busy));
 }
 
 unsigned int
 TrackerList::count_usable() const {
-  return std::count_if(begin(), end(), tracker_usable_t());
+  return std::count_if(begin(), end(), std::mem_fn(&Tracker::is_usable));
 }
 
 void
@@ -125,13 +120,15 @@ TrackerList::disown_all_including(int event_bitmap) {
 
 void
 TrackerList::clear() {
-  std::for_each(begin(), end(), rak::call_delete<Tracker>());
+  for (const auto& tracker : *this) {
+    delete tracker;
+  }
   base_type::clear();
 }
 
 void
 TrackerList::clear_stats() {
-  std::for_each(begin(), end(), std::mem_fun(&Tracker::clear_stats));
+  std::for_each(begin(), end(), std::mem_fn(&Tracker::clear_stats));
 }
 
 void
@@ -223,29 +220,22 @@ TrackerList::insert_url(unsigned int group, const std::string& url, bool extra_t
 
 TrackerList::iterator
 TrackerList::find_url(const std::string& url) {
-  return std::find_if(begin(), end(), std::bind(std::equal_to<std::string>(), url,
-                                                std::bind(&Tracker::url, std::placeholders::_1)));
+  return std::find_if(begin(), end(), [&url](auto tracker) { return tracker->url() == url; });
 }
 
 TrackerList::iterator
 TrackerList::find_usable(iterator itr) {
-  while (itr != end() && !tracker_usable_t()(*itr))
-    ++itr;
-
-  return itr;
+  return std::find_if(itr, end(), std::mem_fn(&Tracker::is_usable));
 }
 
 TrackerList::const_iterator
 TrackerList::find_usable(const_iterator itr) const {
-  while (itr != end() && !tracker_usable_t()(*itr))
-    ++itr;
-
-  return itr;
+  return std::find_if(itr, end(), std::mem_fn(&Tracker::is_usable));
 }
 
 TrackerList::iterator
 TrackerList::find_next_to_request(iterator itr) {
-  TrackerList::iterator preferred = itr = std::find_if(itr, end(), std::mem_fun(&Tracker::can_request_state));
+  auto preferred = itr = std::find_if(itr, end(), std::mem_fn(&Tracker::can_request_state));
 
   if (preferred == end() || (*preferred)->failed_counter() == 0)
     return preferred;
@@ -271,12 +261,12 @@ TrackerList::find_next_to_request(iterator itr) {
 
 TrackerList::iterator
 TrackerList::begin_group(unsigned int group) {
-  return std::find_if(begin(), end(), rak::less_equal(group, std::mem_fun(&Tracker::group)));
+  return std::find_if(begin(), end(), [group](Tracker* t) { return group <= t->group(); });
 }
 
 TrackerList::const_iterator
 TrackerList::begin_group(unsigned int group) const {
-  return std::find_if(begin(), end(), rak::less_equal(group, std::mem_fun(&Tracker::group)));
+  return std::find_if(begin(), end(), [group](Tracker* t) { return group <= t->group(); });
 }
 
 TrackerList::size_type
@@ -311,12 +301,14 @@ TrackerList::promote(iterator itr) {
 
 void
 TrackerList::randomize_group_entries() {
+  static std::random_device rd;
+  static std::mt19937       rng(rd());
   // Random random random.
   iterator itr = begin();
   
   while (itr != end()) {
     iterator tmp = end_group((*itr)->group());
-    std::random_shuffle(itr, tmp);
+    std::shuffle(itr, tmp, rng);
 
     itr = tmp;
   }

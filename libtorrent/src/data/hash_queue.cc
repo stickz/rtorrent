@@ -39,7 +39,6 @@
 #define __STDC_FORMAT_MACROS
 
 #include <functional>
-#include <rak/functional.h>
 #include <unistd.h>
 
 #include "torrent/exceptions.h"
@@ -110,7 +109,7 @@ HashQueue::push_back(ChunkHandle handle, HashQueueNode::id_type id, slot_done_ty
 
 bool
 HashQueue::has(HashQueueNode::id_type id) {
-  return std::find_if(begin(), end(), rak::equal(id, std::mem_fun_ref(&HashQueueNode::id))) != end();
+  return std::any_of(begin(), end(), [id](const auto& n) { return id == n.id(); });
 }
 
 bool
@@ -120,10 +119,11 @@ HashQueue::has(HashQueueNode::id_type id, uint32_t index) {
 
 void
 HashQueue::remove(HashQueueNode::id_type id) {
-  iterator itr = begin();
+  base_type::erase(std::remove_if(begin(), end(), [id, this](auto& itr) {
+    if (itr.id() != id)
+      return false;
   
-  while ((itr = std::find_if(itr, end(), rak::equal(id, std::mem_fun_ref(&HashQueueNode::id)))) != end()) {
-    HashChunk *hash_chunk = itr->get_chunk();
+    HashChunk *hash_chunk = itr.get_chunk();
 
     LT_LOG_DATA(id, DEBUG, "Removing index:%" PRIu32 " from queue.", hash_chunk->handle().index());
 
@@ -147,11 +147,11 @@ HashQueue::remove(HashQueueNode::id_type id) {
       pthread_mutex_unlock(&m_done_chunks_lock);
     }
 
-    itr->slot_done()(*hash_chunk->chunk(), NULL);
-    itr->clear();
+    itr.slot_done()(*hash_chunk->chunk(), NULL);
+    itr.clear();
 
-    itr = erase(itr);
-  }
+    return true;
+  }), end());
 }
 
 void

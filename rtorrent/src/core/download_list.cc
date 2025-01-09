@@ -80,7 +80,7 @@ DownloadList::check_contains(Download* d) {
 
 void
 DownloadList::clear() {
-  std::for_each(begin(), end(), std::bind1st(std::mem_fun(&DownloadList::close), this));
+  std::for_each(begin(), end(), std::bind1st(std::mem_fn(&DownloadList::close), this));
   std::for_each(begin(), end(), rak::call_delete<Download>());
 
   base_type::clear();
@@ -88,7 +88,7 @@ DownloadList::clear() {
 
 void
 DownloadList::session_save() {
-  unsigned int c = std::count_if(begin(), end(), std::bind1st(std::mem_fun(&DownloadStore::save_resume), control->core()->download_store()));
+  unsigned int c = std::count_if(begin(), end(), std::bind1st(std::mem_fn(&DownloadStore::save_resume), control->core()->download_store()));
 
   if (c != size())
     lt_log_print(torrent::LOG_ERROR, "Failed to save session torrents.");
@@ -99,7 +99,7 @@ DownloadList::session_save() {
 
 DownloadList::iterator
 DownloadList::find(const torrent::HashString& hash) {
-  return std::find_if(begin(), end(), rak::equal(hash, rak::on(std::mem_fun(&Download::info), std::mem_fun(&torrent::DownloadInfo::hash))));
+  return std::find_if(begin(), end(), rak::equal(hash, rak::on(std::mem_fn(&Download::info), std::mem_fn(&torrent::DownloadInfo::hash))));
 }
 
 DownloadList::iterator
@@ -109,7 +109,7 @@ DownloadList::find_hex(const char* hash) {
   for (torrent::HashString::iterator itr = key.begin(), last = key.end(); itr != last; itr++, hash += 2)
     *itr = (rak::hexchar_to_value(*hash) << 4) + rak::hexchar_to_value(*(hash + 1));
 
-  return std::find_if(begin(), end(), rak::equal(key, rak::on(std::mem_fun(&Download::info), std::mem_fun(&torrent::DownloadInfo::hash))));
+  return std::find_if(begin(), end(), rak::equal(key, rak::on(std::mem_fn(&Download::info), std::mem_fn(&torrent::DownloadInfo::hash))));
 }
 
 Download*
@@ -187,8 +187,8 @@ DownloadList::insert(Download* download) {
 
     // This needs to be separated into two different calls to ensure
     // the download remains in the view.
-    std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fun(&View::insert), download));
-    std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fun(&View::filter_download), download));
+    std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fn(&View::insert), download));
+    std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fn(&View::filter_download), download));
 
     DL_TRIGGER_EVENT(*itr, "event.download.inserted");
 
@@ -221,7 +221,7 @@ DownloadList::erase(iterator itr) {
   control->core()->download_store()->remove(*itr);
 
   DL_TRIGGER_EVENT(*itr, "event.download.erased");
-  std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fun(&View::erase), *itr));
+  std::for_each(control->view_manager()->begin(), control->view_manager()->end(), std::bind2nd(std::mem_fn(&View::erase), *itr));
 
   torrent::download_remove(*(*itr)->download());
   delete *itr;

@@ -85,7 +85,7 @@ public:
 
   template <typename Key>
   iterator find(const Key& key) {
-    return std::find_if(begin(), end(), std::bind2nd(m_equal, key));
+    return std::find_if(begin(), end(), [&](auto& value) { return m_equal(value, key); });
   }
 
   template <typename Key>

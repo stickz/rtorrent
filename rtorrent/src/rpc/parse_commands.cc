@@ -39,7 +39,6 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
-#include <rak/functional.h>
 #include <rak/path.h>
 #include <torrent/exceptions.h>
 

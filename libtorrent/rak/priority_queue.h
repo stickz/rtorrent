@@ -110,36 +110,6 @@ private:
   Equal               m_equal;
 };
 
-// Iterate while the top node has higher priority, as 'Compare'
-// returns false.
-template <typename Queue, typename Compare>
-class queue_pop_iterator
-  : public std::iterator<std::forward_iterator_tag, void, void, void, void> {
-public:
-  typedef Queue container_type;
-
-  queue_pop_iterator() : m_queue(NULL) {}
-  queue_pop_iterator(Queue* q, Compare c) : m_queue(q), m_compare(c) {}
-
-  queue_pop_iterator& operator ++ ()                     { m_queue->pop(); return *this; }
-  queue_pop_iterator& operator ++ (int)                  { m_queue->pop(); return *this; }
-
-  typename container_type::const_reference operator * () { return m_queue->top(); }
-
-  bool operator != (const queue_pop_iterator& itr)       { return !m_queue->empty() && !m_compare(m_queue->top()); }
-  bool operator == (const queue_pop_iterator& itr)       { return m_queue->empty() || m_compare(m_queue->top()); }
-
-private:
-  Queue*  m_queue;
-  Compare m_compare;
-};
-
-template <typename Queue, typename Compare>
-inline queue_pop_iterator<Queue, Compare>
-queue_popper(Queue& queue, Compare comp) {
-  return queue_pop_iterator<Queue, Compare>(&queue, comp);
-}
-
 }
 
 #endif

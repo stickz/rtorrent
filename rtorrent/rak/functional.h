@@ -157,26 +157,6 @@ struct invert : public std::unary_function<Tp, Tp> {
   operator () (const Tp& x) const { return ~x; }
 };
 
-template <typename Src, typename Dest>
-struct on_t : public std::unary_function<typename Src::argument_type, typename Dest::result_type> {
-  typedef typename Dest::result_type result_type;
-
-  on_t(Src s, Dest d) : m_dest(d), m_src(s) {}
-
-  result_type operator () (typename reference_fix<typename Src::argument_type>::type arg) {
-    return m_dest(m_src(arg));
-  }
-
-  Dest m_dest;
-  Src m_src;
-};
-    
-template <typename Src, typename Dest>
-inline on_t<Src, Dest>
-on(Src s, Dest d) {
-  return on_t<Src, Dest>(s, d);
-}  
-
 // Creates a functor for accessing a member.
 template <typename Class, typename Member>
 struct mem_ptr_t : public std::unary_function<Class*, Member&> {
@@ -231,69 +211,6 @@ template <typename Class, typename Member>
 inline const_mem_ref_t<Class, Member>
 const_mem_ref(const Member Class::*m) {
   return const_mem_ref_t<Class, Member>(m);
-}
-
-template <typename T>
-struct call_delete : public std::unary_function<T*, void> {
-  void operator () (T* t) {
-    delete t;
-  }
-};
-
-template <typename T>
-inline void
-call_delete_func(T* t) {
-  delete t;
-}
-
-template <typename Operation>
-class bind1st_t : public std::unary_function<typename Operation::second_argument_type, typename Operation::result_type> {
-public:
-  typedef typename reference_fix<typename Operation::first_argument_type>::type  value_type;
-  typedef typename reference_fix<typename Operation::second_argument_type>::type argument_type;
-
-  bind1st_t(const Operation& op, const value_type v) :
-    m_op(op), m_value(v) {}
-
-  typename Operation::result_type
-  operator () (const argument_type arg) {
-    return m_op(m_value, arg);
-  }
-
-protected:
-  Operation  m_op;
-  value_type m_value;
-};
-
-template <typename Operation, typename Type>
-inline bind1st_t<Operation>
-bind1st(const Operation& op, const Type& val) {
-  return bind1st_t<Operation>(op, val);
-}
-
-template <typename Operation>
-class bind2nd_t : public std::unary_function<typename Operation::first_argument_type, typename Operation::result_type> {
-public:
-  typedef typename reference_fix<typename Operation::first_argument_type>::type argument_type;
-  typedef typename reference_fix<typename Operation::second_argument_type>::type value_type;
-
-  bind2nd_t(const Operation& op, const value_type v) :
-    m_op(op), m_value(v) {}
-
-  typename Operation::result_type
-  operator () (argument_type arg) {
-    return m_op(arg, m_value);
-  }
-
-protected:
-  Operation  m_op;
-  value_type m_value;
-};
-
-template <typename Operation, typename Type>
-inline bind2nd_t<Operation>
-bind2nd(const Operation& op, const Type& val) {
-  return bind2nd_t<Operation>(op, val);
 }
 
 }

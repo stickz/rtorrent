@@ -38,7 +38,7 @@
 #define RTORRENT_WINDOW_BASE_H
 
 #include <rak/timer.h>
-#include <rak/functional.h>
+#include <rak/functional_fun2.h>
 
 #include "canvas.h"
 #include "globals.h"

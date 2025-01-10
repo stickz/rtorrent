@@ -82,7 +82,7 @@ Control::Control() :
 
   m_taskShutdown.slot() = std::bind(&Control::handle_shutdown, this);
 
-  m_commandScheduler->set_slot_error_message(rak::mem_fn(m_core, &core::Manager::push_log_std));
+  m_commandScheduler->set_slot_error_message(std::bind(&core::Manager::push_log_std, m_core, std::placeholders::_1));
 }
 
 Control::~Control() {
@@ -104,9 +104,9 @@ Control::~Control() {
 void
 Control::initialize() {
   display::Canvas::initialize();
-  display::Window::slot_schedule(rak::make_mem_fun(m_display, &display::Manager::schedule));
-  display::Window::slot_unschedule(rak::make_mem_fun(m_display, &display::Manager::unschedule));
-  display::Window::slot_adjust(rak::make_mem_fun(m_display, &display::Manager::adjust_layout));
+  display::Window::slot_schedule(std::bind(&display::Manager::schedule, m_display, std::placeholders::_1, std::placeholders::_2));
+  display::Window::slot_unschedule(std::bind(&display::Manager::unschedule, m_display, std::placeholders::_1));
+  display::Window::slot_adjust(std::bind(&display::Manager::adjust_layout, m_display));
 
   m_core->http_stack()->set_user_agent(USER_AGENT);
 

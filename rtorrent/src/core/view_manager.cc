@@ -37,7 +37,6 @@
 #include "config.h"
 
 #include <algorithm>
-#include <rak/functional.h>
 #include <torrent/exceptions.h>
 #include <torrent/object.h>
 
@@ -55,7 +54,7 @@ namespace core {
 
 void
 ViewManager::clear() {
-  std::for_each(begin(), end(), rak::call_delete<View>());
+  std::for_each(begin(), end(), [](View* v) { delete v; });
 
   base_type::clear();
 }
@@ -76,12 +75,12 @@ ViewManager::insert(const std::string& name) {
 
 ViewManager::iterator
 ViewManager::find(const std::string& name) {
-  return std::find_if(begin(), end(), rak::equal(name, std::mem_fn(&View::name)));
+  return std::find_if(begin(), end(), [name](View* v){ return name == v->name(); });
 }
 
 ViewManager::iterator
 ViewManager::find_throw(const std::string& name) {
-  iterator itr = std::find_if(begin(), end(), rak::equal(name, std::mem_fn(&View::name)));
+  iterator itr = std::find_if(begin(), end(), [name](View* v){ return name == v->name(); });
 
   if (itr == end())
     throw torrent::input_error("Could not find view: " + name);

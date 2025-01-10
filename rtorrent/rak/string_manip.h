@@ -41,7 +41,6 @@
 #include <cctype>
 #include <climits>
 #include <cstdlib>
-#include <functional>
 #include <iterator>
 #include <locale>
 #include <random>

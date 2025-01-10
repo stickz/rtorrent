@@ -142,7 +142,7 @@ SCgi::event_read() {
   utils::SocketFd fd;
 
   while ((fd = get_fd().accept(&sa)).is_valid()) {
-    SCgiTask* task = std::find_if(m_task, m_task + max_tasks, std::mem_fun_ref(&SCgiTask::is_available));
+    SCgiTask* task = std::find_if(m_task, m_task + max_tasks, std::mem_fn(&SCgiTask::is_available));
 
     if (task == m_task + max_tasks) {
       // Ergh... just closing for now.
@@ -166,8 +166,7 @@ SCgi::event_error() {
 
 bool
 SCgi::receive_call(SCgiTask* task, const char* buffer, uint32_t length) {
-  slot_write slotWrite;
-  slotWrite.set(rak::mem_fn(task, &SCgiTask::receive_write));
+  slot_write slotWrite = std::bind(&SCgiTask::receive_write, task, std::placeholders::_1, std::placeholders::_2);
 
   torrent::thread_base::acquire_global_lock();
   torrent::main_thread()->interrupt();

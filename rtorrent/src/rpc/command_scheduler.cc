@@ -39,7 +39,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <time.h>
-#include <rak/functional.h>
 #include <rak/string_manip.h>
 #include <torrent/exceptions.h>
 
@@ -50,12 +49,12 @@
 namespace rpc {
 
 CommandScheduler::~CommandScheduler() {
-  std::for_each(begin(), end(), rak::call_delete<CommandSchedulerItem>());
+  std::for_each(begin(), end(), [](CommandSchedulerItem* item) { delete item; });
 }
 
 CommandScheduler::iterator
 CommandScheduler::find(const std::string& key) {
-  return std::find_if(begin(), end(), rak::equal(key, std::mem_fun(&CommandSchedulerItem::key)));
+  return std::find_if(begin(), end(), [key](CommandSchedulerItem* item) { return key == item->key(); });
 }
 
 CommandScheduler::iterator
@@ -100,7 +99,7 @@ CommandScheduler::call_item(value_type item) {
     rpc::call_object(item->command());
 
   } catch (torrent::input_error& e) {
-    if (m_slotErrorMessage.is_valid())
+    if (m_slotErrorMessage)
       m_slotErrorMessage("Scheduled command failed: " + item->key() + ": " + e.what());
   }
 

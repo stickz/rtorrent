@@ -38,7 +38,6 @@
 #define RAK_ALGORITHM_H
 
 #include <algorithm>
-#include <functional>
 #include <limits>
 
 namespace rak {

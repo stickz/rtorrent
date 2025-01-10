@@ -41,7 +41,6 @@
 #define RAK_PRIORITY_QUEUE_H
 
 #include <algorithm>
-#include <functional>
 #include <vector>
 
 namespace rak {

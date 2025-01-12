@@ -40,7 +40,6 @@
 #include <curl/multi.h>
 #include <torrent/exceptions.h>
 
-#include "rak/functional.h"
 #include "curl_get.h"
 #include "curl_socket.h"
 #include "curl_stack.h"
@@ -147,7 +146,7 @@ CurlStack::process_done_handle() {
     throw torrent::internal_error("CurlStack::receive_action() msg->msg != CURLMSG_DONE.");
 
   if (msg->data.result == CURLE_COULDNT_RESOLVE_HOST) {
-    iterator itr = std::find_if(begin(), end(), rak::equal(msg->easy_handle, std::mem_fun(&CurlGet::handle)));
+    iterator itr = std::find_if(begin(), end(), [msg](CurlGet* cg) { return msg->easy_handle == cg->handle(); });
  
     if (itr == end())
       throw torrent::internal_error("Could not find CurlGet when calling CurlStack::receive_action.");
@@ -162,7 +161,7 @@ CurlStack::process_done_handle() {
 
 void
 CurlStack::transfer_done(void* handle, const char* msg) {
-  iterator itr = std::find_if(begin(), end(), rak::equal(handle, std::mem_fun(&CurlGet::handle)));
+  iterator itr = std::find_if(begin(), end(), [handle](CurlGet* cg) { return handle == cg->handle(); });
 
   if (itr == end())
     throw torrent::internal_error("Could not find CurlGet with the right easy_handle.");

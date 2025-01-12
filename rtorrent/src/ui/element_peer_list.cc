@@ -53,8 +53,6 @@
 #include "element_peer_list.h"
 #include "element_text.h"
 
-#include "rak/functional.h"
-
 namespace ui {
 
 ElementPeerList::ElementPeerList(core::Download* d) :
@@ -63,10 +61,9 @@ ElementPeerList::ElementPeerList(core::Download* d) :
 
   m_listItr = m_list.end();
 
-  std::for_each(m_download->download()->connection_list()->begin(), m_download->download()->connection_list()->end(),
-                rak::bind1st(std::mem_fun<void,PList,PList::const_reference>(&PList::push_back), &m_list));
-
   torrent::ConnectionList* connection_list = m_download->download()->connection_list();
+
+  std::for_each(connection_list->begin(), connection_list->end(), [&](torrent::Peer* peer) { m_list.push_back(peer); });
 
   m_peer_connected = connection_list->signal_connected().insert(connection_list->signal_connected().end(),
                                                                 std::bind(&ElementPeerList::receive_peer_connected, this, std::placeholders::_1));

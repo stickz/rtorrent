@@ -37,34 +37,37 @@
 #include "config.h"
 
 #include <algorithm>
-#include <rak/functional.h>
 
 #include "address_list.h"
 
 namespace torrent {
 
-inline rak::socket_address
-AddressList::parse_address(const Object& b) {
-  rak::socket_address sa;
-  sa.clear();
-
-  if (!b.is_map())
-    return sa;
-
-  if (!b.has_key_string("ip") || !sa.set_address_str(b.get_key_string("ip")))
-    return sa;
-
-  if (!b.has_key_value("port") || b.get_key_value("port") <= 0 || b.get_key_value("port") >= (1 << 16))
-    return sa;
-
-  sa.set_port(b.get_key_value("port"));
-
-  return sa;
-}
-
 void
 AddressList::parse_address_normal(const Object::list_type& b) {
-  std::for_each(b.begin(), b.end(), rak::on(std::ptr_fun(&AddressList::parse_address), AddressList::add_address(this)));
+  std::for_each(b.begin(), b.end(), [&](auto& obj) {
+      if (!obj.is_map())
+        return;
+      if (!obj.has_key_string("ip"))
+        return;
+      if (!obj.has_key_value("port"))
+        return;
+
+      rak::socket_address sa;
+      sa.clear();
+
+      if (!sa.set_address_str(obj.get_key_string("ip")))
+        return;
+
+      auto port = obj.get_key_value("port");
+
+      if (port <= 0 || port >= (1 << 16))
+        return;
+
+      sa.set_port(port);
+
+      if (sa.is_valid())
+        this->push_back(sa);
+    });
 }
 
 void

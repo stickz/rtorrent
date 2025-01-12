@@ -39,7 +39,6 @@
 #include <cstdio>
 #include <cstring>
 #include <string.h>
-#include <rak/functional.h>
 #include <rak/string_manip.h>
 
 #include "download/download_wrapper.h"
@@ -192,10 +191,12 @@ DownloadConstructor::parse_tracker(const Object& b) {
       // Some torrent makers create empty/invalid 'announce-list'
       // entries while still having valid 'announce'.
       !(announce_list = &b.get_key_list("announce-list"))->empty() &&
-      std::find_if(announce_list->begin(), announce_list->end(), std::mem_fun_ref(&Object::is_list)) != announce_list->end())
+      std::find_if(announce_list->begin(), announce_list->end(), std::mem_fun_ref(&Object::is_list)) != announce_list->end()) {
 
-    std::for_each(announce_list->begin(), announce_list->end(), rak::make_mem_fun(this, &DownloadConstructor::add_tracker_group));
-
+    for (const auto& group : *announce_list) {
+      add_tracker_group(group);
+    }
+  }
   else if (b.has_key("announce"))
     add_tracker_single(b.get_key("announce"), 0);
 
@@ -205,10 +206,11 @@ DownloadConstructor::parse_tracker(const Object& b) {
   if (manager->dht_manager()->is_valid() && !m_download->info()->is_private())
     m_download->main()->tracker_list()->insert_url(m_download->main()->tracker_list()->size_group(), "dht://");
 
-  if (manager->dht_manager()->is_valid() && b.has_key_list("nodes"))
-    std::for_each(b.get_key_list("nodes").begin(), b.get_key_list("nodes").end(),
-                  rak::make_mem_fun(this, &DownloadConstructor::add_dht_node));
-
+  if (manager->dht_manager()->is_valid() && b.has_key_list("nodes")) {
+    for (const auto& node : b.get_key_list("nodes")) {
+      add_dht_node(node);
+    }
+  }
   m_download->main()->tracker_list()->randomize_group_entries();
 }
 
@@ -217,9 +219,9 @@ DownloadConstructor::add_tracker_group(const Object& b) {
   if (!b.is_list())
     throw bencode_error("Tracker group list not a list");
 
-  std::for_each(b.as_list().begin(), b.as_list().end(),
-		rak::bind2nd(rak::make_mem_fun(this, &DownloadConstructor::add_tracker_single),
-			     m_download->main()->tracker_list()->size_group()));
+  for (const auto& tracker : b.as_list()) {
+    add_tracker_single(tracker, m_download->main()->tracker_list()->size_group());
+  }
 }
 
 void
@@ -359,7 +361,9 @@ DownloadConstructor::choose_path(std::list<Path>* pathList) {
   EncodingList::const_iterator encodingLast  = m_encodingList->end();
   
   for ( ; encodingFirst != encodingLast; ++encodingFirst) {
-    std::list<Path>::iterator itr = std::find_if(pathFirst, pathLast, rak::bind2nd(download_constructor_encoding_match(), encodingFirst->c_str()));
+    auto itr = std::find_if(pathFirst, pathLast, [encodingFirst](const Path& p) {
+      return download_constructor_encoding_match()(p, encodingFirst->c_str());
+    });
     
     if (itr != pathLast)
       pathList->splice(pathFirst, *pathList, itr);

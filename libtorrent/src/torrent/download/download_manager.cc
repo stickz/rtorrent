@@ -36,8 +36,6 @@
 
 #include "config.h"
 
-#include <rak/functional.h>
-
 #include "torrent/exceptions.h"
 
 #include "download/download_wrapper.h"
@@ -106,12 +104,12 @@ DownloadManager::find(const HashString& hash) {
 
 DownloadManager::iterator
 DownloadManager::find(DownloadInfo* info) {
-  return std::find_if(begin(), end(), rak::equal(info, std::mem_fun(&DownloadWrapper::info)));
+  return std::find_if(begin(), end(), [info](const auto& wrapper){ return info == wrapper->info(); });
 }
 
 DownloadManager::iterator
 DownloadManager::find_chunk_list(ChunkList* cl) {
-  return std::find_if(begin(), end(), rak::equal(cl, std::mem_fun(&DownloadWrapper::chunk_list)));
+  return std::find_if(begin(), end(), [cl](const auto& wrapper){ return cl == wrapper->chunk_list(); });
 }
 
 DownloadMain*

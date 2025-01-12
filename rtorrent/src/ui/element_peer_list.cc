@@ -53,6 +53,8 @@
 #include "element_peer_list.h"
 #include "element_text.h"
 
+#include "rak/functional.h"
+
 namespace ui {
 
 ElementPeerList::ElementPeerList(core::Download* d) :

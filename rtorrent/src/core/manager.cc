@@ -47,6 +47,7 @@
 #include <rak/regex.h>
 #include <rak/path.h>
 #include <rak/string_manip.h>
+#include <rak/functional.h>
 #include <torrent/utils/resume.h>
 #include <torrent/object.h>
 #include <torrent/connection_manager.h>

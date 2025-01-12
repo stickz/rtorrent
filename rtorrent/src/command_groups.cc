@@ -52,6 +52,8 @@
 // For cg_d_group.
 #include "core/download.h"
 
+#include "rak/functional.h"
+
 // A hack to allow testing of the new choke_group API without the
 // working parts present.
 #define USE_CHOKE_GROUP 0

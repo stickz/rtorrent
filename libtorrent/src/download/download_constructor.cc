@@ -36,6 +36,7 @@
 
 #include "config.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <string.h>
@@ -191,7 +192,7 @@ DownloadConstructor::parse_tracker(const Object& b) {
       // Some torrent makers create empty/invalid 'announce-list'
       // entries while still having valid 'announce'.
       !(announce_list = &b.get_key_list("announce-list"))->empty() &&
-      std::find_if(announce_list->begin(), announce_list->end(), std::mem_fun_ref(&Object::is_list)) != announce_list->end()) {
+      std::find_if(announce_list->begin(), announce_list->end(), std::mem_fn(&Object::is_list)) != announce_list->end()) {
 
     for (const auto& group : *announce_list) {
       add_tracker_group(group);
@@ -342,13 +343,13 @@ DownloadConstructor::create_path(const Object::list_type& plist, const std::stri
   if (plist.empty())
     throw input_error("Bad torrent file, \"path\" has zero entries.");
 
-  if (std::find_if(plist.begin(), plist.end(), std::ptr_fun(&DownloadConstructor::is_invalid_path_element)) != plist.end())
+  if (std::any_of(plist.begin(), plist.end(), &DownloadConstructor::is_invalid_path_element))
     throw input_error("Bad torrent file, \"path\" has zero entries or a zero length entry.");
 
   Path p;
   p.set_encoding(enc);
 
-  std::transform(plist.begin(), plist.end(), std::back_inserter(p), std::mem_fun_ref<const Object::string_type&>(&Object::as_string));
+  std::transform(plist.begin(), plist.end(), std::back_inserter(p), std::mem_fn(&Object::as_string_c));
 
   return p;
 }

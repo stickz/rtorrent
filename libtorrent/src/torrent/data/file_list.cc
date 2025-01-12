@@ -618,9 +618,10 @@ FileList::create_chunk(uint64_t offset, uint32_t length, int prot) {
   if (offset + length > m_torrentSize)
     throw internal_error("Tried to access chunk out of range in FileList", data()->hash());
 
-  std::auto_ptr<Chunk> chunk(new Chunk);
+  std::unique_ptr<Chunk> chunk(new Chunk);
 
-  for (iterator itr = std::find_if(begin(), end(), std::bind2nd(std::mem_fun(&File::is_valid_position), offset)); length != 0; ++itr) {
+  auto itr = std::find_if(begin(), end(), [offset](File* file) { return file->is_valid_position(offset); });
+  for (; length != 0; ++itr) {
 
     if (itr == end())
       throw internal_error("FileList could not find a valid file for chunk", data()->hash());
@@ -690,8 +691,8 @@ FileList::mark_completed(uint32_t index) {
 
 FileList::iterator
 FileList::inc_completed(iterator firstItr, uint32_t index) {
-  firstItr         = std::find_if(firstItr, end(), [index](File* file) { return index < file->range_second(); });
-  iterator lastItr = std::find_if(firstItr, end(), [index](File* file) { return index+1 < file->range_second(); });
+  firstItr     = std::find_if(firstItr, end(), [index](File* file) { return index < file->range_second(); });
+  auto lastItr = std::find_if(firstItr, end(), [index](File* file) { return index+1 < file->range_second(); });
 
   if (firstItr == end())
     throw internal_error("FileList::inc_completed() first == m_entryList->end().", data()->hash());
@@ -699,7 +700,7 @@ FileList::inc_completed(iterator firstItr, uint32_t index) {
   // TODO: Check if this works right for zero-length files.
   std::for_each(firstItr,
                 lastItr == end() ? end() : (lastItr + 1),
-                std::mem_fun(&File::inc_completed_protected));
+                [](File* file) { file->inc_completed_protected(); });
 
   return lastItr;
 }

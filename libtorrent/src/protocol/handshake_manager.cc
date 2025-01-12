@@ -64,14 +64,6 @@ namespace torrent {
 
 ProtocolExtension HandshakeManager::DefaultExtensions = ProtocolExtension::make_default();
 
-inline void
-handshake_manager_delete_handshake(Handshake* h) {
-  h->deactivate_connection();
-  h->destroy_connection();
-
-  delete h;
-}
-
 HandshakeManager::size_type
 HandshakeManager::size_info(DownloadMain* info) const {
   return std::count_if(base_type::begin(), base_type::end(), [info](Handshake* h) { return info == h->download(); });
@@ -79,7 +71,11 @@ HandshakeManager::size_info(DownloadMain* info) const {
 
 void
 HandshakeManager::clear() {
-  std::for_each(base_type::begin(), base_type::end(), std::ptr_fun(&handshake_manager_delete_handshake));
+  for (auto h : *this) {
+    h->deactivate_connection();
+    h->destroy_connection();
+    delete h;
+  };
   base_type::clear();
 }
 
@@ -98,15 +94,11 @@ HandshakeManager::call_slot_succeeded(Handshake* h) {
   m_slot_succeeded(h);
 }
 
-struct handshake_manager_equal : std::binary_function<const rak::socket_address*, const Handshake*, bool> {
-  bool operator () (const rak::socket_address* sa1, const Handshake* p2) const {
-    return p2->peer_info() != NULL && *sa1 == *rak::socket_address::cast_from(p2->peer_info()->socket_address());
-  }
-};
-
 bool
 HandshakeManager::find(const rak::socket_address& sa) {
-  return std::find_if(base_type::begin(), base_type::end(), std::bind1st(handshake_manager_equal(), &sa)) != base_type::end();
+  return std::any_of(base_type::begin(), base_type::end(), [&sa](auto p2) {
+    return p2->peer_info() && sa == *rak::socket_address::cast_from(p2->peer_info()->socket_address());
+  });
 }
 
 void
@@ -115,7 +107,13 @@ HandshakeManager::erase_download(DownloadMain* info) {
     return info != h->download();
   });
 
-  std::for_each(split, base_type::end(), std::ptr_fun(&handshake_manager_delete_handshake));
+  std::for_each(split, base_type::end(), [](auto h) {
+    h->deactivate_connection();
+    h->destroy_connection();
+
+    delete h;
+  });
+
   base_type::erase(split, base_type::end());
 }
 

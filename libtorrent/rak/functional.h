@@ -290,13 +290,6 @@ const_mem_ref(const Member Class::*m) {
   return const_mem_ref_t<Class, Member>(m);
 }
 
-template <typename T>
-struct call_delete : public std::unary_function<T*, void> {
-  void operator () (T* t) {
-    delete t;
-  }
-};
-
 template <typename Operation>
 class bind2nd_t : public std::unary_function<typename Operation::first_argument_type, typename Operation::result_type> {
 public:

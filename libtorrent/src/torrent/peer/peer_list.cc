@@ -105,7 +105,9 @@ PeerList::~PeerList() {
   LT_LOG_EVENTS("deleting list total:%" PRIuPTR " available:%" PRIuPTR,
                 size(), m_available_list->size());
 
-  std::for_each(begin(), end(), rak::on(rak::mem_ref(&value_type::second), rak::call_delete<PeerInfo>()));
+  for (const auto& v : *this) {
+    delete v.second;
+  }
   base_type::clear();
 
   m_info = NULL;

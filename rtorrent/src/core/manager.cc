@@ -343,7 +343,7 @@ Manager::try_create_download(const std::string& uri, int flags, const command_li
   if (flags & create_throw)
     f->set_immediate(true);
 
-  f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
+  f->slot_finished([f]() { delete f; });
 
   if (flags & create_raw_data)
     f->load_raw_data(uri);
@@ -367,7 +367,7 @@ Manager::try_create_download_from_meta_download(torrent::Object* bencode, const 
 
   f->set_start(meta.get_key_value("start"));
   f->set_print_log(meta.get_key_value("print_log"));
-  f->slot_finished(std::bind(&rak::call_delete_func<core::DownloadFactory>, f));
+  f->slot_finished([f]() { delete f; });
 
   // Bit of a waste to create the bencode repesentation here
   // only to have the DownloadFactory decode it.

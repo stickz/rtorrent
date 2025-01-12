@@ -3,6 +3,7 @@ noinst_LTLIBRARIES = libsub_utils.la
 libsub_utils_la_SOURCES = \
 	diffie_hellman.cc \
 	diffie_hellman.h \
+	functional.h \
 	instrumentation.cc \
 	instrumentation.h \
 	rc4.h \

@@ -37,7 +37,6 @@
 #include "config.h"
 
 #include <functional>
-#include <rak/functional.h>
 
 #include "net/address_list.h"
 #include "torrent/utils/log.h"
@@ -273,12 +272,12 @@ TrackerList::find_next_to_request(iterator itr) {
 
 TrackerList::iterator
 TrackerList::begin_group(unsigned int group) {
-  return std::find_if(begin(), end(), rak::less_equal(group, std::mem_fun(&Tracker::group)));
+  return std::find_if(begin(), end(), [group](Tracker* t) { return group <= t->group(); });
 }
 
 TrackerList::const_iterator
 TrackerList::begin_group(unsigned int group) const {
-  return std::find_if(begin(), end(), rak::less_equal(group, std::mem_fun(&Tracker::group)));
+  return std::find_if(begin(), end(), [group](Tracker* t) { return group <= t->group(); });
 }
 
 TrackerList::size_type

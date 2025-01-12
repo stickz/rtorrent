@@ -45,6 +45,7 @@
 #include <rak/socket_address.h>
 #include <rak/string_manip.h>
 #include <rak/regex.h>
+#include <rak/functional.h>
 #include <torrent/rate.h>
 #include <torrent/throttle.h>
 #include <torrent/tracker.h>

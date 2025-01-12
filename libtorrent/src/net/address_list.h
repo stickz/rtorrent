@@ -55,23 +55,6 @@ public:
   void                        parse_address_compact(raw_string s);
   void                        parse_address_compact(const std::string& s);
   void                        parse_address_compact_ipv6(const std::string& s);
-
-private:
-  static rak::socket_address  parse_address(const Object& b);
-
-  struct add_address : public std::unary_function<rak::socket_address, void> {
-    add_address(AddressList* l) : m_list(l) {}
-
-    void operator () (const rak::socket_address& sa) const {
-      if (!sa.is_valid())
-        return;
- 
-      m_list->push_back(sa);
-    }
-
-    AddressList* m_list;
-  };
-
 };
 
 inline void

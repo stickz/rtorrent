@@ -47,7 +47,6 @@
 #include <rak/error_number.h>
 #include <rak/file_stat.h>
 #include <rak/fs_stat.h>
-#include <rak/functional.h>
 
 #include "data/chunk.h"
 #include "data/memory_chunk.h"
@@ -691,8 +690,8 @@ FileList::mark_completed(uint32_t index) {
 
 FileList::iterator
 FileList::inc_completed(iterator firstItr, uint32_t index) {
-  firstItr         = std::find_if(firstItr, end(), rak::less(index, std::mem_fun(&File::range_second)));
-  iterator lastItr = std::find_if(firstItr, end(), rak::less(index + 1, std::mem_fun(&File::range_second)));
+  firstItr         = std::find_if(firstItr, end(), [index](File* file) { return index < file->range_second(); });
+  iterator lastItr = std::find_if(firstItr, end(), [index](File* file) { return index+1 < file->range_second(); });
 
   if (firstItr == end())
     throw internal_error("FileList::inc_completed() first == m_entryList->end().", data()->hash());

@@ -61,6 +61,8 @@
 #include "download_factory.h"
 #include "download_store.h"
 
+#include "rak/functional.h"
+
 namespace core {
 
 bool

@@ -38,10 +38,10 @@
 
 #include <iostream>
 
-#include "rak/functional.h"
 #include "torrent/exceptions.h"
 #include "torrent/http.h"
 #include "torrent/utils/log.h"
+#include "utils/functional.h"
 
 namespace torrent {
 
@@ -58,7 +58,7 @@ Http::trigger_done() {
   bool should_delete_self = (m_flags & flag_delete_self);
   bool should_delete_stream = (m_flags & flag_delete_stream);
 
-  rak::slot_list_call(signal_done());
+  utils::slot_list_call(signal_done());
 
   if (should_delete_stream) {
     delete m_stream;
@@ -77,7 +77,7 @@ Http::trigger_failed(const std::string& message) {
   bool should_delete_self = (m_flags & flag_delete_self);
   bool should_delete_stream = (m_flags & flag_delete_stream);
 
-  rak::slot_list_call(signal_failed(), message);
+  utils::slot_list_call(signal_failed(), message);
 
   if (should_delete_stream) {
     delete m_stream;

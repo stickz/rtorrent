@@ -71,7 +71,9 @@ ConnectionList::ConnectionList(DownloadMain* download) :
 
 void
 ConnectionList::clear() {
-  std::for_each(begin(), end(), rak::on(std::mem_fun(&Peer::m_ptr), rak::call_delete<PeerConnectionBase>()));
+  for (const auto& peer : *this) {
+    delete peer->m_ptr();
+  }
   base_type::clear();
   
   m_disconnectQueue.clear();

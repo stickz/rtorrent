@@ -72,7 +72,7 @@ ResourceManager::~ResourceManager() {
   if (m_currentlyDownloadUnchoked != 0)
     throw internal_error("ResourceManager::~ResourceManager() called but m_currentlyDownloadUnchoked != 0.");
 
-  std::for_each(choke_base_type::begin(), choke_base_type::end(), rak::call_delete<choke_group>());
+  std::for_each(choke_base_type::begin(), choke_base_type::end(), [](choke_group* g) { delete g; });
 }
 
 // If called directly ensure a valid group has been selected.

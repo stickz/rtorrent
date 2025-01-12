@@ -94,7 +94,7 @@ FileList::~FileList() {
   // Can we skip close()?
   close();
 
-  std::for_each(begin(), end(), rak::call_delete<File>());
+  std::for_each(begin(), end(), [](File* file) { delete file; });
 
   base_type::clear();
   m_torrentSize = 0;

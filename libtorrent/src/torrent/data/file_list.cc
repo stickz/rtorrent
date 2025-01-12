@@ -47,7 +47,6 @@
 #include <rak/error_number.h>
 #include <rak/file_stat.h>
 #include <rak/fs_stat.h>
-#include <rak/functional.h>
 
 #include "data/chunk.h"
 #include "data/memory_chunk.h"
@@ -94,7 +93,7 @@ FileList::~FileList() {
   // Can we skip close()?
   close();
 
-  std::for_each(begin(), end(), rak::call_delete<File>());
+  std::for_each(begin(), end(), [](File* file) { delete file; });
 
   base_type::clear();
   m_torrentSize = 0;
@@ -619,10 +618,11 @@ FileList::create_chunk(uint64_t offset, uint32_t length, int prot) {
   if (offset + length > m_torrentSize)
     throw internal_error("Tried to access chunk out of range in FileList", data()->hash());
 
-  std::auto_ptr<Chunk> chunk(new Chunk);
+  std::unique_ptr<Chunk> chunk(new Chunk);
 
-  for (iterator itr = std::find_if(begin(), end(), std::bind2nd(std::mem_fun(&File::is_valid_position), offset)); length != 0; ++itr) {
+  auto itr = std::find_if(begin(), end(), [offset](File* file) { return file->is_valid_position(offset); });
 
+  for (; length != 0; ++itr) {
     if (itr == end())
       throw internal_error("FileList could not find a valid file for chunk", data()->hash());
 
@@ -691,8 +691,8 @@ FileList::mark_completed(uint32_t index) {
 
 FileList::iterator
 FileList::inc_completed(iterator firstItr, uint32_t index) {
-  firstItr         = std::find_if(firstItr, end(), rak::less(index, std::mem_fun(&File::range_second)));
-  iterator lastItr = std::find_if(firstItr, end(), rak::less(index + 1, std::mem_fun(&File::range_second)));
+  firstItr     = std::find_if(firstItr, end(), [index](File* file) { return index < file->range_second(); });
+  auto lastItr = std::find_if(firstItr, end(), [index](File* file) { return index+1 < file->range_second(); });
 
   if (firstItr == end())
     throw internal_error("FileList::inc_completed() first == m_entryList->end().", data()->hash());
@@ -700,7 +700,7 @@ FileList::inc_completed(iterator firstItr, uint32_t index) {
   // TODO: Check if this works right for zero-length files.
   std::for_each(firstItr,
                 lastItr == end() ? end() : (lastItr + 1),
-                std::mem_fun(&File::inc_completed_protected));
+                [](File* file) { file->inc_completed_protected(); });
 
   return lastItr;
 }

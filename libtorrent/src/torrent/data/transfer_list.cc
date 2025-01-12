@@ -39,7 +39,6 @@
 #include <algorithm>
 #include <functional>
 #include <set>
-#include <rak/functional.h>
 #include <rak/timer.h>
 
 #include "data/chunk.h"
@@ -68,18 +67,22 @@ TransferList::~TransferList() {
 
 TransferList::iterator
 TransferList::find(uint32_t index) {
-  return std::find_if(begin(), end(), rak::equal(index, std::mem_fun(&BlockList::index)));
+  return std::find_if(begin(), end(), [index](BlockList* b) { return index == b->index(); });
 }
 
 TransferList::const_iterator
 TransferList::find(uint32_t index) const {
-  return std::find_if(begin(), end(), rak::equal(index, std::mem_fun(&BlockList::index)));
+  return std::find_if(begin(), end(), [index](BlockList* b) { return index == b->index(); });
 }
 
 void
 TransferList::clear() {
-  std::for_each(begin(), end(), std::bind(m_slot_canceled, std::bind(&BlockList::index, std::placeholders::_1)));
-  std::for_each(begin(), end(), rak::call_delete<BlockList>());
+  for (const auto& block_list : *this) {
+    m_slot_canceled(block_list->index());
+  }
+  for (const auto& block_list : *this) {
+    delete block_list;
+  }
 
   base_type::clear();
 }
@@ -124,8 +127,7 @@ void
 TransferList::hash_succeeded(uint32_t index, Chunk* chunk) {
   iterator blockListItr = find(index);
 
-  if ((Block::size_type)std::count_if((*blockListItr)->begin(), (*blockListItr)->end(),
-                                      std::mem_fun_ref(&Block::is_finished)) != (*blockListItr)->size())
+  if ((Block::size_type)std::count_if((*blockListItr)->begin(), (*blockListItr)->end(), std::mem_fn(&Block::is_finished)) != (*blockListItr)->size())
     throw internal_error("TransferList::hash_succeeded(...) Finished blocks does not match size.");
 
   // The chunk should also be marked here or by the caller so that it
@@ -144,11 +146,11 @@ TransferList::hash_succeeded(uint32_t index, Chunk* chunk) {
   // every 30 minutes is guaranteed to get them all as long as it is
   // ordered properly.
   m_completedList.emplace_back(rak::timer::current().usec(), index);
-  
+
   if (rak::timer(m_completedList.front().first) + rak::timer::from_minutes(60) < rak::timer::current()) {
-    completed_list_type::iterator itr = std::find_if(m_completedList.begin(), m_completedList.end(),
-                                                     rak::less_equal(rak::timer::current() - rak::timer::from_minutes(30),
-                                                                     rak::mem_ref(&completed_list_type::value_type::first)));
+    auto itr = std::find_if(m_completedList.begin(), m_completedList.end(), [](auto v) {
+      return (rak::timer::current() - rak::timer::from_minutes(30)) <= v.first;
+    });
     m_completedList.erase(m_completedList.begin(), itr);
   }
 
@@ -174,7 +176,7 @@ TransferList::hash_failed(uint32_t index, Chunk* chunk) {
   if (blockListItr == end())
     throw internal_error("TransferList::hash_failed(...) Could not find index.");
 
-  if ((Block::size_type)std::count_if((*blockListItr)->begin(), (*blockListItr)->end(), std::mem_fun_ref(&Block::is_finished)) != (*blockListItr)->size())
+  if ((Block::size_type)std::count_if((*blockListItr)->begin(), (*blockListItr)->end(), std::mem_fn(&Block::is_finished)) != (*blockListItr)->size())
     throw internal_error("TransferList::hash_failed(...) Finished blocks does not match size.");
 
   m_failedCount++;

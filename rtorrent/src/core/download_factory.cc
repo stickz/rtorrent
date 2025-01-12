@@ -332,8 +332,9 @@ DownloadFactory::receive_success() {
     if (torrent::log_groups[torrent::LOG_TORRENT_DEBUG].valid())
       log_created(download, rtorrent);
 
-    std::for_each(m_commands.begin(), m_commands.end(),
-                  rak::bind2nd(std::ptr_fun(&rpc::parse_command_multiple_std), rpc::make_target(download)));
+    std::for_each(m_commands.begin(), m_commands.end(), [&download](const std::string& cmd) {
+        rpc::parse_command_multiple_std(cmd, rpc::make_target(download));
+      });
 
     if (!m_session) {
       if (m_manager->download_list()->find(infohash) == m_manager->download_list()->end()) {

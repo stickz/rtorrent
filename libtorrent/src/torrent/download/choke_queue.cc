@@ -41,7 +41,6 @@
 #include <numeric>
 #include <cstdlib>
 #include lt_tr1_functional
-#include <rak/functional.h>
 
 #include "protocol/peer_connection_base.h"
 #include "torrent/download/group_entry.h"
@@ -467,9 +466,9 @@ choke_manager_allocate_slots(choke_queue::iterator first, choke_queue::iterator 
 
   for (uint32_t i = 0; i < choke_queue::order_max_size; i++) {
     target[i].first = 0;
-    target[i + 1].second = std::find_if(target[i].second, last,
-                                        rak::less(i * choke_queue::order_base + (choke_queue::order_base - 1),
-                                                  rak::mem_ref(&choke_queue::value_type::weight)));
+    target[i + 1].second = std::find_if(target[i].second, last, [i](auto& v) {
+      return (i * choke_queue::order_base + (choke_queue::order_base - 1)) < v.weight;
+    });
 
     if (std::distance(target[i].second, target[i + 1].second) != 0)
       weightTotal += weights[i];

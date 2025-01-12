@@ -52,7 +52,7 @@ private:
     int port;
     udp_tracker_info new_info;
 
-    if (sscanf(url.c_str(), "udp://%1023[^:]:%i/announce", &hostname, &port) == 2 && hostname[0] != '\0' && port > 0 && port < (1 << 16)) {
+    if (sscanf(url.c_str(), "udp://%1023[^:]:%i/announce", hostname, &port) == 2 && hostname[0] != '\0' && port > 0 && port < (1 << 16)) {
       new_info.set(url, hostname, port);
       base_type::push_back(new_info);
       return new_info;

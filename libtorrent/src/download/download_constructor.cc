@@ -206,8 +206,10 @@ DownloadConstructor::add_tracker_group(const Object& b) {
   if (!b.is_list())
     throw bencode_error("Tracker group list not a list");
 
+  auto group = m_download->main()->tracker_list()->size_group();
+
   for (const auto& tracker : b.as_list()) {
-    add_tracker_single(tracker, m_download->main()->tracker_list()->size_group());
+    add_tracker_single(tracker, group);
   }
 }
 

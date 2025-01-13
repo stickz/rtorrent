@@ -40,7 +40,6 @@
 #include <functional>
 #include <numeric>
 #include <cstdlib>
-#include lt_tr1_functional
 
 #include "protocol/peer_connection_base.h"
 #include "torrent/download/group_entry.h"

@@ -241,7 +241,7 @@ CurlStack::remove_get(CurlGet* get) {
     throw torrent::internal_error("Error calling curl_multi_remove_handle.");
 
   if (m_active == m_maxActive &&
-      (itr = std::find_if(begin(), end(), std::not1(std::mem_fun(&CurlGet::is_active)))) != end()) {
+      (itr = std::find_if(begin(), end(), [](CurlGet* get) { return !get->is_active(); })) != end()) {
     (*itr)->set_active(true);
 
     if (curl_multi_add_handle((CURLM*)m_handle, (*itr)->handle()) > 0)

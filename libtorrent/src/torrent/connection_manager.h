@@ -45,8 +45,8 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
-#include <sys/socket.h>
 #include <functional>
+#include <sys/socket.h>
 #include <torrent/common.h>
 
 #ifdef USE_UDNS

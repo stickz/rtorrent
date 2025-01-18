@@ -42,7 +42,7 @@
 #define RTORRENT_RPC_OBJECT_STORAGE_H
 
 #include <cstring>
-#include lt_tr1_unordered_map
+#include <unordered_map>
 #include <torrent/object.h>
 
 #include "rak/unordered_vector.h"

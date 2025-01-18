@@ -38,10 +38,10 @@
 #define LIBTORRENT_UTILS_LOG_H
 
 #include <bitset>
+#include <functional>
 #include <string>
 #include <vector>
 #include <array>
-#include <functional>
 #include <torrent/common.h>
 
 namespace torrent {

@@ -44,7 +44,7 @@
 #include <iosfwd>
 #include <rak/priority_queue_default.h>
 #include <torrent/object.h>
-#include lt_tr1_functional
+#include <functional>
 
 #include "http_queue.h"
 

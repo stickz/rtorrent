@@ -39,7 +39,7 @@
 
 #include <list>
 #include <iosfwd>
-#include lt_tr1_functional
+#include <functional>
 
 namespace core {
 

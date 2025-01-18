@@ -37,6 +37,7 @@
 #ifndef RTORRENT_RPC_COMMAND_MAP_H
 #define RTORRENT_RPC_COMMAND_MAP_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <cstring>
@@ -46,7 +47,7 @@
 
 namespace rpc {
 
-struct command_map_comp : public std::binary_function<const char*, const char*, bool> {
+struct command_map_comp : public std::function<bool (const char*, const char*)> {
   bool operator () (const char* arg1, const char* arg2) const { return std::strcmp(arg1, arg2) < 0; }
 };
 

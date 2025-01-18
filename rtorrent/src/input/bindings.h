@@ -38,7 +38,7 @@
 #define RTORRENT_INPUT_BINDINGS_H
 
 #include <map>
-#include lt_tr1_functional
+#include <functional>
 
 #include "display/attributes.h"
 

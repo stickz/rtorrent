@@ -39,7 +39,7 @@
 
 #include <torrent/event.h>
 #include <torrent/poll.h>
-#include lt_tr1_functional
+#include <functional>
 
 namespace input {
 

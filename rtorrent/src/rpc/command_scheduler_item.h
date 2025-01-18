@@ -39,7 +39,7 @@
 
 #include "globals.h"
 
-#include lt_tr1_functional
+#include <functional>
 #include <torrent/object.h>
 
 namespace rpc {

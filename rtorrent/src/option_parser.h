@@ -39,7 +39,7 @@
 
 #include <map>
 #include <string>
-#include lt_tr1_functional
+#include <functional>
 
 // Throws std::runtime_error upon receiving bad input.
 

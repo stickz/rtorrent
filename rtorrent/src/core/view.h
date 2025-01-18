@@ -53,7 +53,7 @@
 #include <vector>
 #include <rak/timer.h>
 #include <torrent/object.h>
-#include lt_tr1_functional
+#include <functional>
 
 #include "globals.h"
 

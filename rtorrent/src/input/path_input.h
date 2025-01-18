@@ -38,7 +38,7 @@
 #define RTORRENT_INPUT_PATH_INPUT_H
 
 #include <list>
-#include lt_tr1_functional
+#include <functional>
 
 #include "utils/directory.h"
 #include "text_input.h"
